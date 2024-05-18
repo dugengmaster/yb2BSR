@@ -1,0 +1,44 @@
+<!-- 基底網頁 -->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %}</title>
+</head>
+
+
+<!-- 目前內容為測試用 -->
+
+<body>
+  <!--導覽列-->
+  <div>
+    <a id='to_index' href="{% url 'index' %}">
+      <h3>ubike查詢推薦系統</h3>
+    </a>
+    <br>
+    <a id='aboutUs' href="{% url 'about_us' %}">關於我們</a>
+    <a id='map' href="{% url 'mapAPP' %}">推薦站點查詢</a>
+    <a id='menber' href="{% url 'user' %}">會員資料</a>
+  </div>
+
+
+
+
+  <div id="container">
+    {% block content %}
+
+    {% endblock %}
+  </div>
+
+
+</body>
+
+{% block javascript %}
+
+{% endblock %}
+
+</html>
