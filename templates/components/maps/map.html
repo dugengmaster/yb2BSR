@@ -1,0 +1,27 @@
+<div class="container-flex">
+    <div id="map" class="position-relative"></div>
+</div>
+
+<!-- Google Maps API script -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2AiYlSa0BYV-Ac-Dbpv39RWK48NNyT1g"></script>
+<script>
+    function initMap() {
+        var taiwan = {lat: 23.6978, lng: 120.9605};
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 7,
+            center: taiwan
+        });
+        var marker = new google.maps.Marker({
+            position: taiwan,
+            map: map
+        });
+    }
+
+    window.onload = function() {
+        if (typeof google === 'object' && typeof google.maps === 'object') {
+            initMap();
+        } else {
+            console.error('Google Maps JavaScript API not loaded.');
+        }
+    };
+</script>

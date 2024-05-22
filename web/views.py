@@ -1,0 +1,57 @@
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth.decorators import login_required
+
+# Create your views here.
+def my_login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        # 檢查帳號和密碼是否符合預期值
+        if username == "Ben" and password == "870126":
+            user = authenticate(request, username=username, password=password)
+            print(
+                f"Input username: {username}, Input password: {password}, Authenticated user: {user}"
+            )
+            if user is not None:
+                auth_login(request, user)
+                return redirect("home")
+            else:
+                error_message = "認證失敗"
+                return render(request, "login.html", {"error_message": error_message})
+        else:
+            error_message = "帳號或密碼錯誤! 注意大小寫"
+            return render(request, "login.html", {"error_message": error_message})
+    else:
+        return render(request, "login.html")
+
+
+# @login_required
+def home(request):
+    username = request.user.username if request.user.is_authenticated else None
+    return render(request, "home.html", {"username": username})
+
+
+def logout_view(request):
+    auth_logout(request)
+    return redirect("my_login")
+
+
+def stations(request):
+    return render(request, "stations.html")
+
+
+def analysis_view(request):
+    # 示例热门站点数据，可以从数据库或其他数据源获取
+    hot_stations = ["台北市", "台中市", "桃園市", "高雄市", "台南市"]
+    return render(request, "analysis.html", {"hot_stations": hot_stations})
+
+
+def station_analysis_view(request, station_name):
+    # 根据站点名称获取分析数据
+    analysis_data = {
+        "station_name": station_name,
+        "chart_data": [10, 20, 30, 40, 50],  # 示例数据
+    }
+    return render(request, "analysis.html", analysis_data)

@@ -1,0 +1,29 @@
+<!--登入表單的彈窗-->
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">登入</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form action="/login" method="post">
+                    {% csrf_token %}
+                    <!-- 登入表單的內容 -->
+                    <label for="username">帳號：</label>
+                    <input type="text" class="form-control" id="username" name="username">
+
+                    <label for="password">密碼：</label>
+                    <input type="password" class="form-control" id="password" name="password">
+
+                    <button type="submit" class="btn btn-primary">登入</button>
+                </form>
+                <!-- 註冊按鈕 -->
+                <p class="mt-2">沒有帳號嗎？<button type="button" class="btn btn-link" data-toggle="modal" data-target="#registerModal" data-dismiss="modal">註冊</button></p>
+            </div>
+        </div>
+    </div>
+</div>
