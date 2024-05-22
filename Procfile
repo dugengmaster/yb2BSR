@@ -1,0 +1,1 @@
+web: gunicorn yb2BSR.wsgi
