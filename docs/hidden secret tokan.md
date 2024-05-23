@@ -31,7 +31,7 @@
     ```terminal
     git merge main
     ```
-### 步驟二：創建 .env 檔案
+### 步驟二：創建 `.env` 檔案
 1. 在專案的根目錄下創建一個 `.env` 檔案 ( 根目錄指的是 `yb2BSR` 跟 `manage.py` 同一層的那個 )
 2. 將 `discord secrect_key` 頻道中的文字全部儲存在 `.env` 檔案中。如：
     
@@ -39,20 +39,20 @@
     SECRET_KEY=your_secret_key_here
     DATABASE_PASSWORD=your_database_password_here
     ```
-### 步驟三：更新 .gitignore 檔案
-- 在專案的根目錄下找到或創建 `.gitignore` 檔案，並添加以下內容以確保 .env 檔案不被提交到版本控制系統：
+### 步驟三：更新 `.gitignore` 檔案
+- 在專案的根目錄下找到或創建 `.gitignore` 檔案，並添加以下內容以確保 `.env` 檔案不被提交到版本控制系統：
     
     ```.gitignore
     .env
     ```
-### 步驟四：安裝 python-dotenv 套件
+### 步驟四：安裝 `python-dotenv` 套件
 - 安裝 `python-dotenv` 這個套件。
 
     ```terminal
     pip install python-dotenv
     ```
 ### 步驟五：在應用程式中讀取環境變數
-- 在 Django 的 settings.py 檔案中，增加如下內容來讀取環境變數：
+- 在 `Django` 的 `settings.py` 檔案中，增加如下內容來讀取環境變數：
     
     ```python
     import os
@@ -69,7 +69,7 @@
     ```
 
 - **不要將金鑰寫在原始碼中，所有需要之金鑰都應該儲存在 `.env` 這個檔案之內統一進行管理**
-- **後續要請將新金鑰時，請把她添加到 .env 檔案中，並在 settings.py 中的註解 # Environment variable: ACCESS_TOKEN之後，新增 os.getenv('你想新增的金鑰') 來讀取新金鑰。**
+- **後續要請將新金鑰時，請把她添加到 `.env` 檔案中，並在 `settings.py` 中的註解 `# Environment variable: ACCESS_TOKEN`之後，新增 `os.getenv('你想新增的金鑰')` 來讀取新金鑰。**
 
 1. 在 `.env` 檔案中添加新金鑰：
 
