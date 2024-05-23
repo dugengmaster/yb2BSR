@@ -19,6 +19,9 @@ from django.contrib import admin
 from django.urls import path, include
 from web import views as web_views
 
+
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", web_views.home, name="home"),
@@ -32,4 +35,12 @@ urlpatterns = [
     ),
     path("about_us/", include("aboutUS.urls")),
     path("map/", include("mapAPP.urls")),
+    # path('404/',web_views.custom_404),
+    # path('404/', web_views.custom_404, name='custom_404'),
+    
 ]
+handler404 = web_views.custom_404
+# 將自定義 404 視圖與指定路徑關聯
+# urlpatterns += [
+#     path('404/',web_views.custom_404),
+# ]
