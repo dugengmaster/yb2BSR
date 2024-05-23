@@ -26,9 +26,9 @@ SECRET_KEY = "django-insecure-*9=2+w6166u8c54ei-ov#i5j3w2#qh5jm%%97vhctat9%w(o8(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+# DEBUG = False
 ALLOWED_HOSTS = []
-
+# ALLOWED_HOSTS = ['example.com', 'www.example.com', 'localhost', '127.0.0.1']
 
 # Application definition
 
@@ -52,6 +52,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'yb2BSR.middleware.Custom404Middleware',#404頁面    
 ]
 
 ROOT_URLCONF = "yb2BSR.urls"
@@ -68,6 +69,9 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            'builtins' :[
+                'django.templatetags.static'
+            ]
         },
     },
 ]
@@ -121,10 +125,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+# ]
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
+    BASE_DIR / "static",
 ]
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 django_heroku.settings(locals())

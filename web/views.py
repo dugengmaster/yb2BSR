@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 
+
 # Create your views here.
 def my_login(request):
     if request.method == "POST":
@@ -55,3 +56,19 @@ def station_analysis_view(request, station_name):
         "chart_data": [10, 20, 30, 40, 50],  # 示例数据
     }
     return render(request, "analysis.html", analysis_data)
+
+
+# from django.http import Http404
+# def my_view(request):
+#     try:
+#         # 你的視圖代碼...
+#         # 如果無法找到所需內容，則手動引發 404 錯誤
+#         # 如果你的視圖無法找到所需內容，你可以引發 Http404 異常
+#         raise Http404("Page not found")
+#     except Http404:
+#         # 如果引發了 Http404 異常，導向到自定義的 404 錯誤頁面
+#         return custom_404(request)
+
+def custom_404(request,exception):
+
+    return render(request, '404.html', status=404)
