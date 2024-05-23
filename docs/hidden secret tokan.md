@@ -66,10 +66,12 @@
 - **後續要請將新金鑰時，請把她添加到 .env 檔案中，並在 settings.py 中的註解 # Environment variable: ACCESS_TOKEN之後，新增 os.getenv('你想新增的金鑰') 來讀取新金鑰。**
 
 1. 在 `.env` 檔案中添加新金鑰：
+
     ```.env
     NEW_SECRET_KEY=your_new_secret_key_here
     ```
 2. 在 `settings.py` 檔案中讀取新金鑰：
+
     ```python
     # Environment variable: ACCESS_TOKEN
     env_path = os.path.join(BASE_DIR, ".env")
