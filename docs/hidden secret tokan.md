@@ -67,7 +67,7 @@
     LINE_CHANNEL_SECRET = os.getenv('LINE_CHANNEL_SECRET')
     LINE_CHANNEL_ACCESS_TOKEN = os.getenv('LINE_CHANNEL_ACCESS_TOKEN')
     ```
-
+## 管理金鑰操作指南
 - **不要將金鑰寫在原始碼中，所有需要之金鑰都應該儲存在 `.env` 這個檔案之內統一進行管理**
 - **後續要請將新金鑰時，請把她添加到 `.env` 檔案中，並在 `settings.py` 中的註解 `# Environment variable: ACCESS_TOKEN`之後，新增 `os.getenv('你想新增的金鑰')` 來讀取新金鑰。**
 
@@ -79,7 +79,7 @@
 2. 在 `settings.py` 檔案中讀取新金鑰：
 
     ```python
-    # Environment variable: ACCESS_TOKEN
+    # Environment variable: ACCESS_TOKEN <- 在settings.py 找到這段註解
     env_path = os.path.join(BASE_DIR, ".env")
     load_dotenv(env_path)
 
