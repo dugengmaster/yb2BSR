@@ -6,5 +6,5 @@
 {% endblock %}
 
 {% block content %}
-{% include "components/maps/map.html" %}
+{% include "components/maps/map.html" with api_key=GOOGLE_MAPS_API_KEY %}
 {% endblock %}

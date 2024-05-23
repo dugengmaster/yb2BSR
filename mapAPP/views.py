@@ -1,11 +1,13 @@
 from django.shortcuts import render
+from django.conf import settings
 
 # Create your views here.
 
 
 # 顯示有地圖的頁面
 def mapAPP(request):
-    return render(request, "mapAPP/mapAPP.html")
+    map_key = {"GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY}
+    return render(request, "map.html", map_key)
 
 
 # 查詢特定站點

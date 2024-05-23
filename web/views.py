@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 # Create your views here.
 def my_login(request):
@@ -39,7 +40,8 @@ def logout_view(request):
 
 
 def stations(request):
-    return render(request, "stations.html")
+    map_key = {"GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY}
+    return render(request, "stations.html", map_key)
 
 
 def analysis_view(request):
