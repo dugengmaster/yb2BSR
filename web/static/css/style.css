@@ -288,10 +288,96 @@ body {
 	color: #FF0000; /* YouTube 的品牌颜色 */
 }
 
+.modal-content {
+    background: linear-gradient(135deg, rgba(173, 216, 230, 0.9), rgba(240, 248, 255, 0.9)); /* 添加漸層背景色 */
+    padding: 20px; /* 調整填充 */
+    border: 1px solid #ccc; /* 添加邊框 */
+    box-shadow: 0 0 10px rgba(114, 62, 62, 0.1); /* 添加陰影效果 */
+    border-radius: 50px; /* 添加圓角 */
+}
+.modal-title {
+    font-size: 24px; /* 調整標題字體大小 */
+    color: #000000; /* 調整標題顏色 */
+    font-family: 'Arial', sans-serif; /* 調整字體樣式 */
+    font-weight: bold; /* 調整字體粗細 */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* 添加文字陰影 */
+    margin-bottom: 20px; /* 調整標題下方的間距 */
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0080FF); /* 添加淡灰色的渐变背景色 */
+    border: none; /* 移除邊框，使用陰影代替 */
+    color: #ffffff; /* 調整按鈕文字顏色 */
+    border-radius: 25px; /* 添加圓角 */
+    padding: 10px 20px; /* 調整按鈕填充 */
+    font-size: 16px; /* 調整按鈕字體大小 */
+    font-weight: bold; /* 調整按鈕字體粗細 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加按鈕陰影 */
+    transition: background 0.3s, box-shadow 0.3s; /* 添加過渡效果 *//
+}
+
+/* 按鈕懸停樣式 */
+.btn-primary:hover {
+    background: linear-gradient(135deg, rgba(211, 211, 211, 0.9), rgba(192, 192, 192, 0.9)); /* 悬停时调整渐变方向 */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* 懸停時加強陰影效果 */
+}
+
+/* 按鈕激活樣式 */
+.btn-primary:active {
+    background: linear-gradient(135deg, rgba(192, 192, 192, 0.9), rgba(211, 211, 211, 0.9)); /* 激活时调整渐变颜色 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 激活時減弱陰影效果 */
+}
+
+.modal-body label {
+    display: block; /* 將標籤設置為塊級元素 */
+    margin-bottom: 5px; /* 添加下邊距 */
+    font-weight: bold; /* 調整字體粗細 */
+    color: #000000; /* 調整字體顏色 */
+}
+
+/* 輸入框樣式 */
+.form-control {
+    border-radius: 5px; /* 添加圓角 */
+    border: 1px solid #ccc; /* 調整邊框 */
+    padding: 10px; /* 調整內邊距 */
+    font-size: 16px; /* 調整字體大小 */
+    margin-bottom: 15px; /* 添加下邊距 */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* 添加內陰影 */
+    transition: border-color 0.3s, box-shadow 0.3s; /* 添加過渡效果 */
+}
 
 
+.form-control:focus {
+    border-color: #000000; /* 聚焦時調整邊框顏色 */
+    box-shadow: 0 0 5px rgba(142, 161, 223, 0.5); /* 聚焦時添加陰影 */
+}
 
+/* 取消按鈕樣式 */
+.btn-secondary {
+    background-color: #ccc; /* 設置背景色為淡灰色 */
+    color: #333; /* 設置文字顏色為深灰色 */
+    border: none; /* 移除邊框 */
+    border-radius: 25px; /* 添加圓角 */
+    padding: 10px 20px; /* 調整填充 */
+    font-size: 16px; /* 調整字體大小 */
+    font-weight: bold; /* 設置文字加粗 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加陰影效果 */
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s; /* 添加過渡效果 */
+}
 
+/* 取消按鈕懸停樣式 */
+.btn-secondary:hover {
+    background-color: #aaa; /* 懸停時稍深的灰色 */
+    color: #333; /* 文字顏色不變 */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* 懸停時加強陰影效果 */
+}
+
+/* 取消按鈕激活樣式 */
+.btn-secondary:active {
+    background-color: #999; /* 激活時更深的灰色 */
+    color: #333; /* 文字顏色不變 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 激活時減弱陰影效果 */
+}
 
 
 
