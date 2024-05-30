@@ -18,6 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from web import views as web_views
+from Line_Official_Account_Bot import views as linebot_views
 
 
 
@@ -37,7 +38,8 @@ urlpatterns = [
     path("map/", include("mapAPP.urls")),
     # path('404/',web_views.custom_404),
     # path('404/', web_views.custom_404, name='custom_404'),
-    
+    path("callback/", linebot_views.callback)
+
 ]
 handler404 = web_views.custom_404
 # 將自定義 404 視圖與指定路徑關聯
