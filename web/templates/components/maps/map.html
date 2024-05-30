@@ -3,18 +3,40 @@
 </div>
 
 <!-- Google Maps API script -->
-<script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&loading=async&callback=initMap&libraries=marker" defer></script>
+<h3 style="background-color:DodgerBlue;">{{ msg }}</h3>
 <script>
+    
     function initMap() {
-        var taiwan = {lat: 23.6978, lng: 120.9605};
+        var myPosition = {{ coordinates }};
+        var bikePin = document.createElement('img')
+        bikePin.src = "/static/images/location.png"
+        bikePin.style.width = '35px';  // 設置寬度
+        bikePin.style.height = 'auto';
         var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 7,
-            center: taiwan
+            zoom: 16,
+            center: myPosition,
+            mapId: "yb2bsr",
         });
-        var marker = new google.maps.Marker({
-            position: taiwan,
-            map: map
+        var marker = new google.maps.marker.AdvancedMarkerElement({
+            map: map,
+            position: myPosition,
+            title: "you are here",
+            
         });
+
+        {% for i in bikeStation %}
+            {% for key, value in i.items %}
+                var station = new google.maps.marker.AdvancedMarkerElement({
+                    map: map,
+                    position: {{ value }},
+                    title: "{{ key }}",
+                    content: bikePin.cloneNode(true),
+                });
+            {% endfor %}
+        {% endfor %}
+        
+
     }
 
     window.onload = function() {
