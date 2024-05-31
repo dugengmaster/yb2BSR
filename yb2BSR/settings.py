@@ -49,7 +49,9 @@ INSTALLED_APPS = [
     "user.apps.UserConfig",
     "aboutUS.apps.AboutusConfig",
     "mapAPP.apps.MapappConfig",
+    
 ]
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

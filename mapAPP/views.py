@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.conf import settings
 from mapAPP.GoogleMapForUbike import GoogleMapforUbike
-from mapAPP.models import LtecelltowerTpe, YbStn
+from mapAPP.models import LtecelltowerTpe, Yb_stn
 from django.db.models import Q
 from django.http import HttpResponse
 # Create your views here.
@@ -32,11 +32,11 @@ def mapAPP(request):
     parameter = {"api_key": settings.GOOGLE_MAPS_API_KEY, 'coordinates':temp, 'msg':msg, 'bikeStation':bikestations}
     return render(request, "mapAPP.html", parameter)
 
-def test(request):
-    ob = LtecelltowerTpe.objects
-    towerList = ob.filter(net__in=['1','97'])
-    netlist = [i.lat for i in towerList]
-    return HttpResponse(netlist)
+# def test(request):
+#     ob = LtecelltowerTpe.objects
+#     towerList = ob.filter(net__in=['1','97'])
+#     netlist = [i.lat for i in towerList]
+#     return HttpResponse(netlist)
 #
 # 查詢特定站點
 
@@ -57,7 +57,7 @@ import re
 from django.shortcuts import render
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from models import Yb_cnty, Yb_stn,Yb_yb,Tpe_yb
+from mapAPP.models import Yb_cnty, Yb_stn,Yb_yb,Tpe_yb
 
 # Create your views here.
 global dcflg

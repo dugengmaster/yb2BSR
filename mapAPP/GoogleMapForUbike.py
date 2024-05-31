@@ -12,7 +12,7 @@ import uuid
 from datetime import datetime
 import sqlite3 as sql
 import time
-from mapAPP.models import LtecelltowerTpe, YbStn
+from mapAPP.models import LtecelltowerTpe, Yb_stn
 from django.db.models import Q
 
 
@@ -136,7 +136,7 @@ class GoogleMapforUbike:
         
         top5 = df.head(5)
         del top5['distance']
-        staInfo = YbStn.objects.filter(area_code='00')
+        staInfo = Yb_stn.objects.filter(area_code='00')
         sta_info_df = pd.DataFrame([{'lat': eval(sta.lat), 'lng': eval(sta.lng), 'name_tw': sta.name_tw} for sta in staInfo])
         top5 = top5.merge(sta_info_df, how='left', left_on=['lat', 'lng'], right_on=['lat', 'lng'])
         result = top5.to_dict('records')

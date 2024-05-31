@@ -21,5 +21,5 @@ from mapAPP import views
 
 urlpatterns = [
     path("", views.mapAPP, name="mapAPP"),
-    path("test", views.test)
+    # path("test", views.test)
 ]
