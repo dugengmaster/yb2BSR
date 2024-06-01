@@ -24,21 +24,37 @@
             title: "you are here",
             
         });
-
+        var contents = [
+            {% for item in bikeStatus %}
+                "{% for key, value in item.items %}{% if forloop.counter == 1 %}目前車輛數: {{ value }}{% else %}<br>更新時間: {{ value }}{% endif %}{% endfor %}",
+            {% endfor %}
+        ]
+        var infoWindow = new google.maps.InfoWindow();
         {% for i in bikeStation %}
             {% for key, value in i.items %}
-                var station = new google.maps.marker.AdvancedMarkerElement({
-                    map: map,
-                    position: {{ value }},
-                    title: "{{ key }}",
-                    content: bikePin.cloneNode(true),
-                });
+                (function() {
+                    var bikePinClone = bikePin.cloneNode(true);
+                    var station = new google.maps.marker.AdvancedMarkerElement({
+                        map: map,
+                        position: {{ value }},
+                        title: "{{ key }}",
+                        content: bikePinClone,
+                        gmpClickable: true,
+                        customContent: contents[{{ forloop.parentloop.counter0 }}]
+                    });
+
+                    station.addListener("click", function() {
+                        infoWindow.close();
+                        infoWindow.setContent(station.customContent);
+                        infoWindow.open(map, station);
+                    });
+                 }){% comment %}(contents[{{ forloop.parentloop.counter0 }}], {{ value }}, "{{ key }}"); {% endcomment %}
             {% endfor %}
         {% endfor %}
         
 
     }
-
+   
     window.onload = function() {
         if (typeof google === 'object' && typeof google.maps === 'object') {
             initMap();
