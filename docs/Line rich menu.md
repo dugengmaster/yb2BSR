@@ -131,3 +131,41 @@ https://developers.line.biz/en/reference/messaging-api/#rich-menu-object
 https://developers.line.biz/en/reference/messaging-api/#rich-menu-response-object
 - Django 官方文件
 https://docs.djangoproject.com/en/3.2/ref/request-response/#django.http.HttpRequest.body
+
+# 我要寫一個 顯示實時天氣 的功能
+
+## 用Django跟linebot.v3來寫 如果需要增加 import 的套件 你自己處理
+
+### process：
+
+1. **用戶操作：**
+    - 用戶按下rich menu按鈕，觸發postback事件。
+
+2. **伺服器處理請求：**
+    - LINE伺服器將postback事件請求轉發給Django的webhook API。
+
+3. **Webhook API接收請求：**
+    - Webhook API解析請求並確認其類型。
+    - 如果請求為postback事件，檢查`action`參數。
+    - 如果`action`為`sharelocation`，以asyncio執行以下步驟：
+        1. 回應一個Flex Message Bubble，包含說明文字和同意/不同意按鈕。
+        2. 將`user_id`、`timestamp`、`task`儲存在session中。
+
+4. **用戶位置分享：**
+    - 用戶按下同意按鈕並分享位置信息。
+    - LINE伺服器將位置分享請求轉發給Django的webhook API。
+
+5. **Webhook API處理位置請求：**
+    - Webhook API解析位置請求。
+    - 確認session中的`user_id`與位置請求中的`user_id`匹配。
+    - 如果匹配，檢查session中的`task`類型。
+        - 如果`task`為`weather_query`，執行以下步驟：
+            - 從位置請求中獲取GPS位置。
+            - 使用GPS位置獲取對應位置的天氣信息。
+        - 如果`task`為`yb_select_site`，執行以下步驟：
+            - 從位置請求中獲取GPS位置。
+            - 使用GPS位置獲取對應位置的最佳YouBike站點位置。
+    - 將天氣信息或YouBike站點位置發送給用戶。
+    - 清除session中的`[timestamp, user_id, task]`資訊。
+
+    但我要你一步一步來幫我完成 先從第一步開始
