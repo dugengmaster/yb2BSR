@@ -1,15 +1,84 @@
 from django.shortcuts import render
 from django.conf import settings
-
+from mapAPP.GoogleMapForUbike import GoogleMapforUbike
+from mapAPP.models import LtecelltowerTpe, Yb_stn
+from django.db.models import Q
+from django.http import HttpResponse
+import os
+import time
+import datetime
+import pandas as pd
+import re
+import requests
+import json
 # Create your views here.
-
+#取得最新的站點狀態
+def getstationbike(coordinates):
+    header = {
+        'User-Agent': 
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+        }
+    url = 'https://apis.youbike.com.tw/json/station-yb2.json'
+    sess = requests.session()
+    r = sess.get(url, headers = header)
+    if r.status_code==requests.codes.ok:
+        data = json.loads(r.text)
+        tpeStation = [sta for sta in data if sta['area_code']=='00']
+        df = pd.DataFrame(tpeStation)
+        df['lat']= df['lat'].astype(float)
+        df['lng']= df['lng'].astype(float)
+        stationStatus = []
+        for coor in coordinates:
+            for j in df.index:
+                if coor['lat']==df.loc[j, 'lat'] and coor['lng']==df.loc[j, 'lng']:
+                    temp = {
+                        'available_spaces': str(df.loc[j, 'available_spaces'])+'/'+str(df.loc[j, 'parking_spaces']), 
+                        'update_time': df.loc[j, 'updated_at']
+                        }
+                    stationStatus.append(temp)
+                    break
+        return stationStatus
+    else:
+        print('載入數值失敗')
 
 # 顯示有地圖的頁面
 def mapAPP(request):
-    map_key = {"GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY}
-    return render(request, "map.html", map_key)
+    gmap = GoogleMapforUbike(settings.GOOGLE_MAPS_API_KEY)
+    myPosition = gmap.getgeolocation()
+    lat_min, lat_max = 24.97619, 25.14582
+    lng_min, lng_max = 121.46288, 121.62306
+    bikeStation ={}
+    tpeStaion = {'lat': 25.048159037642492, 'lng': 121.51707574725279}#台北車站座標
+    if (myPosition['lat']<lat_min or myPosition['lat']>lat_max) or (myPosition['lng']<lng_min or myPosition['lng']>lng_max):
+        temp = "{lat: 25.048159037642492, lng: 121.51707574725279}"
+        msg = "您不在台北市，請使用大眾交通工具移動到台北市"
+        bikeStation = gmap.getBikeStation(tpeStaion)
+    else:
+        temp = "{lat:"+str(myPosition['lat'])+","+"lng:"+str(myPosition['lng'])+'}'
+        bikeStation = gmap.getBikeStation(myPosition)
+    bikestations = []
+    bikeStatus = getstationbike(bikeStation)
+    
+    for sta in bikeStation:
+        change = "{lat:"+str(sta['lat'])+","+"lng:"+str(sta['lng'])+'}'
+        bike = {sta['name_tw']: change}
+        bikestations.append(bike)
+        
+    parameter = {
+        "api_key": settings.GOOGLE_MAPS_API_KEY, 
+        'coordinates':temp, 
+        'msg':msg, 
+        'bikeStation':bikestations,
+        'bikeStatus':bikeStatus
+    }
+    return render(request, "mapAPP.html", parameter)
 
-
+# def test(request):
+#     ob = LtecelltowerTpe.objects
+#     towerList = ob.filter(net__in=['1','97'])
+#     netlist = [i.lat for i in towerList]
+#     return HttpResponse(netlist)
+#
 # 查詢特定站點
 
 # 推薦站點
@@ -21,15 +90,11 @@ def mapAPP(request):
 
 
 # by C F Chu for yb data collection and yb model setup
-import os
-import time
-import datetime
-import pandas as pd
-import re
+
 from django.shortcuts import render
 from django.shortcuts import render,redirect
-from django.http import HttpResponse
-from models import Yb_cnty, Yb_stn,Yb_yb,Tpe_yb
+
+from mapAPP.models import Yb_cnty, Yb_stn,Yb_yb,Tpe_yb
 
 # Create your views here.
 global dcflg
