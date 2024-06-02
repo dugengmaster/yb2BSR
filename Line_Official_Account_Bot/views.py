@@ -39,6 +39,9 @@ def callback(request):
     # 取得請求的數據可能是
     body = request.body.decode('utf-8')
     events = json.loads(body)['events']
+    print(request.session)
+
+
     for event in events:
         task = event.get('postback', {}).get('data')
         timestamp = event.get('timestamp')
@@ -63,43 +66,22 @@ def callback(request):
 
 @handler.add(PostbackEvent)
 def handle_postback(event):
-    data = json.loads(event.postback.data)
-    action = data.get('action')
-    task = data.get('task')
-
+    data = event.postback.data
+    action = json.loads(data).get('action')
+    print(data)
     if action == 'shareLocation':
-        user_id = event.source.user_id
+        quick_reply_buttons = QuickReply(
+            items=[
+                QuickReplyItem(action=LocationAction(label="Share Location"))
+            ]
+        )
+        message = TextMessage(text="Please share your location.", quick_reply=quick_reply_buttons)
 
-        # 儲存user_id, timestamp和task到session
-        request.session['user_id'] = user_id
-        request.session['timestamp'] = event.timestamp
-        request.session['task'] = task
-
-        if task == 'yb_select_site':
-            reply_message = {
-                "type": "flex",
-                "altText": "Location Sharing",
-                "contents": {
-                    "type": "bubble",
-                    "body": {
-                        "type": "box",
-                        "layout": "vertical",
-                        "contents": [
-                            {
-                                "type": "text",
-                                "text": "Please share your location",
-                                "wrap": True
-                            },
-                            {
-                                "type": "button",
-                                "action": {
-                                    "type": "uri",
-                                    "label": "Share Location",
-                                    "uri": "line://nv/location"
-                                }
-                            }
-                        ]
-                    }
-                }
-            }
-            line_bot_api.reply_message(event.reply_token, reply_message)
+    with ApiClient(configuration) as api_client:
+        line_bot_api = MessagingApi(api_client)
+        line_bot_api.reply_message(
+            ReplyMessageRequest(
+                reply_token=event.reply_token,
+                messages=[message]
+            )
+        )
