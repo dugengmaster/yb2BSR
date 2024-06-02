@@ -307,7 +307,9 @@ def tpe_yb_upd():
 
     #return HttpResponse("tpe_yb_upd is done!")
 
-def get_rain(fn):
+
+# get real time rain in 10min.
+def get_rain(fn): 
     # fn="D:\\LC\\ubike\\weather-2024-05-24 00_52.json"
     data=pd.read_json(fn)
 
@@ -321,7 +323,7 @@ def get_rain(fn):
             # print(" rain:",i["RainfallElement"]["Now"]["Precipitation"])
             return i["RainfallElement"]["Past10Min"]["Precipitation"]
 
-
+# get real time temperature in 1 hour.
 def get_temp(fn):
     if "2024-05-24 00" in fn: #due to no weather2 file before 2024-05-24 01
         return 24.1 
