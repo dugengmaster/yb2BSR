@@ -115,7 +115,7 @@ class GoogleMapforUbike:
         return myGPS['location']
 
     def getBikeStation(self, location):        
-        #先取得半徑500m的bike station
+        #先取得半徑500m的bike station {'lat': 123456, 'lng':4561}
         place_search = self.client.places_nearby(location, keyword="youbike", radius=500)
         #數量太少再擴大搜尋
         if len(place_search['results']) <5:
@@ -142,7 +142,7 @@ class GoogleMapforUbike:
         result = top5.to_dict('records')
         return result
     
-    def getDuration(self, location, destination, departuretime= datetime.now()):
+    def getDuration(self, location, destination, departuretime= datetime.now()) -> dict:
         # departuretime = datetime.now()
         matrix = self.client.distance_matrix(location, destination, mode='walking', units='metrics', departure_time=departuretime)
         for index, coor in enumerate(destination):
