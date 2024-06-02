@@ -3,11 +3,12 @@
 </div>
 
 <!-- Google Maps API script -->
-<script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&loading=async&callback=initMap&libraries=marker" defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=beta&key={{ api_key }}&loading=async&callback=initMap&libraries=marker" defer></script>
 <h3 style="background-color:DodgerBlue;">{{ msg }}</h3>
 <script>
     
     function initMap() {
+     
         var myPosition = {{ coordinates }};
         var bikePin = document.createElement('img')
         bikePin.src = "/static/images/location.png"
@@ -26,33 +27,38 @@
         });
         var contents = [
             {% for item in bikeStatus %}
+                {% if forloop.last %}
+                "{% for key, value in item.items %}{% if forloop.counter == 1 %}目前車輛數: {{ value }}{% else %}<br>更新時間: {{ value }}{% endif %}{% endfor %}"
+                {% else %}
                 "{% for key, value in item.items %}{% if forloop.counter == 1 %}目前車輛數: {{ value }}{% else %}<br>更新時間: {{ value }}{% endif %}{% endfor %}",
+                {% endif %}
             {% endfor %}
         ]
         var infoWindow = new google.maps.InfoWindow();
+        function makemarker(content, position, title) {
+                       
+                new google.maps.marker.AdvancedMarkerElement({
+                map: map,
+                position: position,
+                title: title+" "+content,
+                content: bikePin.cloneNode(true),
+                gmpClickable: true,
+                {% comment %} customContent: content {% endcomment %}
+                
+            });            
+        }                    
         {% for i in bikeStation %}
-            {% for key, value in i.items %}
-                (function() {
-                    var bikePinClone = bikePin.cloneNode(true);
-                    var station = new google.maps.marker.AdvancedMarkerElement({
-                        map: map,
-                        position: {{ value }},
-                        title: "{{ key }}",
-                        content: bikePinClone,
-                        gmpClickable: true,
-                        customContent: contents[{{ forloop.parentloop.counter0 }}]
-                    });
-
-                    station.addListener("click", function() {
-                        infoWindow.close();
-                        infoWindow.setContent(station.customContent);
-                        infoWindow.open(map, station);
-                    });
-                 }){% comment %}(contents[{{ forloop.parentloop.counter0 }}], {{ value }}, "{{ key }}"); {% endcomment %}
+            {% for key, value in i.items %}            
+                 var sta = makemarker(contents[{{ forloop.parentloop.counter0 }}], {{ value }}, "{{ key }}");
+                 {% comment %} sta.addListener("click", function() {
+                    const { target } = domEvent; 
+                    infoWindow.close();
+                    infoWindow.setContent(sta.title);
+                    infoWindow.open(map, sta);
+                });  {% endcomment %}
             {% endfor %}
         {% endfor %}
         
-
     }
    
     window.onload = function() {
