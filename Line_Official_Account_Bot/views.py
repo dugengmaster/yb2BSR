@@ -39,11 +39,13 @@ def callback(request):
     # 取得請求的數據可能是
     body = request.body.decode('utf-8')
     events = json.loads(body)['events']
+
     for event in events:
-        task = event.get('postback', {}).get('data')
-        timestamp = event.get('timestamp')
-    # userId = events.source.userId
-    # print(type(events))
+        # 儲存user_id, timestamp和task到session
+        request.session['user_id'] = event.get('source', {}).get('userId')
+        request.session['timestamp'] = event.get('timestamp', {})
+        request.session['task'] = json.loads(event.get('postback', {}).get('data', {})).get('task')
+
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
@@ -67,39 +69,8 @@ def handle_postback(event):
     action = data.get('action')
     task = data.get('task')
 
-    if action == 'shareLocation':
-        user_id = event.source.user_id
 
-        # 儲存user_id, timestamp和task到session
-        request.session['user_id'] = user_id
-        request.session['timestamp'] = event.timestamp
-        request.session['task'] = task
 
-        if task == 'yb_select_site':
-            reply_message = {
-                "type": "flex",
-                "altText": "Location Sharing",
-                "contents": {
-                    "type": "bubble",
-                    "body": {
-                        "type": "box",
-                        "layout": "vertical",
-                        "contents": [
-                            {
-                                "type": "text",
-                                "text": "Please share your location",
-                                "wrap": True
-                            },
-                            {
-                                "type": "button",
-                                "action": {
-                                    "type": "uri",
-                                    "label": "Share Location",
-                                    "uri": "line://nv/location"
-                                }
-                            }
-                        ]
-                    }
-                }
-            }
-            line_bot_api.reply_message(event.reply_token, reply_message)
+
+
+

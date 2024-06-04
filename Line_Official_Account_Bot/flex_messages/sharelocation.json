@@ -1,21 +1,60 @@
 {
-    "type": "flex",
-    "altText": "this is a flex message",
-    "contents": {
-      "type": "bubble",
-      "body": {
-        "type": "box",
-        "layout": "vertical",
-        "contents": [
-          {
-            "type": "text",
-            "text": "hello"
-          },
-          {
-            "type": "text",
-            "text": "world"
-          }
-        ]
+  "type": "bubble",
+  "hero": {
+    "type": "image",
+    "url": "https://play-lh.googleusercontent.com/n-QElS_GZMRZtbBgpTgsH2ybD_nkQzDO24Lm9ql4ljRwIENmbS2lyjRavNZlPEIH5ms=w240-h480-rw",
+    "size": "full",
+    "aspectRatio": "20:13",
+    "aspectMode": "fit",
+    "action": {
+      "type": "postback",
+      "label": "action",
+      "data": "hello"
+    },
+    "backgroundColor": "#111111"
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "weight": "bold",
+        "size": "xl",
+        "text": "您願意分享位置資訊嗎？",
+        "scaling": true,
+        "wrap": true
       }
-    }
+    ]
+  },
+  "footer": {
+    "type": "box",
+    "layout": "horizontal",
+    "spacing": "sm",
+    "contents": [
+      {
+        "type": "button",
+        "height": "sm",
+        "action": {
+          "type": "postback",
+          "label": "確認",
+          "data": "confirm"
+        },
+        "gravity": "bottom",
+        "scaling": true,
+        "adjustMode": "shrink-to-fit"
+      },
+      {
+        "type": "button",
+        "style": "link",
+        "height": "sm",
+        "action": {
+          "type": "postback",
+          "label": "取消",
+          "data": "cancel"
+        }
+      }
+    ],
+    "flex": 0
   }
+}
