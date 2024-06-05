@@ -1,9 +1,9 @@
 from django.conf import settings
+from django.contrib.sessions.backends.db import SessionStore
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import json
-
 from linebot.v3 import (
     WebhookHandler
 )
@@ -39,11 +39,12 @@ def callback(request):
     # 取得請求的數據可能是
     body = request.body.decode('utf-8')
     events = json.loads(body)['events']
+    print(events)
 
     for event in events:
-        # 儲存user_id, timestamp和task到session
+        # 儲存user_id和task到session
         request.session['user_id'] = event.get('source', {}).get('userId')
-        request.session['timestamp'] = event.get('timestamp', {})
+        # request.session['timestamp'] = event.get('timestamp', {})
         request.session['task'] = json.loads(event.get('postback', {}).get('data', {})).get('task')
 
     try:
@@ -52,25 +53,21 @@ def callback(request):
         return HttpResponse(status=403)
     return HttpResponse(status=200)
 
-# @handler.add(MessageEvent, message=TextMessageContent)
-# def handle_message(event):
-#     with ApiClient(configuration) as api_client:
-#         line_bot_api = MessagingApi(api_client)
-#         line_bot_api.reply_message_with_http_info(
-#             ReplyMessageRequest(
-#                 reply_token=event.reply_token,
-#                 messages=[TextMessage(text=event.message.text)]
-#             )
-#         )
+@handler.add(MessageEvent, message=TextMessageContent)
+def handle_message(event):
+    with ApiClient(configuration) as api_client:
+        line_bot_api = MessagingApi(api_client)
+        line_bot_api.reply_message_with_http_info(
+            ReplyMessageRequest(
+                reply_token=event.reply_token,
+                messages=[TextMessage(text=event.message.text)]
+            )
+        )
 
-@handler.add(PostbackEvent)
-def handle_postback(event):
-    data = json.loads(event.postback.data)
-    action = data.get('action')
-    task = data.get('task')
-
-
-
-
-
+# @handler.add(PostbackEvent)
+# def handle_postback(event):
+    # data = json.loads(event.postback.data)
+    # action = data.get('action')
+    # task = data.get('task')
+    # print(event)
 
