@@ -3,6 +3,8 @@ from django.contrib.sessions.backends.db import SessionStore
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from Line_Official_Account_Bot.models import WeatherRecord
+from Line_Official_Account_Bot.scraper import weather
 import json
 from linebot.v3 import (
     WebhookHandler
@@ -30,6 +32,7 @@ handler = WebhookHandler(settings.LINE_CHANNEL_SECRET)
 
 # Create your views here.
 
+# line bot
 # 禁用 CSRF 驗證，以便 LINE 伺服器可以發送請求到此端點
 @csrf_exempt
 @require_POST
@@ -71,3 +74,27 @@ def handle_message(event):
     # task = data.get('task')
     # print(event)
 
+# weather records
+def weather(request) -> None:
+    METEOROLOGICAL_DATA_OPEN_PLATFORM = settings.METEOROLOGICAL_DATA_OPEN_PLATFORM
+    api = f'f"https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization={METEOROLOGICAL_DATA_OPEN_PLATFORM}&format=JSON&elementName=Wx,PoP,MinT,MaxT"'
+    weather_data_list = weather(api)
+
+    if weather_data_list is not None:
+        for weather_data in weather_data_list:
+            WeatherRecord.objects.create(
+                location=weather_data['location'],
+                start_time=weather_data['start_time'],
+                end_time=weather_data['end_time'],
+                wx=weather_data.get('wx'),
+                weather_code=weather_data.get('weather_code'),
+                pop_value=weather_data.get('pop_value'),
+                pop_unit=weather_data.get('pop_unit'),
+                min_temp=weather_data.get('min_temp'),
+                max_temp=weather_data.get('max_temp'),
+                temp_unit=weather_data.get('temp_unit')
+            )
+
+        return HttpResponse("Weather data fetched and saved successfully.")
+    else:
+        return HttpResponse("Failed to fetch data", status=403)

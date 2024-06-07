@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     "user.apps.UserConfig",
     "aboutUS.apps.AboutusConfig",
     "mapAPP.apps.MapappConfig",
-
+    "Line_Official_Account_Bot"
 ]
 
 

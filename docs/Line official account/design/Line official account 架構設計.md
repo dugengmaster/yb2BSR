@@ -93,7 +93,7 @@ Line official account 未註冊時 圖文選單顯示
     - 將天氣信息用 Flex message bubble 發送給用戶。
 
         > Flex message bubble: { header: { pic },
-         body: { text: {  }}}
+         body: { text: { MaxT, MinT, PoP }}}
 
         >pic => https://www.cwa.gov.tw/V8/C/K/Weather_Icon.html
     - 清除 session 中的`[user_id, task]`資訊。
