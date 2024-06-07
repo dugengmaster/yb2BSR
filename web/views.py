@@ -30,9 +30,12 @@ def my_login(request):
 
 
 # @login_required
+# def home(request):
+#     username = request.user.username if request.user.is_authenticated else None
+#     return render(request, "home.html", {"username": username})
+
 def home(request):
-    username = request.user.username if request.user.is_authenticated else None
-    return render(request, "home.html", {"username": username})
+    return render(request, "1.html")
 
 
 def logout_view(request):

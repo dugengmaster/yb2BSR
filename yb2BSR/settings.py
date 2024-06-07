@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     "user.apps.UserConfig",
     "aboutUS.apps.AboutusConfig",
     "mapAPP.apps.MapappConfig",
-    
+    "Line_Official_Account_Bot"
 ]
 
 
@@ -61,7 +61,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'yb2BSR.middleware.Custom404Middleware',#404頁面    
+    'yb2BSR.middleware.Custom404Middleware',#404頁面
 ]
 
 ROOT_URLCONF = "yb2BSR.urls"
@@ -97,7 +97,7 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 使用數據庫儲存 session
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
