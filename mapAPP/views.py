@@ -32,6 +32,7 @@ def getstationbike(coordinates):
             for j in df.index:
                 if coor['lat']==df.loc[j, 'lat'] and coor['lng']==df.loc[j, 'lng']:
                     temp = {
+                        'name':df.loc[j, 'name_tw'],
                         'available_spaces': str(df.loc[j, 'available_spaces'])+'/'+str(df.loc[j, 'parking_spaces']), 
                         'update_time': df.loc[j, 'updated_at']
                         }
@@ -40,6 +41,7 @@ def getstationbike(coordinates):
         return stationStatus
     else:
         print('載入數值失敗')
+        return None
 
 # 顯示有地圖的頁面
 def mapAPP(request):

@@ -10,7 +10,7 @@ import pandas as pd
 import math
 import uuid
 from datetime import datetime
-import sqlite3 as sql
+# import sqlite3 as sql
 import time
 from mapAPP.models import LtecelltowerTpe, Yb_stn
 from django.db.models import Q
