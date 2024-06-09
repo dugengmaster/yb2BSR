@@ -2,15 +2,13 @@
 
 ## 註冊系統
 
-
-
 ## 圖文選單
 
 ### 功能
 Line official account 未註冊時 圖文選單顯示
 
-| | | |
-| :-: | :-: | :-: |
+| | |
+| :-: | :-: |
 [最佳站點查詢](#最佳站點查詢) | [綁定 YB_site_select 會員](#綁定-yb_site_select-會員)
 
 註冊後改為
@@ -56,8 +54,8 @@ Line official account 未註冊時 圖文選單顯示
     - 確認 session 中的 `user_id` 與位置請求中的 `user_id` 匹配。
     - 如果匹配，檢查 session 中的 `task` 類型。
         - 如果 `task` 為 `yb_select_site`，執行以下步驟：
-            - 從位置請求中獲取GPS位置。
-            - 使用 GPS 位置獲取對應位置的最佳 YouBike 站點位置。
+            - 從位置請求中獲取用戶之經緯度。
+            - 使用該經緯度獲取對應位置的最佳 YouBike 站點位置。
     - 將 YouBike 站點位置發送給用戶。
     - 清除 session 中的 `[user_id, task]` 資訊。
 
@@ -75,7 +73,7 @@ Line official account 未註冊時 圖文選單顯示
     - Webhook API解析請求並確認其類型。
     - 如果請求為 postback event，檢查 `action` 參數。
     - 如果 `action` 為 `share_location`，執行以下步驟：
-        1. 回應一個Flex Message Bubble，包含說明文字和同意/不同意按鈕。
+        1. 回應一個 Quick Reply，內容包含說明文字和 同意 / 不同意 按鈕。
         2. 將 `user_id`、 `task` 儲存在 session 中。
 
 4. **用戶位置分享：**
@@ -87,9 +85,9 @@ Line official account 未註冊時 圖文選單顯示
     - 確認 session 中的 `user_id` 與位置請求中的 `user_id` 匹配。
     - 如果匹配，檢查 session 中的 `task` 類型。
         - 如果 `task` 為 `weather_query`，執行以下步驟：
-            - 從位置請求中獲取 GPS 位置。
-            - 使用 GPS 位置獲取對應位置的天氣信息。
-    - 爬蟲抓取氣象局 F-C0032-001 api。
+            - 從位置請求中獲取用戶之經緯度。
+            - 使用該經緯度獲取對應地區的天氣信息。
+    - 從資料庫中找到weather資料表並對照回傳之 timestamp 以取得該時段之天氣資料。
     - 將天氣信息用 Flex message bubble 發送給用戶。
 
         > Flex message bubble: { header: { pic },

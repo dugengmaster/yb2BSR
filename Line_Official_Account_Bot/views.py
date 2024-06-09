@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.contrib.sessions.backends.db import SessionStore
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -19,8 +18,8 @@ from linebot.v3.messaging import (
     ReplyMessageRequest,
     TextMessage,
     QuickReply,
-    QuickReplyItem,
-    LocationAction
+    FlexMessage,
+    FlexBubble,
 )
 from linebot.v3.webhooks import (
     MessageEvent,
@@ -29,7 +28,6 @@ from linebot.v3.webhooks import (
 )
 configuration = Configuration(access_token=settings.LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(settings.LINE_CHANNEL_SECRET)
-
 # Create your views here.
 
 # line bot
@@ -41,19 +39,19 @@ def callback(request):
     signature = request.META.get('HTTP_X_LINE_SIGNATURE', '')
     # 取得請求的數據可能是
     body = request.body.decode('utf-8')
-    events = json.loads(body)['events']
-    print(events)
+    events = json.loads(body).get('events')
+    print(*events)
 
-    for event in events:
-        # 儲存user_id和task到session
-        request.session['user_id'] = event.get('source', {}).get('userId')
-        # request.session['timestamp'] = event.get('timestamp', {})
-        request.session['task'] = json.loads(event.get('postback', {}).get('data', {})).get('task')
+    # for event in events:
+    #     userId = event.get('source')
+    #     task = json.loads(event.get('postback').get('data')).get('task')
+    #     print(userId)
+    #     # request.session['']
 
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
-        return HttpResponse(status=403)
+        return HttpResponseForbidden()
     return HttpResponse(status=200)
 
 @handler.add(MessageEvent, message=TextMessageContent)
@@ -67,19 +65,52 @@ def handle_message(event):
             )
         )
 
-# @handler.add(PostbackEvent)
-# def handle_postback(event):
-    # data = json.loads(event.postback.data)
-    # action = data.get('action')
-    # task = data.get('task')
-    # print(event)
+@handler.add(PostbackEvent)
+def handle_postback(event):
+    source = json.loads(event.postback.data)
+    data = json.loads(event.postback.data)
+
+    userId = source.get('user_id')
+    action = data.get('action')
+    task = data.get('task')
+
+    with ApiClient(configuration) as api_client:
+        line_bot_api = MessagingApi(api_client)
+        if action == "shareLocation":
+            handle_share_location(event, line_bot_api)
+            # session_task(userId, task)
+            # with open(r".\Line_Official_Account_Bot\flex_messages\sharelocation.json", "r", encoding="utf-8") as file:
+            #     bubble_string = json.load(file)
+            #     message = FlexMessage(alt_text="hello", contents=FlexContainer.from_dict(bubble_string))
+
+            # line_bot_api.reply_message(
+            #     ReplyMessageRequest(
+            #         reply_token=event.reply_token,
+            #         messages=[message]
+            #     )
+            # )
+
+def handle_share_location(event, line_bot_api) -> None:
+    with open(r".\Line_Official_Account_Bot\messages_components\quick_reply.json", "r", encoding="utf-8") as file:
+        quick_reply = QuickReply.from_dict(json.load(file).get('shareLocation'))
+        message = TextMessage(text="確認分享您的所在位置", quickReply=quick_reply)
+        line_bot_api.reply_message(
+            ReplyMessageRequest(
+                reply_token=event.reply_token,
+                messages=[message]
+            )
+        )
+
+# Django session
+# def session_task(userId, task):
+#     SessionStore.create()
+
 
 # weather records
-def weather(request) -> None:
+def weather(request):
     METEOROLOGICAL_DATA_OPEN_PLATFORM = settings.METEOROLOGICAL_DATA_OPEN_PLATFORM
-    api = f'f"https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization={METEOROLOGICAL_DATA_OPEN_PLATFORM}&format=JSON&elementName=Wx,PoP,MinT,MaxT"'
-    weather_data_list = weather(api)
 
+    weather_data_list = weather(METEOROLOGICAL_DATA_OPEN_PLATFORM)
     if weather_data_list is not None:
         for weather_data in weather_data_list:
             WeatherRecord.objects.create(

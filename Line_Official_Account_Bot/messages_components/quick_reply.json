@@ -1,0 +1,13 @@
+{
+  "shareLocation": {
+    "items": [
+      {
+        "type": "action",
+        "action": {
+          "type": "location",
+          "label": "location"
+        }
+      }
+    ]
+  }
+}

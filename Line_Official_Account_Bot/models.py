@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 class WeatherRecord(models.Model):
-    location = models.CharField(max_length=100)
+    location = models.CharField(max_length=50)
     start_time = models.BigIntegerField()
     end_time = models.BigIntegerField()
     wx = models.CharField(max_length=50, null=True, blank=True)
@@ -16,3 +16,6 @@ class WeatherRecord(models.Model):
 
     def __str__(self):
         return f"{self.location} - {self.start_time} to {self.end_time}"
+
+# class LineUserSessions(models.Model):
+#     user_id = models.
