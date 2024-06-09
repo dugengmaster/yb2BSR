@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+import json
+import os
 
 
 # Create your views here.
@@ -71,6 +73,21 @@ def station_analysis_view(request, station_name):
 #         # 如果引發了 Http404 異常，導向到自定義的 404 錯誤頁面
 #         return custom_404(request)
 
-def custom_404(request,exception):
 
-    return render(request, '404.html', status=404)
+def custom_404(request, exception):
+
+    return render(request, "404.html", status=404)
+
+
+def io(request):
+    return render(request,"1.html")
+
+def about_us(request):
+    return render(request, "team.html")
+
+
+def member(request):
+    return render(request, "member.html")
+
+def bike(request):
+    return render(request, "bike.html")

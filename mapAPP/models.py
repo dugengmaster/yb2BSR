@@ -9,7 +9,9 @@ from django.db import models
 
 
 class LtecelltowerTpe(models.Model):
-    field_id = models.AutoField(db_column='_id', primary_key=True)  # Field renamed because it started with '_'.
+    field_id = models.AutoField(
+        db_column="_id", primary_key=True
+    )  # Field renamed because it started with '_'.
     radio = models.TextField()
     mcc = models.IntegerField()
     net = models.IntegerField()
@@ -23,11 +25,14 @@ class LtecelltowerTpe(models.Model):
     changeable = models.IntegerField()
     created = models.IntegerField()
     updated = models.IntegerField()
-    averagesignal = models.IntegerField(db_column='averageSignal')  # Field name made lowercase.
+    averagesignal = models.IntegerField(
+        db_column="averageSignal"
+    )  # Field name made lowercase.
 
     class Meta:
         # managed = False
-        db_table = 'LTEcelltower_tpe'
+        db_table = "LTEcelltower_tpe"
+
 
 class Yb_cnty(models.Model):
     uid = models.CharField(max_length=50)
@@ -92,18 +97,18 @@ class Yb_yb(models.Model):
     forbidden_spaces = models.IntegerField()
     updated_at = models.CharField(max_length=20)
 
-
     class Meta:
         db_table = "yb_yb"
         managed = False
 
-#set up the yb model by using Teipei's data
+
+# set up the yb model by using Teipei's data
 class Tpe_yb(models.Model):
     station_no = models.CharField(max_length=20)
     available_spaces = models.IntegerField()
-    isholiday= models.IntegerField()
-    rain_amt=models.FloatField()
-    temp_now=models.FloatField()
+    isholiday = models.IntegerField()
+    rain_amt = models.FloatField()
+    temp_now = models.FloatField()
     updated_at = models.CharField(max_length=20)
     dc_time = models.CharField(max_length=20)
 

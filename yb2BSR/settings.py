@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -25,11 +26,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env_path = os.path.join(BASE_DIR, ".env")
 load_dotenv(env_path)
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
-GOOGLE_MAPS_API_KEY2 = os.getenv('GOOGLE_MAPS_API_KEY2')
-LINE_CHANNEL_SECRET = os.getenv('LINE_CHANNEL_SECRET')
-LINE_CHANNEL_ACCESS_TOKEN = os.getenv('LINE_CHANNEL_ACCESS_TOKEN')
+SECRET_KEY = os.getenv("SECRET_KEY")
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
+GOOGLE_MAPS_API_KEY2 = os.getenv("GOOGLE_MAPS_API_KEY2")
+LINE_CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET")
+LINE_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -49,7 +50,6 @@ INSTALLED_APPS = [
     "user.apps.UserConfig",
     "aboutUS.apps.AboutusConfig",
     "mapAPP.apps.MapappConfig",
-
 ]
 
 
@@ -61,7 +61,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'yb2BSR.middleware.Custom404Middleware',#404頁面
+    "yb2BSR.middleware.Custom404Middleware",  # 404頁面
 ]
 
 ROOT_URLCONF = "yb2BSR.urls"
@@ -69,7 +69,9 @@ ROOT_URLCONF = "yb2BSR.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "web", "templates"),],
+        "DIRS": [
+            os.path.join(BASE_DIR, "web", "templates"),
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -78,9 +80,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
-            'builtins' :[
-                'django.templatetags.static'
-            ]
+            "builtins": ["django.templatetags.static"],
         },
     },
 ]
@@ -97,7 +97,7 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 使用數據庫儲存 session
+SESSION_ENGINE = "django.contrib.sessions.backends.db"  # 使用數據庫儲存 session
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -138,7 +138,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "web/static"),
 ]
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 django_heroku.settings(locals())
 

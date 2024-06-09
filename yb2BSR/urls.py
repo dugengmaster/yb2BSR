@@ -21,8 +21,6 @@ from web import views as web_views
 from Line_Official_Account_Bot import views as linebot_views
 
 
-
-
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", web_views.home, name="home"),
@@ -38,8 +36,11 @@ urlpatterns = [
     path("map/", include("mapAPP.urls")),
     # path('404/',web_views.custom_404),
     # path('404/', web_views.custom_404, name='custom_404'),
-    path("callback/", linebot_views.callback)
-
+    path("callback/", linebot_views.callback),
+    path("io/", web_views.io, name="io"),
+    path("about/", web_views.about_us, name="about_us"),
+    path("member/", web_views.member, name="member"),
+    path("bike/", web_views.bike, name="bike"),
 ]
 handler404 = web_views.custom_404
 # 將自定義 404 視圖與指定路徑關聯
