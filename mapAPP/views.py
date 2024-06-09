@@ -6,11 +6,14 @@ from django.db.models import Q
 from django.http import HttpResponse
 import os
 import time
-import datetime
+from datetime import datetime
 import pandas as pd
 import re
 import requests
 import json
+from mapAPP.StationSuggestAlgorism import intomodel, minuteChange
+from mapAPP.get_current_info import tpe_cur_rain, tpe_cur_temp, holiday_qy
+import numpy as np
 # Create your views here.
 #取得最新的站點狀態
 def getstationbike(coordinates):
@@ -45,6 +48,10 @@ def getstationbike(coordinates):
 
 # 顯示有地圖的頁面
 def mapAPP(request):
+    now = datetime.now()
+    raincheck = tpe_cur_rain()
+    temperature = tpe_cur_temp()
+    isholiday = holiday_qy(now.date().strftime("%Y%m%d"))
     gmap = GoogleMapforUbike(settings.GOOGLE_MAPS_API_KEY)
     myPosition = gmap.getgeolocation()
     lat_min, lat_max = 24.97619, 25.14582
@@ -55,12 +62,32 @@ def mapAPP(request):
         temp = "{lat: 25.048159037642492, lng: 121.51707574725279}"
         msg = "您不在台北市，請使用大眾交通工具移動到台北市"
         bikeStation = gmap.getBikeStation(tpeStaion)
+        myPosition = tpeStaion
     else:
         temp = "{lat:"+str(myPosition['lat'])+","+"lng:"+str(myPosition['lng'])+'}'
         bikeStation = gmap.getBikeStation(myPosition)
     bikestations = []
     bikeStatus = getstationbike(bikeStation)
-    
+    duration = gmap.getDuration(myPosition,bikeStation)
+    # print(duration)
+    timeSwap = [minuteChange(dur['time_cost']/60 + now.minute) for dur in duration]
+    models = intomodel(bikeStation)
+    #輸入參數hour, isholiday(0,1), rainCheck(0,1), temp_now
+    X_input = [pd.DataFrame([{'hour':(now.hour+timeSwap[i]), 'isholiday':isholiday, 'rainCheck':raincheck, 'temp_now':temperature}]) for i in range(len(timeSwap))]
+    have_bike = [models[j]['model'].predict(X_input[j]) for j in range(len(timeSwap))]
+    for i in range(len(bikeStatus)):
+        if have_bike[i]==1:
+            bikeStatus[i]['msg']="車輛充足"
+            bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,2)
+        else:
+            bikeStatus[i]['msg']="車輛不足，需要等待幾分鐘"
+            bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
+        # print(duration[i]['time_cost'])
+    # bestStation = 0
+    # if have_bike.count(1) ==0:
+    #     bestStation = bikeStation[0]
+    # else:
+    #     bestStation = bikeStation[have_bike.index(1)]
     for sta in bikeStation:
         change = "{lat:"+str(sta['lat'])+","+"lng:"+str(sta['lng'])+'}'
         bike = {sta['name_tw']: change}

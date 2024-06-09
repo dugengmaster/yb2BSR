@@ -29,7 +29,7 @@
         });
         var contents = [
             {% for item in bikeStatus %}
-                "{% for key, value in item.items %}{% if forloop.counter == 1 %}<h5 style='color:black'>{{ value }}</h3>{% elif forloop.counter == 2 %}<p style='color:black'>目前車輛數: {{ value }}{% else %}<br>更新時間: {{ value }}</p>{% endif %}{% endfor %}",
+                "{% for key, value in item.items %}{% if forloop.counter == 1 %}<h5 style='color:black'>{{ value }}</h3>{% elif forloop.counter == 2 %}<p style='color:black'>目前車輛數: {{ value }}</p>{% elif forloop.counter == 4 %}<p style='color:black'>{{ value }}</p>{% elif forloop.counter == 5 %}<p style='color:black'>走路前往需花費{{ value }}分鐘</p>{% elif forloop.counter == 3 %}<p style='color:black'>更新時間: {{ value }}</p>{% endif %}{% endfor %}",
             {% endfor %}
         ]
         
