@@ -2,7 +2,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from Line_Official_Account_Bot.models import WeatherRecord
+from Line_Official_Account_Bot.models import WeatherRecord, LineUserSessions
 from Line_Official_Account_Bot.scraper import weather
 import json
 from linebot.v3 import (
@@ -39,8 +39,8 @@ def callback(request):
     signature = request.META.get('HTTP_X_LINE_SIGNATURE', '')
     # 取得請求的數據可能是
     body = request.body.decode('utf-8')
-    events = json.loads(body).get('events')
-    print(*events)
+    # events = json.loads(body).get('events')
+    # print(*events)
 
     # for event in events:
     #     userId = event.get('source')
@@ -67,12 +67,17 @@ def handle_message(event):
 
 @handler.add(PostbackEvent)
 def handle_postback(event):
-    source = json.loads(event.postback.data)
     data = json.loads(event.postback.data)
 
-    userId = source.get('user_id')
+    user_id = event.source.user_id
     action = data.get('action')
     task = data.get('task')
+    timestamp = event.timestamp
+    session = LineUserSessions(user_id=user_id,
+                               expiry_date=timestamp,
+                               task=task
+                               )
+    session.save()
 
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
