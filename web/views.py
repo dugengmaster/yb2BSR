@@ -35,7 +35,7 @@ def my_login(request):
 #     return render(request, "home.html", {"username": username})
 
 def home(request):
-    return render(request, "1.html")
+    return render(request, "base.html")
 
 
 def logout_view(request):

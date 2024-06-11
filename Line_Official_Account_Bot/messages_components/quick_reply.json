@@ -5,9 +5,11 @@
         "type": "action",
         "action": {
           "type": "location",
-          "label": "location"
+          "label": "請按我"
         }
       }
     ]
   }
 }
+
+

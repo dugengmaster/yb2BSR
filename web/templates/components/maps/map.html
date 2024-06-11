@@ -3,85 +3,12 @@
 </div>
 
 <!-- Google Maps API script -->
-<<<<<<< HEAD
-<script
-  src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&loading=async&callback=initMap&libraries=marker"
-  defer
-></script>
-<h3 style="background-color: DodgerBlue">{{ msg }}</h3>
-<script>
-
-  function initMap() {
-      var myPosition = {{ coordinates }};
-      var bikePin = document.createElement('img')
-      bikePin.src = "/static/images/location.png"
-      bikePin.style.width = '35px';  // 設置寬度
-      bikePin.style.height = 'auto';
-
-      var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 16,
-          center: myPosition,
-          mapId: "yb2bsr",
-      });
-
-      var marker = new google.maps.marker.AdvancedMarkerElement({
-          map: map,
-          position: myPosition,
-          title: "you are here",
-
-      });
-      var contents = [
-        {% for item in bikeStatus %}
-            `<div style="color: #000">
-                {% for key, value in item.items %}
-                    {% if forloop.counter == 1 %}
-                        目前車輛數: {{ value }} <br>
-                    {% else %}
-                        更新時間: {{ value }}
-                    {% endif %}
-                {% endfor %}
-            </div>`,
-        {% endfor %}
-    ];
-
-      var bikePinClone = bikePin.cloneNode(true);
-            for (let i=0; i>5; i++) {}
-      {% for i in bikeStation %}
-          {% for key, value in i.items %}
-            var station = new google.maps.marker.AdvancedMarkerElement({
-                    map: map,
-                    position: {{ value|safe }},
-                    title: "{{ key }}",
-                    content: bikePinClone,
-                    gmpClickable: true,
-                });
-
-            var infoWindow = new google.maps.InfoWindow();
-
-            station.addListener("click", ({ domEvent, latLng }) => {
-                infoWindow.close();
-                infoWindow.setContent(contents[{{ forloop.parentloop.counter0 }}]);
-                infoWindow.open(map, station);
-            });
-          {% endfor %}
-      {% endfor %}
-  }
-
-  window.onload = () => {
-      if (typeof google === 'object' && typeof google.maps === 'object') {
-          initMap();
-      } else {
-          console.error('Google Maps JavaScript API not loaded.');
-      }
-  };
-</script>
-=======
 <script src="https://maps.googleapis.com/maps/api/js?v=beta&key={{ api_key }}&loading=async&callback=initMap&libraries=marker" defer></script>
 <h3 style="background-color:DodgerBlue;">{{ msg }}</h3>
 <script>
-    
+
     function initMap() {
-     
+
         var myPosition = {{ coordinates }};
         var bikePin = document.createElement('img')
         bikePin.src = "/static/images/location.png"
@@ -96,7 +23,7 @@
             map: map,
             position: myPosition,
             title: "you are here",
-            
+
         });
         var contents = [
             {% for item in bikeStatus %}
@@ -109,7 +36,7 @@
         ]
         var infoWindow = new google.maps.InfoWindow();
         function makemarker(content, position, title) {
-                       
+
                 new google.maps.marker.AdvancedMarkerElement({
                 map: map,
                 position: position,
@@ -117,23 +44,23 @@
                 content: bikePin.cloneNode(true),
                 gmpClickable: true,
                 {% comment %} customContent: content {% endcomment %}
-                
-            });            
-        }                    
+
+            });
+        }
         {% for i in bikeStation %}
-            {% for key, value in i.items %}            
+            {% for key, value in i.items %}
                  var sta = makemarker(contents[{{ forloop.parentloop.counter0 }}], {{ value }}, "{{ key }}");
                  {% comment %} sta.addListener("click", function() {
-                    const { target } = domEvent; 
+                    const { target } = domEvent;
                     infoWindow.close();
                     infoWindow.setContent(sta.title);
                     infoWindow.open(map, sta);
                 });  {% endcomment %}
             {% endfor %}
         {% endfor %}
-        
+
     }
-   
+
     window.onload = function() {
         if (typeof google === 'object' && typeof google.maps === 'object') {
             initMap();
@@ -142,4 +69,3 @@
         }
     };
 </script>
->>>>>>> main

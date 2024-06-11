@@ -15,33 +15,17 @@ class WeatherRecord(models.Model):
     max_temp = models.CharField(max_length=10, null=True, blank=True)
     temp_unit = models.CharField(max_length=5, null=True, blank=True)
 
-    def __str__(self):
-        return f"{self.location} - {self.start_time} to {self.end_time}"
 
 class LineUserSessions(models.Model):
-    STATUS_PENDING = 'pending'
-    STATUS_EXPIRED = 'expired'
-    STATUS_COMPLETED = 'completed'
-
-    STATUS_CHOICES = [
-        (STATUS_PENDING, 'pending'),
-        (STATUS_EXPIRED, 'expired'),
-        (STATUS_COMPLETED, 'completed'),
-    ]
-
     user_id = models.CharField(max_length=50)
     expiry_date = models.BigIntegerField()
     task = models.CharField(max_length=255)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 
-    # 在初始化物件時自動添加 5 分鐘
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        if not self.pk in kwargs:
-            self.expiry_date = int(kwargs['expiry_date']) + 300000
+    # 在儲存階段時自動添加 5 分鐘到 expiry_date 供之後檢查 session 是否過期。
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.expiry_date += 300000
+        super().save(force_insert, force_update, using, update_fields)
 
-    def __str__(self):
-        return f"{self.user_id} - {self.task} - {self.status}"
-
-    def is_pending(self, current_timestamp):
-        return current_timestamp < self.expiry_date
+class WeatherCodeImage(models.Model):
+    weather_code = models.CharField(max_length=10, unique=True)
+    image_url = models.URLField()
