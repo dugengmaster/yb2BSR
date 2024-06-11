@@ -23,6 +23,7 @@ from datetime import datetime
 import time
 from mapAPP.models import LtecelltowerTpe, Yb_stn
 from django.db.models import Q
+import time
 
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -170,10 +171,15 @@ class GoogleMapforUbike:
 
 
 if __name__ == '__main__':
-    gmap = GoogleMapforUbike('AIzaSyDeEzYq-fwNLOXJu7XzAXU2NgxJW3th_2A')
-    myposi = {'lat': 25.048159037642492, 'lng': 121.51707574725279}
-    bike = gmap.getBikeStation(myposi)
-    print(gmap.getDuration(myposi,bike))
+    # gmap = GoogleMapforUbike('AIzaSyDeEzYq-fwNLOXJu7XzAXU2NgxJW3th_2A')
+    gmap = gmap.Client(key='AIzaSyDeEzYq-fwNLOXJu7XzAXU2NgxJW3th_2A')
+    start = time.time()
+    posi = gmap.geolocate()
+    end = time.time()
+    print(end-start)
+    # myposi = {'lat': 25.048159037642492, 'lng': 121.51707574725279}
+    # bike = gmap.getBikeStation(myposi)
+    # print(gmap.getDuration(myposi,bike))
     
                
     

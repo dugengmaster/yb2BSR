@@ -8,6 +8,7 @@ Created on Sun May 26 09:46:35 2024
 import requests
 import json
 import datetime
+import queue
 
 agent = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"}
 session = requests.Session()
@@ -20,7 +21,7 @@ apis = ["https://apis.youbike.com.tw/json/area-all.json","https://apis.youbike.c
 
 
 
-def tpe_cur_rain(): #got current rain status
+def tpe_cur_rain(q): #got current rain status
     global apis
     url=apis[3]
     
@@ -35,13 +36,20 @@ def tpe_cur_rain(): #got current rain status
             
             if i["StationName"]=="信義":   
                rain_amt = i["RainfallElement"]["Past10Min"]["Precipitation"]
+               
                if rain_amt/10 >(0.3/6):
-                   return 1
+                #    return 1
+                    r = 1
+                    q.put(r)
+                    return
                else:
-                   return 0
+                #    return 0
+                    r = 0
+                    q.put(r)
+                    return
             
             
-def tpe_cur_temp(): #got current temperature status
+def tpe_cur_temp(q): #got current temperature status
     global apis
     url=apis[4]
     
@@ -51,9 +59,10 @@ def tpe_cur_temp(): #got current temperature status
         data = response.json()
         
         for i in data["records"]["Station"]:
-            if i["StationName"]=="信義":
-               
-                return i["WeatherElement"]["AirTemperature"]        
+            if i["StationId"]=="C0I080":
+                # print(type(i["WeatherElement"]["AirTemperature"]))
+                # return i["WeatherElement"]["AirTemperature"]   
+                q.put(i["WeatherElement"]["AirTemperature"])     
 
 def tpe_yb_stn(): #got Taipei YB ststion No list
     global apis
@@ -86,7 +95,7 @@ def tpe_yb_qy(station_no): #got the available ybs for a station in Taipei
             
             #Taipei station_no range:5001xxxxx
 
-def holiday_qy(date):   #got holoday status date format:20150101
+def holiday_qy(date,q):   #got holoday status date format:20150101
     global apis
     url=apis[5]
     
@@ -97,9 +106,10 @@ def holiday_qy(date):   #got holoday status date format:20150101
         
         for i in data:
             if i["date"]==date:
-               
-                return 1  
-        return 0
+               q.put(1)
+                # return 1  
+        # return 0
+        q.put(0)
             
 
 

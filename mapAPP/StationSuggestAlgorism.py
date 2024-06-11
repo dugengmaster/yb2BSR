@@ -26,12 +26,13 @@ import seaborn as sns
 from datetime import datetime
 from mapAPP.models import Tpe_yb, Yb_stn
 from django.db.models import Q   
+import joblib
 
 def minuteChange(minute) -> float:
     min_div = 0.083333333333333 #60/12
     level = round(((minute/60)//min_div)*min_div,10)
     return level
-def intomodel(list_of_station) -> list:
+def geo_to_No(list_of_station) -> list:
     ybinfo = Yb_stn.objects.all()
     stationnumbers = []
     for i in range(len(list_of_station)):
@@ -41,7 +42,21 @@ def intomodel(list_of_station) -> list:
                 stationnumbers.append(sta.station_no)                
         else:
             print('coordinate error')
-    models = []
+    return stationnumbers
+
+def intomodel(list_of_station) -> list:
+    ybinfo = Yb_stn.objects.all()
+    stationnumbers = []
+    stationnumbers = list_of_station
+    # for i in range(len(list_of_station)):
+    #     statioNo = ybinfo.filter(Q(lat=list_of_station[i]['lat']) | Q(lng=list_of_station[i]['lng']))
+    #     if statioNo.exists:
+    #         for sta in statioNo:
+    #             stationnumbers.append(sta.station_no)                
+    #     else:
+    #         print('coordinate error')
+    # models = []
+    
     for number in stationnumbers:
         print(number)
         try:
@@ -97,25 +112,20 @@ def intomodel(list_of_station) -> list:
             
             model = SVC(kernel='rbf', C=1E5)  
             model.fit(x_train, y_train)
-            temp = {'stationno':number, 'model':model }
-            models.append(temp)
+            # temp = {'stationno':number, 'model':model }
+            # models.append(temp)
+            model_dir = os.path.join(os.path.dirname(__file__), 'mlmodels')
+            os.makedirs(model_dir, exist_ok=True)
+            model_path = os.path.join(model_dir, f'model{number}.joblib')
+            joblib.dump(model, model_path)
             print(number, 'OK')
         except:
             pass
-    return models    
-        # y_pred = model.predict(x_test)
-        # # 评估模型
-        # print("Accuracy:", accuracy_score(y_test, y_pred))
-        # print(classification_report(y_test, y_pred))
+    # return models    
 
-        
-        # now = datetime.now()
-        # hour = now.hour+ minuteChange(now.minute + 5)
-        # rain = eval(input("rainy?: 0 or 1 :"))
-        # hoilday = eval(input("holiday? 0 or 1 :"))
-        # to = [hour, hoilday, rain, 25]
-        # x = np.reshape(to, (1,len(to)))
-        # msg = ["車量吃緊，需要等待幾分鐘", "車量充裕，無需等待"]
-        # print(msg[int(model.predict(x))])
 
-       
+# stationNumberList = Yb_stn.objects.all().filter(area_code = '00')
+# stationNumberList = [code.station_no for code in stationNumberList]
+# print(stationNumberList)
+# # thelist = ['500103059', '500106080', '500103051', '500110008', '500203094', '500103037', '500106067']  
+# intomodel(stationNumberList)    

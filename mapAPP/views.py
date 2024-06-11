@@ -11,12 +11,15 @@ import pandas as pd
 import re
 import requests
 import json
-from mapAPP.StationSuggestAlgorism import intomodel, minuteChange
+from mapAPP.StationSuggestAlgorism import minuteChange, geo_to_No
 from mapAPP.get_current_info import tpe_cur_rain, tpe_cur_temp, holiday_qy
 import numpy as np
+import joblib
+import threading
+import queue
 # Create your views here.
 #取得最新的站點狀態
-def getstationbike(coordinates):
+def getstationbike(coordinates,q):
     header = {
         'User-Agent': 
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
@@ -41,23 +44,33 @@ def getstationbike(coordinates):
                         }
                     stationStatus.append(temp)
                     break
-        return stationStatus
+        # return stationStatus
+        # print(stationStatus)
+        q.put(stationStatus)
+        return
     else:
         print('載入數值失敗')
         return None
 
 # 顯示有地圖的頁面
 def mapAPP(request):
-    now = datetime.now()
-    raincheck = tpe_cur_rain()
-    temperature = tpe_cur_temp()
-    isholiday = holiday_qy(now.date().strftime("%Y%m%d"))
-    gmap = GoogleMapforUbike(settings.GOOGLE_MAPS_API_KEY)
+    start = time.time()
+    now = datetime.now()    
+    q = queue.Queue()
+
+    rainthread = threading.Thread(target=tpe_cur_rain, args=(q,))
+    tempthread = threading.Thread(target=tpe_cur_temp, args=(q,))
+    holidaythread = threading.Thread(target=holiday_qy, args=(now.date().strftime("%Y%m%d"), q))
+    rainthread.start()
+    tempthread.start()
+    holidaythread.start()
+    gmap = GoogleMapforUbike(settings.GOOGLE_MAPS_API_KEY)    
     myPosition = gmap.getgeolocation()
     lat_min, lat_max = 24.97619, 25.14582
     lng_min, lng_max = 121.46288, 121.62306
     bikeStation ={}
     tpeStaion = {'lat': 25.048159037642492, 'lng': 121.51707574725279}#台北車站座標
+
     if (myPosition['lat']<lat_min or myPosition['lat']>lat_max) or (myPosition['lng']<lng_min or myPosition['lng']>lng_max):
         temp = "{lat: 25.048159037642492, lng: 121.51707574725279}"
         msg = "您不在台北市，請使用大眾交通工具移動到台北市"
@@ -66,21 +79,42 @@ def mapAPP(request):
     else:
         temp = "{lat:"+str(myPosition['lat'])+","+"lng:"+str(myPosition['lng'])+'}'
         bikeStation = gmap.getBikeStation(myPosition)
+    statusthread = threading.Thread(target=getstationbike, args=(bikeStation,q))
+    statusthread.start()
     bikestations = []
-    bikeStatus = getstationbike(bikeStation)
+    station_no = geo_to_No(bikeStation)  
+    
     duration = gmap.getDuration(myPosition,bikeStation)
-    # print(duration)
     timeSwap = [minuteChange(dur['time_cost']/60 + now.minute) for dur in duration]
-    models = intomodel(bikeStation)
+    
+    models = []
+    for x in station_no:
+        try:
+            model_path = os.path.join(os.path.dirname(__file__), 'mlmodels', f'model{x}.joblib')
+            model = joblib.load(model_path)
+            models.append(model)
+        except:
+            pass
+    rainthread.join()
+    tempthread.join()
+    holidaythread.join()
+    statusthread.join()
+    raincheck = q.get()      
+    temperature = q.get()    
+    isholiday = q.get()   
+    bikeStatus = q.get()
+    
     #輸入參數hour, isholiday(0,1), rainCheck(0,1), temp_now
     X_input = [pd.DataFrame([{'hour':(now.hour+timeSwap[i]), 'isholiday':isholiday, 'rainCheck':raincheck, 'temp_now':temperature}]) for i in range(len(timeSwap))]
-    have_bike = [models[j]['model'].predict(X_input[j]) for j in range(len(timeSwap))]
+    have_bike = [models[j].predict(X_input[j]) for j in range(len(timeSwap))]
+    
+    
     for i in range(len(bikeStatus)):
         if have_bike[i]==1:
             bikeStatus[i]['msg']="車輛充足"
             bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,2)
         else:
-            bikeStatus[i]['msg']="車輛不足，需要等待幾分鐘"
+            bikeStatus[i]['msg']="這時段車輛可能不足，需要等待幾分鐘"
             bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
         # print(duration[i]['time_cost'])
     # bestStation = 0
@@ -88,6 +122,7 @@ def mapAPP(request):
     #     bestStation = bikeStation[0]
     # else:
     #     bestStation = bikeStation[have_bike.index(1)]
+    
     for sta in bikeStation:
         change = "{lat:"+str(sta['lat'])+","+"lng:"+str(sta['lng'])+'}'
         bike = {sta['name_tw']: change}
@@ -100,6 +135,8 @@ def mapAPP(request):
         'bikeStation':bikestations,
         'bikeStatus':bikeStatus
     }
+    end = time.time()
+    print(end-start)
     return render(request, "mapAPP.html", parameter)
 
 # def test(request):
