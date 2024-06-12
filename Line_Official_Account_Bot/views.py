@@ -147,26 +147,6 @@ def handle_location_message(event):
                     )
                 )
 
-
-            # session_task(userId, task)
-            # with open(r".\Line_Official_Account_Bot\flex_messages\sharelocation.json", "r", encoding="utf-8") as file:
-            #     bubble_string = json.load(file)
-            #     message = FlexMessage(alt_text="hello", contents=FlexContainer.from_dict(bubble_string))
-
-            # line_bot_api.reply_message(
-            #     ReplyMessageRequest(
-            #         reply_token=event.reply_token,
-            #         messages=[message]
-            #     )
-            # )
-
-
-
-# Django session
-# def session_task(userId, task):
-#     SessionStore.create()
-
-
 # weather records
 def weather(request):
     METEOROLOGICAL_DATA_OPEN_PLATFORM = settings.METEOROLOGICAL_DATA_OPEN_PLATFORM
