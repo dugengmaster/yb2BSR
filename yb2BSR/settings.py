@@ -15,9 +15,9 @@ import os
 import django_heroku
 from dotenv import load_dotenv
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -28,14 +28,24 @@ load_dotenv(env_path)
 SECRET_KEY = os.getenv('SECRET_KEY')
 GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
 GOOGLE_MAPS_API_KEY2 = os.getenv('GOOGLE_MAPS_API_KEY2')
+LINE_CLIENT_ID = int(os.getenv('LINE_CLIENT_ID'))
 LINE_CHANNEL_SECRET = os.getenv('LINE_CHANNEL_SECRET')
 LINE_CHANNEL_ACCESS_TOKEN = os.getenv('LINE_CHANNEL_ACCESS_TOKEN')
+LINE_LOGIN_CHANNEL_SECRET = os.getenv('LINE_LOGIN_CHANNEL_SECRET')
+LINE_REDIRECT_URI = "https://08c5-2401-e180-8d51-544-1b2-96f3-db0-e241.ngrok-free.app"
+LINE_REDIRECT_URI_CALLBACK=os.getenv('LINE_REDIRECT_URI_CALLBACK')
+LINE_NOTIFY_URL = 'https://notify-api.line.me/api/notify'
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 使用数据库会话
+SESSION_COOKIE_NAME = 'sessionid'
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-# DEBUG = False
-ALLOWED_HOSTS = []
-# ALLOWED_HOSTS = ['example.com', 'www.example.com', 'localhost', '127.0.0.1']
+
+ALLOWED_HOSTS = ["*"]
+
 
 # Application definition
 
@@ -49,9 +59,31 @@ INSTALLED_APPS = [
     "user.apps.UserConfig",
     "aboutUS.apps.AboutusConfig",
     "mapAPP.apps.MapappConfig",
-
+    'allauth.socialaccount.providers.line',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'web',
+    'allauth.socialaccount.providers.github',
 ]
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+SITE_ID = 2
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
+SOCIALACCOUNT_PROVIDERS = {
+    'line': {
+
+        "SCOPE":[
+            "profile",
+            "openid",
+            "email",
+        ]
+}}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -62,9 +94,12 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'yb2BSR.middleware.Custom404Middleware',#404頁面
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = "yb2BSR.urls"
+
+
 
 TEMPLATES = [
     {
@@ -73,11 +108,11 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
-                "django.template.context_processors.debug",
+
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-            ],
+                    ],
             'builtins' :[
                 'django.templatetags.static'
             ]
@@ -95,6 +130,8 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
+        'PASSWORD': BASE_DIR / "db.sqlite3",
+
     }
 }
 

@@ -21,12 +21,15 @@
             </ul>
             <ul class="navbar-nav">
                 {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'home' %}">
-                        <i class="fas fa-sign-out-alt"></i> 登出
-                    </a>
-                </li>
-                {% else %}
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link btn btn-link" style="padding: 0; border: none; background: none;">
+                                <i class="fas fa-sign-out-alt"></i> 登出
+                            </button>
+                        </form>
+                    </li>
+                    {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="#" data-toggle="modal" data-target="#loginModal">
                         <i class="fas fa-user"></i> 登入
@@ -68,11 +71,14 @@
                 <a class="nav-link" href="/about">關於我們</a>
             </li>
             {% if user.is_authenticated %}
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'home' %}">
-                    <i class="fas fa-sign-out-alt"></i> 登出
-                </a>
-            </li>
+                <li class="nav-item">
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link btn btn-link" style="padding: 0; border: none; background: none;">
+                            <i class="fas fa-sign-out-alt"></i> 登出
+                        </button>
+                    </form>
+                </li>
             {% else %}
             <li class="nav-item">
                 <a class="nav-link" href="#" data-toggle="modal" data-target="#loginModal">

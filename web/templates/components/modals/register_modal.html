@@ -9,7 +9,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="/register" method="POST">
+                <form action="/register/" method="POST">
                     {% csrf_token %}
                     <label for="new_username">帳號:</label>
                     <input type="text" id="new_username" name="new_username" required><br><br>
@@ -17,12 +17,12 @@
                     <label for="new_password">密碼:</label>
                     <input type="password" id="new_password" name="new_password" required><br><br>
 
-                    <label for="telecom">電信:</label>
-                    <input type="text" id="telecom" name="telecom" required><br><br>
+                    {% comment %} <label for="telecom">電信:</label>
+                    <input type="text" id="telecom" name="telecom" required><br><br> {% endcomment %}
 
                     <label for="email">電子郵件:</label>
                     <input type="email" id="email" name="email" required><br><br>
-
+                    <input type="hidden" name="line_login" value="true">
                     <button type="submit" class="btn btn-primary">註冊</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
                 </form>

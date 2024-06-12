@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import json
+from django.shortcuts import render, redirect
 
 from linebot.v3 import (
     WebhookHandler
@@ -39,6 +40,7 @@ def callback(request):
     # 取得請求的數據可能是
     body = request.body.decode('utf-8')
     events = json.loads(body)['events']
+    # print(events)
 
     for event in events:
         # 儲存user_id, timestamp和task到session
@@ -50,7 +52,8 @@ def callback(request):
         handler.handle(body, signature)
     except InvalidSignatureError:
         return HttpResponse(status=403)
-    return HttpResponse(status=200)
+    return HttpResponse(status=200),redirect('home')
+
 
 # @handler.add(MessageEvent, message=TextMessageContent)
 # def handle_message(event):

@@ -1,4 +1,5 @@
-<!--登入表單的彈窗-->
+<!-- 登入表單的彈窗 -->
+{% load socialaccount %}
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -10,7 +11,7 @@
             </div>
             <div class="modal-body">
 
-                <form action="/login" method="post">
+                <form action="{% url 'my_login' %}" method="post">
                     {% csrf_token %}
                     <!-- 登入表單的內容 -->
                     <label for="username">帳號：</label>
@@ -18,8 +19,9 @@
 
                     <label for="password">密碼：</label>
                     <input type="password" class="form-control" id="password" name="password">
-
+                    {% comment %} <input type="hidden" name="my_login" value="true"> {% endcomment %}
                     <button type="submit" class="btn btn-primary">登入</button>
+                    <button type="button" class="btn btn-primary" onclick="window.location.href = '{% url 'custom_line_login' %}'; return false;">line登入</button>
                 </form>
                 <!-- 註冊按鈕 -->
                 <p class="mt-2" style="font-size: 16px; color: #555;">沒有帳號嗎？<button type="button" class="btn btn-link" data-toggle="modal" data-target="#registerModal" data-dismiss="modal" style="text-decoration: underline; color: #007bff;">註冊</button></p>
