@@ -46,18 +46,8 @@ def geo_to_No(list_of_station) -> list:
 
 def intomodel(list_of_station) -> list:
     ybinfo = Yb_stn.objects.all()
-    stationnumbers = []
-    stationnumbers = list_of_station
-    # for i in range(len(list_of_station)):
-    #     statioNo = ybinfo.filter(Q(lat=list_of_station[i]['lat']) | Q(lng=list_of_station[i]['lng']))
-    #     if statioNo.exists:
-    #         for sta in statioNo:
-    #             stationnumbers.append(sta.station_no)                
-    #     else:
-    #         print('coordinate error')
-    # models = []
     
-    for number in stationnumbers:
+    for number in list_of_station:
         print(number)
         try:
             table = Tpe_yb.objects.filter(Q(station_no=number) & Q(updated_at__range=('2024-05-23 00:00:00','2024-05-30 02:55:00')))

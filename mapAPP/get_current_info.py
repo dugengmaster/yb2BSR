@@ -9,6 +9,7 @@ import requests
 import json
 import datetime
 import queue
+import pandas as pd
 
 agent = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"}
 session = requests.Session()
@@ -19,7 +20,37 @@ apis = ["https://apis.youbike.com.tw/json/area-all.json","https://apis.youbike.c
        "https://apis.youbike.com.tw/json/station-yb2.json","https://opendata.cwa.gov.tw/api/v1/rest/datastore/O-A0002-001?Authorization=CWA-BA524CBF-8292-4BCA-9CC1-1AFEB8DF80D2&format=JSON",
        "https://opendata.cwa.gov.tw/api/v1/rest/datastore/O-A0001-001?Authorization=CWA-BA524CBF-8292-4BCA-9CC1-1AFEB8DF80D2&format=JSON","https://data.ntpc.gov.tw/api/datasets/308dcd75-6434-45bc-a95f-584da4fed251/json?size=2000"]
 
-
+#取得最新的站點狀態
+def getstationbike(coordinates,q) -> list:
+    header = {
+        'User-Agent': 
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+        }
+    url = 'https://apis.youbike.com.tw/json/station-yb2.json'
+    sess = requests.session()
+    r = sess.get(url, headers = header)
+    if r.status_code==requests.codes.ok:
+        data = json.loads(r.text)
+        tpeStation = [sta for sta in data if sta['area_code']=='00']
+        df = pd.DataFrame(tpeStation)
+        df['lat']= df['lat'].astype(float)
+        df['lng']= df['lng'].astype(float)
+        stationStatus = []
+        for coor in coordinates:
+            for j in df.index:
+                if coor['lat']==df.loc[j, 'lat'] and coor['lng']==df.loc[j, 'lng']:
+                    temp = {
+                        'name':df.loc[j, 'name_tw'],
+                        'available_spaces': str(df.loc[j, 'available_spaces'])+'/'+str(df.loc[j, 'parking_spaces']), 
+                        'update_time': df.loc[j, 'updated_at']
+                        }
+                    stationStatus.append(temp)
+                    break
+        q.put(stationStatus)
+        return
+    else:
+        print('載入數值失敗')
+        return None
 
 def tpe_cur_rain(q): #got current rain status
     global apis
