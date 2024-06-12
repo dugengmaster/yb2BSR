@@ -98,7 +98,7 @@ class Yb_yb(models.Model):
         db_table = "yb_yb"
         managed = False
 
-#set up the yb model by using Teipei's data
+# set up the yb model by using Teipei's data
 class Tpe_yb(models.Model):
     station_no = models.CharField(max_length=20)
     available_spaces = models.IntegerField()

@@ -1,22 +1,77 @@
 .navbar-custom {
-    height: 100px;
-    background-color: rgba(255, 255, 255, 1); /* 自定義背景色 */
+    background-color: rgba(255, 255, 255, 1);
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    position: relative;
+    z-index: 1000; /* 確保導航欄在最上層 */
 }
+
 .navbar-custom .navbar-brand,
 .navbar-custom .nav-link {
-    color: #666; /* 自定義文字顏色 */
+    color: #666;
 }
+
 .navbar-custom .nav-link:hover {
-    color: #FFD700; /* 滑鼠懸停文字顏色 */
+    color: #FFD700;
 }
+
+.navbar-toggler-icon {
+    background-image: url('data:image/svg+xml;charset=utf8,%3Csvg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath stroke="rgba%2868, 68, 68, 0.7%29" stroke-width="2" linecap="round" linejoin="round" d="M4 7h22M4 15h22M4 23h22"%3E%3C/path%3E%3C/svg%3E');
+}
+
+/* 右側側邊欄樣式 */
+.sidebar {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    right: -250px;
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    z-index: 2000; /* 確保側邊欄在內容和視頻上層 */
+    transition: right 0.3s ease;
+}
+
+.sidebar.active {
+    right: 0;
+}
+
+.sidebar .nav-link {
+    color: #666;
+    padding: 15px;
+    text-align: center;
+    display: block;
+}
+
+.sidebar .nav-link:hover {
+    color: #FFD700;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* 隱藏側邊欄在桌面端 */
+@media (min-width: 992px) {
+    .sidebar {
+        display: none;
+    }
+}
+
+/* 隱藏頂部導航欄在移動端 */
+@media (max-width: 991.98px) {
+    .navbar-expand-lg.d-none.d-lg-flex {
+        display: none;
+    }
+}
+
+
 
 /* 首頁youyube影片 */
 .video-container {
     position: relative;
-    width: 640px; /* 定義 iframe 寬度 */
-    height: 360px; /* 定義 iframe 高度 */
-    margin: 0 auto; /* 居中 */
+    height: 0; /* 初始高度為 0 */
+    padding-bottom: 56.25%; /* 設置 16:9 的寬高比 (9/16*100%) */
+    margin: 50px auto 0; /* 在顶部留出 50px 的空间 */
+    transform: scale(0.8);
+    z-index: 2; /* 確保視頻位於背景圖片之上 */
 }
 
 .video-placeholder, iframe {
@@ -47,6 +102,7 @@ iframe {
     border: none; /* 移除 iframe 邊框 */
 }
 
+
 /* 背景圖片 */
 body {
     background-image: url("../images/bikestation.jpg");
@@ -54,17 +110,10 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed; /* 背景圖片在滾動時固定 */
     background-position: center center; /* 背景圖片在容器中水平和垂直方向居中 */
-    height: 100vh;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
     text-align: center;
-    font-family: Arial, sans-serif;
-    color: white;
+
 }
+
 
 /* button-container 的樣式 */
 .menu {
@@ -180,7 +229,7 @@ body {
     min-width: 300px; /* 确保有最小宽度 */
 }
 
-/* 地图的样式 */
+/* 地圖的樣式 */
 #map {
     height: 600px;
     width: 1000px;
@@ -256,18 +305,18 @@ body {
     width: 100%;
     background-color: rgba(255, 255, 255, 1); /* 半透明白色背景 */
     text-align: center;
-    padding: 20px;
+    margin-top: 50px;/* 往下調整 */
+    padding: 10px;
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
 	position: relative;
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
 	z-index: 1;
-}*
+}
 
 /* 社交軟體圖案樣式 */
 .icon-discord, .icon-instagram, .icon-youtube, .icon-line {
-	font-size: 1.5rem;
 	margin: 0 10px; /* 图案间距 */
 	transition: color 0.3s; /* 过度效果 */
 }
@@ -288,6 +337,63 @@ body {
 	color: #FF0000; /* YouTube 的品牌颜色 */
 }
 
+
+@media screen and (max-width: 576px) {
+    .icon-discord, .icon-instagram, .icon-youtube, .icon-line {
+        font-size: 0.5rem;
+    }
+}
+
+@media screen and (min-width: 576px) and (max-width: 992px) {
+    .icon-discord, .icon-instagram, .icon-youtube, .icon-line {
+        font-size: 1rem;
+    }
+}
+
+
+@media screen and (min-width: 992px) {
+    .icon-discord, .icon-instagram, .icon-youtube, .icon-line {
+        font-size: 1.5rem;
+    }
+}
+
+/* 小型屏幕時的樣式 */
+@media screen and (max-width: 576px) {
+    .modal-dialog {
+        max-width: 50%; /* 設置模態框最大寬度為父級容器的 90% */
+        max-height: 50%; /* 設置模態框最大高度為父級容器的 80% */
+        width: auto; /* 使用自動寬度 */
+        height: auto;
+        margin: 0 auto; /* 在水平方向上居中 */
+        position: fixed; /* 固定定位 */
+        top: 25%; /* 距離上方 50% */
+        left: 25%; /* 距離左側 50% */
+        transform: translate(-50%, -50%); /* 使用 transform 移動框到中心 */
+    }
+}
+
+/* 中等屏幕時的樣式 */
+@media screen and (min-width: 576px) and (max-width: 992px) {
+    .modal-dialog {
+        max-width: 75%; /* 設置模態框最大寬度為父級容器的 90% */
+        max-height: 75%; /* 設置模態框最大高度為父級容器的 80% */
+        width: auto; /* 使用自動寬度 */
+        height: auto;
+        margin: 0 auto; /* 在水平方向上居中 */
+        position: fixed; /* 固定定位 */
+        top: 30%; /* 距離上方 50% */
+        left: 35%; /* 距離左側 50% */
+        transform: translate(-50%, -50%); /* 使用 transform 移動框到中心 */
+    }
+}
+
+/* 大屏幕時的樣式 */
+@media screen and (min-width: 992px) {
+    .modal-body label {
+        color: black; /* 修改顏色 */
+    }
+}
+
 .modal-content {
     background: linear-gradient(135deg, rgba(173, 216, 230, 0.9), rgba(240, 248, 255, 0.9)); /* 添加漸層背景色 */
     padding: 20px; /* 調整填充 */
@@ -295,6 +401,31 @@ body {
     box-shadow: 0 0 10px rgba(114, 62, 62, 0.1); /* 添加陰影效果 */
     border-radius: 50px; /* 添加圓角 */
 }
+/* 小屏幕時的樣式 */
+@media screen and (max-width: 576px) {
+    .modal-content {
+        padding: 10px; /* 調整填充 */
+        border-radius: 20px; /* 調整圓角 */
+    }
+}
+
+/* 中等屏幕時的樣式 */
+@media screen and (min-width: 576px) and (max-width: 992px) {
+    .modal-content {
+        padding: 15px; /* 調整填充 */
+        border-radius: 30px; /* 調整圓角 */
+    }
+}
+
+/* 大屏幕時的樣式 */
+@media screen and (min-width: 992px) {
+    .modal-content {
+        padding: 20px; /* 調整填充 */
+        border-radius: 50px; /* 調整圓角 */
+    }
+}
+
+
 .modal-title {
     font-size: 24px; /* 調整標題字體大小 */
     color: #000000; /* 調整標題顏色 */
@@ -378,6 +509,7 @@ body {
     color: #333; /* 文字顏色不變 */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 激活時減弱陰影效果 */
 }
+
 
 
 
