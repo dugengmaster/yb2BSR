@@ -33,7 +33,8 @@ def my_login(request):
             return redirect("home")  # 登錄成功後重定向到首頁
         else:
             error_message = "帳號或密碼錯誤! 注意大小寫"
-            return render(request, "home.html", {"error_message": error_message})
+            print("error_message:", error_message)
+            return render(request, "home.html", {"error_message": error_message, "username": username})
     else:
         return render(request, "home.html")
 

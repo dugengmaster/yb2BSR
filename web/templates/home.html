@@ -1,4 +1,23 @@
+
+
+
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}Youbike最佳站點推薦系統-home{% endblock %}
+
+{% block content %}
+{% if error_message %}
+    <p style="color: red;">{{ error_message }}</p>
+{% endif %}
+
+<div class="container">
+    {% include "components/video.html" %}
+</div>
+{% endblock %}
+
+
+{% comment %} {% extends "base.html" %}
 {% load static %}
 
 {% block title %}Youbike最佳站點推薦系統-home{% endblock %}
@@ -7,4 +26,4 @@
 <div class="container">
     {% include "components/video.html" %}
 </div>
-{% endblock %}
+{% endblock %} {% endcomment %}
