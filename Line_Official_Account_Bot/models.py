@@ -25,7 +25,3 @@ class LineUserSessions(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.expiry_date += 300000
         super().save(force_insert, force_update, using, update_fields)
-
-class WeatherCodeImage(models.Model):
-    weather_code = models.CharField(max_length=10, unique=True)
-    image_url = models.URLField()
