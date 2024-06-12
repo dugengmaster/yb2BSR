@@ -4,16 +4,26 @@ Created on Fri May 10 14:14:59 2024
 
 @author: 88698
 """
+import os
+import django
+import sys
+project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_path)
+# 设置环境变量
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'yb2BSR.settings')
 
+# 初始化 Django
+django.setup()
 import googlemaps as gmap
 import pandas as pd
 import math
 import uuid
 from datetime import datetime
-import sqlite3 as sql
+# import sqlite3 as sql
 import time
 from mapAPP.models import LtecelltowerTpe, Yb_stn
 from django.db.models import Q
+import time
 
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -60,7 +70,7 @@ class GoogleMapforUbike:
 
         
         
-    def getgeolocation(self, Carrier="中華電信"):
+    def getgeolocation(self, Carrier="中華電信") -> dict:
         #先取得粗略的GPS定位
         gps = self.client.geolocate()
         carrier = {'1':"遠傳電信", "5":"遠傳電信","89":"台灣大哥大","92":"中華電信","97":"台灣大哥大"}
@@ -114,7 +124,7 @@ class GoogleMapforUbike:
                                         cell_towers= None, wifi_access_points=None)
         return myGPS['location']
 
-    def getBikeStation(self, location):        
+    def getBikeStation(self, location) -> dict:        
         #先取得半徑500m的bike station {'lat': 123456, 'lng':4561}
         place_search = self.client.places_nearby(location, keyword="youbike", radius=500)
         #數量太少再擴大搜尋
@@ -161,7 +171,15 @@ class GoogleMapforUbike:
 
 
 if __name__ == '__main__':
-    print('0')
+    # gmap = GoogleMapforUbike('AIzaSyDeEzYq-fwNLOXJu7XzAXU2NgxJW3th_2A')
+    gmap = gmap.Client(key='AIzaSyDeEzYq-fwNLOXJu7XzAXU2NgxJW3th_2A')
+    start = time.time()
+    posi = gmap.geolocate()
+    end = time.time()
+    print(end-start)
+    # myposi = {'lat': 25.048159037642492, 'lng': 121.51707574725279}
+    # bike = gmap.getBikeStation(myposi)
+    # print(gmap.getDuration(myposi,bike))
     
                
     

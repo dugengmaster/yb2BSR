@@ -1,19 +1,21 @@
 <div class="container-flex">
-  <div id="map" class="position-relative"></div>
+    <div id="map" class="position-relative"></div>
 </div>
 
 <!-- Google Maps API script -->
 <script src="https://maps.googleapis.com/maps/api/js?v=beta&key={{ api_key }}&loading=async&callback=initMap&libraries=marker" defer></script>
 <h3 style="background-color:DodgerBlue;">{{ msg }}</h3>
 <script>
-
+    
     function initMap() {
-
+     
         var myPosition = {{ coordinates }};
+
         var bikePin = document.createElement('img')
         bikePin.src = "/static/images/location.png"
         bikePin.style.width = '35px';  // 設置寬度
         bikePin.style.height = 'auto';
+
         var map = new google.maps.Map(document.getElementById('map'), {
             zoom: 16,
             center: myPosition,
@@ -23,44 +25,40 @@
             map: map,
             position: myPosition,
             title: "you are here",
-
+            
         });
         var contents = [
             {% for item in bikeStatus %}
-                {% if forloop.last %}
-                "{% for key, value in item.items %}{% if forloop.counter == 1 %}目前車輛數: {{ value }}{% else %}<br>更新時間: {{ value }}{% endif %}{% endfor %}"
-                {% else %}
-                "{% for key, value in item.items %}{% if forloop.counter == 1 %}目前車輛數: {{ value }}{% else %}<br>更新時間: {{ value }}{% endif %}{% endfor %}",
-                {% endif %}
+                "{% for key, value in item.items %}{% if forloop.counter == 1 %}<h5 style='color:black'>{{ value }}</h3>{% elif forloop.counter == 2 %}<p style='color:black'>目前車輛數: {{ value }}</p>{% elif forloop.counter == 4 %}<p style='color:black'>{{ value }}</p>{% elif forloop.counter == 5 %}<p style='color:black'>走路前往需花費{{ value }}分鐘</p>{% elif forloop.counter == 3 %}<p style='color:black'>更新時間: {{ value }}</p>{% endif %}{% endfor %}",
             {% endfor %}
         ]
-        var infoWindow = new google.maps.InfoWindow();
-        function makemarker(content, position, title) {
-
-                new google.maps.marker.AdvancedMarkerElement({
+        
+        function makemarker(position, title) {
+                var bikePinClone = bikePin.cloneNode(true);       
+                var station=new google.maps.marker.AdvancedMarkerElement({
                 map: map,
                 position: position,
-                title: title+" "+content,
-                content: bikePin.cloneNode(true),
-                gmpClickable: true,
-                {% comment %} customContent: content {% endcomment %}
-
-            });
-        }
+                title: title,
+                content: bikePinClone,
+                gmpClickable: true,               
+                
+            }); 
+            return station        
+        }                    
         {% for i in bikeStation %}
-            {% for key, value in i.items %}
-                 var sta = makemarker(contents[{{ forloop.parentloop.counter0 }}], {{ value }}, "{{ key }}");
-                 {% comment %} sta.addListener("click", function() {
-                    const { target } = domEvent;
+            {% for key, value in i.items %}            
+                 var sta_{{ forloop.parentloop.counter0 }} = makemarker({{ value }}, "{{ key }}");
+                 var infoWindow = new google.maps.InfoWindow();
+                 sta_{{ forloop.parentloop.counter0 }}.addListener("click", () => {                    
                     infoWindow.close();
-                    infoWindow.setContent(sta.title);
-                    infoWindow.open(map, sta);
-                });  {% endcomment %}
+                    infoWindow.setContent(contents[{{ forloop.parentloop.counter0 }}]);
+                    infoWindow.open(map, sta_{{ forloop.parentloop.counter0 }});
+                }); 
             {% endfor %}
         {% endfor %}
-
+        
     }
-
+   
     window.onload = function() {
         if (typeof google === 'object' && typeof google.maps === 'object') {
             initMap();
@@ -68,4 +66,4 @@
             console.error('Google Maps JavaScript API not loaded.');
         }
     };
-</script>
+</script> 

@@ -26,8 +26,9 @@ class LtecelltowerTpe(models.Model):
     averagesignal = models.IntegerField(db_column='averageSignal')  # Field name made lowercase.
 
     class Meta:
-        # managed = False
+        managed = False
         db_table = 'LTEcelltower_tpe'
+        app_label = 'mapAPP'
 
 class Yb_cnty(models.Model):
     uid = models.CharField(max_length=50)
