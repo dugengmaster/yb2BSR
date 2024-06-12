@@ -25,7 +25,7 @@ def mapAPP(request):
     start = time.time()
     now = datetime.now()
 
-    #多工緒處理爬蟲    
+    #多工緒處理爬蟲
     q = queue.Queue()
     rainthread = threading.Thread(target=tpe_cur_rain, args=(q,))
     tempthread = threading.Thread(target=tpe_cur_temp, args=(q,))
@@ -35,7 +35,7 @@ def mapAPP(request):
     holidaythread.start()
 
     #取得使用者GPS
-    gmap = GoogleMapforUbike(settings.GOOGLE_MAPS_API_KEY)    
+    gmap = GoogleMapforUbike(settings.GOOGLE_MAPS_API_KEY)
     myPosition = gmap.getgeolocation()
 
     #台北市的經緯度範圍，不再這範圍內的人，會定位在台北車站，並以定位點為中心取得周邊的Ubike站點
@@ -72,20 +72,20 @@ def mapAPP(request):
     tempthread.join()
     holidaythread.join()
     statusthread.join()
-    raincheck = q.get()      
-    temperature = q.get()    
-    isholiday = q.get()   
+    raincheck = q.get()
+    temperature = q.get()
+    isholiday = q.get()
     bikeStatus = q.get()
-    
+
     #取得走路到各站點需要花費的時間，並轉換為時段
-    bikestations = []     
+    bikestations = []
     duration = gmap.getDuration(myPosition,bikeStation)
     timeSwap = [minuteChange(dur['time_cost']/60 + now.minute) for dur in duration]
 
     #輸入參數hour(00.00), isholiday(0,1), rainCheck(0,1), temp_now
     X_input = [pd.DataFrame([{'hour':(now.hour+timeSwap[i]), 'isholiday':isholiday, 'rainCheck':raincheck, 'temp_now':temperature}]) for i in range(len(timeSwap))]
     have_bike = [models[j].predict(X_input[j]) for j in range(len(timeSwap))]
-    
+
     #訓練結果轉換為msg
     for i in range(len(bikeStatus)):
         if have_bike[i]==1:
@@ -101,16 +101,15 @@ def mapAPP(request):
         bike = {sta['name_tw']: change}
         bikestations.append(bike)
 
-    #資料彙整成dict傳入html    
+    #資料彙整成dict傳入html
     parameter = {
-        "api_key": settings.GOOGLE_MAPS_API_KEY, 
-        'coordinates':temp, 
-        'msg':msg, 
+        "api_key": settings.GOOGLE_MAPS_API_KEY,
+        'coordinates':temp,
+        'msg':msg,
         'bikeStation':bikestations,
         'bikeStatus':bikeStatus
     }
     end = time.time()
-    print(end-start)
     return render(request, "mapAPP.html", parameter)
 
 

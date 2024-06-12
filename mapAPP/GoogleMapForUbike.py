@@ -49,27 +49,27 @@ def haversine(lat1, lon1, lat2, lon2):
     """
     #經緯度轉為弧度制
     lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
-    
+
     dlat = lat1-lat2
     dlon = lon1-lon2
-    
+
     a = math.sin(dlat/2)**2+ math.cos(lat1)*math.cos(lat2)*math.sin(dlon/2)**2
     c= 2*math.atan2(math.sqrt(a), math.sqrt(1-a))
-    
+
     #地球半徑
     R = 6371.0
     #單位公里
     distance = R*c*1000
     return distance
-    
+
 
 class GoogleMapforUbike:
     def __init__(self, key):
         self.client = gmap.Client(key=key)
         self.lteCelltower = LtecelltowerTpe.objects.all()
 
-        
-        
+
+
     def getgeolocation(self, Carrier="中華電信") -> dict:
         #先取得粗略的GPS定位
         gps = self.client.geolocate()
@@ -77,7 +77,7 @@ class GoogleMapforUbike:
         Net = []
         for key, value in carrier.items():
             if value == Carrier: Net.append(int(key))
-        
+
         if len(Net) >1:
             towerList = self.lteCelltower.filter(Q(net=Net[0]) | Q(net=Net[1]))
         else:
@@ -92,9 +92,8 @@ class GoogleMapforUbike:
                 temp = {'lat':tower.lat, 'lng':tower.lon}
                 pickthem.append(temp)
                 distanceList.append(distance)
-        
+
         x = [i for i in range(len(distanceList)) if distanceList[i] == min(distanceList)]
-        print('not in TPE')
         if len(x) > 0:
             cellTower = [{
                 "cellId": int(pickthem[x[0]]["cell"]),
@@ -115,35 +114,35 @@ class GoogleMapforUbike:
             "channel": 36,
             "age": 0
             }]
-            myGPS = self.client.geolocate(home_mobile_country_code=466, home_mobile_network_code=int(pickthem[x[0]]["net"]), 
-                                        radio_type="lte", carrier=Carrier, consider_ip=True, 
-                                        cell_towers= cellTower, wifi_access_points=wifiAccessPoint)    
+            myGPS = self.client.geolocate(home_mobile_country_code=466, home_mobile_network_code=int(pickthem[x[0]]["net"]),
+                                        radio_type="lte", carrier=Carrier, consider_ip=True,
+                                        cell_towers= cellTower, wifi_access_points=wifiAccessPoint)
         else:
-            myGPS = self.client.geolocate(home_mobile_country_code=466, home_mobile_network_code=None, 
-                                        radio_type="lte", carrier=Carrier, consider_ip=True, 
+            myGPS = self.client.geolocate(home_mobile_country_code=466, home_mobile_network_code=None,
+                                        radio_type="lte", carrier=Carrier, consider_ip=True,
                                         cell_towers= None, wifi_access_points=None)
         return myGPS['location']
 
-    def getBikeStation(self, location) -> dict:        
+    def getBikeStation(self, location) -> dict:
         #先取得半徑500m的bike station {'lat': 123456, 'lng':4561}
         place_search = self.client.places_nearby(location, keyword="youbike", radius=500)
         #數量太少再擴大搜尋
         if len(place_search['results']) <5:
             place_search = self.client.places_nearby(location, keyword="youbike", radius=1000)
             if len(place_search['results']) ==0:
-                
+
                 return "附近沒有YouBike站點"
-        
+
         #依照目前座標給出距離最近的5個站點
         coordinates = []
-        for result in place_search['results']:                    
+        for result in place_search['results']:
             if result['business_status']=='OPERATIONAL':
                 coordinate = result['geometry']['location']
                 coordinate['distance'] = haversine(location['lat'], location['lng'], coordinate['lat'], coordinate['lng'])
                 coordinates.append(coordinate)
         df = pd.DataFrame(coordinates)
         df = df.sort_values(by='distance')
-        
+
         top5 = df.head(5)
         del top5['distance']
         staInfo = Yb_stn.objects.filter(area_code='00')
@@ -151,7 +150,7 @@ class GoogleMapforUbike:
         top5 = top5.merge(sta_info_df, how='left', left_on=['lat', 'lng'], right_on=['lat', 'lng'])
         result = top5.to_dict('records')
         return result
-    
+
     def getDuration(self, location, destination, departuretime= datetime.now()) -> dict:
         # departuretime = datetime.now()
         matrix = self.client.distance_matrix(location, destination, mode='walking', units='metrics', departure_time=departuretime)
@@ -167,7 +166,7 @@ class GoogleMapforUbike:
 #         temp['geometry'] = place_search['results'][i]['geometry']
 #         temp['rating'] = place_search['results'][i]['rating']
 #         goodRestoraunt.append(temp)
-        
+
 
 
 if __name__ == '__main__':
@@ -176,11 +175,9 @@ if __name__ == '__main__':
     start = time.time()
     posi = gmap.geolocate()
     end = time.time()
-    print(end-start)
     # myposi = {'lat': 25.048159037642492, 'lng': 121.51707574725279}
     # bike = gmap.getBikeStation(myposi)
     # print(gmap.getDuration(myposi,bike))
-    
-               
-    
-    
+
+
+
