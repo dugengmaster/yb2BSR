@@ -1,0 +1,42 @@
+[33mac7f41a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m temp
+[33m739734a[m linelogin系統完成
+[33m7b779c2[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m 網頁架構討論
+[33m2c453f9[m Merge pull request #4 from dugengmaster/cfchu
+[33mfb7b2e5[m Merge pull request #3 from dugengmaster/newCSS
+[33md300c33[m make it better
+[33md6f3623[m Merge pull request #2 from dugengmaster/mapAPP
+[33m7f5115c[m Merge pull request #1 from dugengmaster/dugeng
+[33m5c7cec5[m 5個站點pin都可讀
+[33mafc73ce[m temp line postback
+[33mccb5a41[m Merge branch 'mapAPP' of github.com:dugengmaster/yb2BSR into dugeng
+[33ma35a065[m 網頁增加infowindow, 增加站點最新內容
+[33m8f1274c[m 資料庫整合後修改
+[33m23bba51[m Merge branch 'main' of https://github.com/dugengmaster/yb2BSR into mapAPP
+[33m3cc4cf8[m 5/31 1:36 upload
+[33mb892ac1[m callback api test
+[33mcc15246[m 將網頁改成響應式
+[33m4d817e3[m Merge branch 'main' of https://github.com/dugengmaster/yb2BSR
+[33m94b1936[m add db related models & codes
+[33md8a732a[m Revise 404.md
+[33m01e2274[m 更新404page docs
+[33m9a7eabc[m[33m ([m[1;32m404page[m[33m)[m 更新CSS樣式和登錄模態框模板
+[33m9f2f7b8[m 刪除pycache
+[33md3962fe[m 合併
+[33md3bdba6[m 新增隱藏秘密金鑰指南的技術文件
+[33m899cc79[m 新增隱藏秘密金鑰指南的技術文件
+[33m1fff693[m 新增隱藏秘密金鑰指南的技術文件
+[33m2b016c2[m 新增隱藏秘密金鑰指南的技術文件
+[33m7880bb8[m Merge github.com:dugengmaster/yb2BSR
+[33mfd6c6a3[m 新增隱藏秘密金鑰指南的技術文件
+[33m022e234[m Merge branch '404page'
+[33mdafd305[m 404page
+[33mab2ae26[m hidden django secret key
+[33m6c6c32a[m staics move to web
+[33m92ab231[m Move access_token to .env file and update settings to load from .env. Add .env to .gitignore.
+[33m75e297f[m make it better
+[33m1889cc7[m make it better
+[33m0027dff[m add some description file
+[33m4cec927[m merge two branch
+[33m767bad6[m django基礎架構建立
+[33m19791b0[m Add files via upload
+[33m1dbb442[m Initial commit

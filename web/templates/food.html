@@ -1,0 +1,249 @@
+{% load  static %}
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youbike最佳站點推薦系統</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2AiYlSa0BYV-Ac-Dbpv39RWK48NNyT1g&libraries=places"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <!-- 自定義 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* 設置地圖和搜尋框的樣式 */
+        #map {
+            height: 500px;
+            width: 1000px;
+            margin: 0 auto; /* 讓地圖居中顯示 */
+        }
+        #pac-input {
+            margin-top: 10px;
+            width: 80%;
+            max-width: 300px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        @media (max-width: 600px) {
+            #map {
+                height: 300px;
+                width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航欄 -->
+    <nav class="navbar navbar-dark bg-dark fixed-top navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">YouBike最佳站點推薦系統</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">YouBike最佳站點推薦系統</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="{% url 'io' %}">首頁</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'bikemap' %}">站點地圖</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'bike' %}">腳踏車步道</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'food' %}">YouBike米其淋</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'chart' %}">站點地圖分析</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'member' %}">會員專區</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'about_us' %}">關於我們</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav justify-content-end flex-grow-2 pe-3">
+                        <li class="nav-item">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                登入/註冊
+                              </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- 模態框 -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">登入</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">帳號</label>
+                        <input type="text" class="form-control" id="username" placeholder="請輸入帳號">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">密碼</label>
+                        <input type="password" class="form-control" id="password" placeholder="請輸入密碼">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">登入</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal">
+                註冊
+            </button>
+
+            </div>
+        </div>
+        </div>
+    </div>
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerModalLabel">註冊</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="registerUsername" class="form-label">帳號</label>
+                            <input type="text" class="form-control" id="registerUsername" placeholder="請輸入帳號">
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerPassword" class="form-label">密碼</label>
+                            <input type="password" class="form-control" id="registerPassword" placeholder="請輸入密碼">
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerCarrier" class="form-label">電信</label>
+                            <select class="form-control" id="registerCarrier">
+                              <option value="">請選擇電信</option>
+                              <option value="chunghwa">中華電信</option>
+                              <option value="taiwanmobile">台灣大哥大</option>
+                              <option value="fareastone">遠傳電信</option>
+                              <option value="tstar">台灣之星</option>
+                              <option value="apt">亞太電信</option>
+                            </select>
+                          </div>
+                        <div class="mb-3">
+                            <label for="registerEmail" class="form-label">電子郵件</label>
+                            <input type="email" class="form-control" id="registerEmail" placeholder="請輸入電子郵件">
+                        </div>
+                        <button type="submit" class="btn btn-primary">註冊</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h1>Google 地圖和搜尋欄</h1>
+    <input id="pac-input" class="controls" type="text" placeholder="搜索地點">
+    <div id="map"></div>
+    <div id="photos"></div>
+
+
+
+    <div class="custom-background2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 contact-info">
+                    <h2>聯繫我們</h2>
+                    <p>電話: 123-456-789</p>
+                    <p>Email: info@youbike.com</p>
+                </div>
+                <div class="col-md-6 social-software">
+                    <h2>社交媒體</h2>
+                    <a href="https://www.facebook.com/youbike" class="social-icon facebook"><i class="fab fa-facebook fa-3x"></i></a>
+                    <a href="https://www.instagram.com/youbike_tw/" class="social-icon instagram"><i class="fab fa-instagram fa-3x"></i></a>
+                    <a href="https://www.linkedin.com/company/youbike" class="social-icon line"><i class="fab fa-line fa-3x"></i></a>
+                    <a href="https://www.youtube.com/youbike" class="social-icon youtube"><i class="fab fa-youtube fa-3x"></i></a>
+                    <a href="https://discord.com/youbike" class="social-icon discord"><i class="fab fa-discord fa-3x"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5+5hb7ie2ElVx2Lt5PLOME6/JCMVWvD2qxCUV6MG" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+    <script>
+        function initMap() {
+            // 創建地圖
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 25.0330, lng: 121.5654}, // 預設中心為台北市
+                zoom: 13
+            });
+
+            // 創建搜索框並將其綁定到 UI 元素
+            var input = document.getElementById('pac-input');
+            var searchBox = new google.maps.places.SearchBox(input);
+
+            // 偵聽搜索框的結果並設置地圖的邊界
+            map.addListener('bounds_changed', function() {
+                searchBox.setBounds(map.getBounds());
+            });
+
+            var markers = [];
+
+            // 偵聽搜索框的地點選擇事件
+            searchBox.addListener('places_changed', function() {
+                var places = searchBox.getPlaces();
+
+                if (places.length == 0) {
+                    return;
+                }
+
+                // 清除舊的地標
+                markers.forEach(function(marker) {
+                    marker.setMap(null);
+                });
+                markers = [];
+
+                // 獲取地點的邊界
+                var bounds = new google.maps.LatLngBounds();
+                places.forEach(function(place) {
+                    if (!place.geometry) {
+                        console.log("Returned place contains no geometry");
+                        return;
+                    }
+
+                    // 創建地標
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        title: place.name,
+                        position: place.geometry.location
+                    });
+                    markers.push(marker);
+
+                    if (place.geometry.viewport) {
+                        bounds.union(place.geometry.viewport);
+                    } else {
+                        bounds.extend(place.geometry.location);
+                    }
+                });
+                map.fitBounds(bounds);
+            });
+        }
+
+        // 當網頁加載完成時初始化地圖
+        window.onload = initMap;
+    </script>
+
+</body>

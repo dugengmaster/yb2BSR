@@ -18,6 +18,8 @@ from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -25,6 +27,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env_path = os.path.join(BASE_DIR, ".env")
 load_dotenv(env_path)
 
+SECRET_KEY = os.getenv("SECRET_KEY")
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
+GOOGLE_MAPS_API_KEY2 = os.getenv("GOOGLE_MAPS_API_KEY2")
+LINE_CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET")
+LINE_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
 SECRET_KEY = os.getenv('SECRET_KEY')
 GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
 GOOGLE_MAPS_API_KEY2 = os.getenv('GOOGLE_MAPS_API_KEY2')
@@ -36,6 +43,7 @@ LINE_REDIRECT_URI = "https://08c5-2401-e180-8d51-544-1b2-96f3-db0-e241.ngrok-fre
 LINE_REDIRECT_URI_CALLBACK=os.getenv('LINE_REDIRECT_URI_CALLBACK')
 LINE_NOTIFY_URL = 'https://notify-api.line.me/api/notify'
 
+# LINE_CLIENT_SECRET = 'your_line_client_secret_here'
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 使用数据库会话
 SESSION_COOKIE_NAME = 'sessionid'
 SESSION_COOKIE_HTTPONLY = True
@@ -59,6 +67,7 @@ INSTALLED_APPS = [
     "user.apps.UserConfig",
     "aboutUS.apps.AboutusConfig",
     "mapAPP.apps.MapappConfig",
+
     'allauth.socialaccount.providers.line',
     'django.contrib.sites',
     'allauth',
@@ -93,31 +102,31 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'yb2BSR.middleware.Custom404Middleware',#404頁面
+    "yb2BSR.middleware.Custom404Middleware",  # 404頁面
     'allauth.account.middleware.AccountMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
 ]
 
 ROOT_URLCONF = "yb2BSR.urls"
 
 
-
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "web", "templates"),],
+        "DIRS": [
+            os.path.join(BASE_DIR, "web", "templates"),
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
-
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                    ],
-            'builtins' :[
-                'django.templatetags.static'
-            ]
+            ],
+            "builtins": ["django.templatetags.static"],
         },
-    },
+    }
 ]
 
 WSGI_APPLICATION = "yb2BSR.wsgi.application"
@@ -134,9 +143,30 @@ DATABASES = {
 
     }
 }
-
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-
+SESSION_ENGINE = "django.contrib.sessions.backends.db"  # 使用數據庫儲存 session
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',  # 设定日志级别为 DEBUG
+            'class': 'logging.FileHandler',
+            'filename': '/path/to/your/django/logs/debug.log',  # 指定日志文件路径
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'web': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -176,7 +206,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "web/static"),
 ]
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 django_heroku.settings(locals())
 
