@@ -33,7 +33,10 @@
         <div class="menu">
             <button onclick="window.location.href='/'" class="btn btn-primary">首頁</button>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#loginModal">登入</button>
-            <button onclick="window.location.href='{% url 'home' %}'" class="btn btn-primary">登出</button>
+            <form id="logoutForm" action="{% url 'logout' %}" method="post" style="display: none;">
+                {% csrf_token %}
+            </form>
+            <button onclick="document.getElementById('logoutForm').submit();" class="btn btn-primary">登出</button>
             <button onclick="window.location.href='{% url 'stations' %}'" class="btn btn-primary">地圖</button>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerModal">註冊</button>
             <button onclick="window.location.href='/about'" class="btn btn-primary">地圖分析頁面</button>
