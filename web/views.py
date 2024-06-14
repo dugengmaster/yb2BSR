@@ -32,9 +32,12 @@ def my_login(request):
 
 
 # @login_required
+# def home(request):
+#     username = request.user.username if request.user.is_authenticated else None
+#     return render(request, "home.html", {"username": username})
+
 def home(request):
-    username = request.user.username if request.user.is_authenticated else None
-    return render(request, "home.html", {"username": username})
+    return render(request, "base.html")
 
 
 def logout_view(request):
@@ -44,7 +47,7 @@ def logout_view(request):
 
 def stations(request):
     map_key = {"GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY}
-    return render(request, "stations.html", map_key)
+    return render(request, "mapAPP.html", map_key)
 
 
 def analysis_view(request):

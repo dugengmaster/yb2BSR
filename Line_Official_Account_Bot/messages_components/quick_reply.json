@@ -1,0 +1,15 @@
+{
+  "shareLocation": {
+    "items": [
+      {
+        "type": "action",
+        "action": {
+          "type": "location",
+          "label": "請按我"
+        }
+      }
+    ]
+  }
+}
+
+
