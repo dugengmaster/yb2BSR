@@ -30,11 +30,6 @@ load_dotenv(env_path)
 SECRET_KEY = os.getenv("SECRET_KEY")
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 GOOGLE_MAPS_API_KEY2 = os.getenv("GOOGLE_MAPS_API_KEY2")
-# LINE_CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET")
-# LINE_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
-# SECRET_KEY = os.getenv('SECRET_KEY')
-# GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
-# GOOGLE_MAPS_API_KEY2 = os.getenv('GOOGLE_MAPS_API_KEY2')
 LINE_CLIENT_ID = int(os.getenv('LINE_CLIENT_ID'))
 LINE_CHANNEL_SECRET = os.getenv('LINE_CHANNEL_SECRET')
 LINE_CHANNEL_ACCESS_TOKEN = os.getenv('LINE_CHANNEL_ACCESS_TOKEN')
@@ -44,12 +39,10 @@ LINE_REDIRECT_URI = "https://08c5-2401-e180-8d51-544-1b2-96f3-db0-e241.ngrok-fre
 LINE_REDIRECT_URI_CALLBACK=os.getenv('LINE_REDIRECT_URI_CALLBACK')
 LINE_NOTIFY_URL = 'https://notify-api.line.me/api/notify'
 
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
 
 # Application definition
 
@@ -63,7 +56,7 @@ INSTALLED_APPS = [
     "user.apps.UserConfig",
     "aboutUS.apps.AboutusConfig",
     "mapAPP.apps.MapappConfig",
-    "Line_Official_Account_Bot"
+    "Line_Official_Account_Bot",
     # line 第三方登入使用
     'allauth.socialaccount.providers.line',
     'django.contrib.sites',
@@ -73,6 +66,7 @@ INSTALLED_APPS = [
     'web',
     'allauth.socialaccount.providers.github',
 ]
+
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',

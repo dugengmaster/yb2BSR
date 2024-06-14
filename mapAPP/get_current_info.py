@@ -23,7 +23,7 @@ apis = ["https://apis.youbike.com.tw/json/area-all.json","https://apis.youbike.c
 #取得最新的站點狀態
 def getstationbike(coordinates,q) -> list:
     header = {
-        'User-Agent': 
+        'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
         }
     url = 'https://apis.youbike.com.tw/json/station-yb2.json'
@@ -41,13 +41,14 @@ def getstationbike(coordinates,q) -> list:
                 if coor['lat']==df.loc[j, 'lat'] and coor['lng']==df.loc[j, 'lng']:
                     temp = {
                         'name':df.loc[j, 'name_tw'],
-                        'available_spaces': str(df.loc[j, 'available_spaces'])+'/'+str(df.loc[j, 'parking_spaces']), 
+                        'available_spaces': str(df.loc[j, 'available_spaces'])+'/'+str(df.loc[j, 'parking_spaces']),
                         'update_time': df.loc[j, 'updated_at']
                         }
+
                     stationStatus.append(temp)
                     break
         q.put(stationStatus)
-        return
+        # return
     else:
         print('載入數值失敗')
         return None
@@ -55,45 +56,49 @@ def getstationbike(coordinates,q) -> list:
 def tpe_cur_rain(q): #got current rain status
     global apis
     url=apis[3]
-    
+
     response = session.get(url)
-    
+
     if response.status_code == 200:
         data = response.json()
         #print(data)
         # print(type(data))
-        
+
         for i in data["records"]["Station"]:
-            
-            if i["StationName"]=="信義":   
-               rain_amt = i["RainfallElement"]["Past10Min"]["Precipitation"]
-               
-               if rain_amt/10 >(0.3/6):
+
+            if i["StationName"]=="信義":
+                rain_amt = i["RainfallElement"]["Past10Min"]["Precipitation"]
+                if rain_amt/10 >(0.3/6):
+                    # print(rain_amt)
                 #    return 1
                     r = 1
                     q.put(r)
-                    return
-               else:
+                    break
+                    # return
+                else:
+                    # print(rain_amt)
                 #    return 0
                     r = 0
                     q.put(r)
-                    return
-            
-            
+                    break
+                    # return
+
+
 def tpe_cur_temp(q): #got current temperature status
     global apis
     url=apis[4]
-    
+
     response = session.get(url)
     #print(response.status_code)
     if response.status_code == 200:
         data = response.json()
-        
+
         for i in data["records"]["Station"]:
             if i["StationId"]=="C0I080":
+                # print(i["WeatherElement"]["AirTemperature"])
                 # print(type(i["WeatherElement"]["AirTemperature"]))
-                # return i["WeatherElement"]["AirTemperature"]   
-                q.put(i["WeatherElement"]["AirTemperature"])     
+                # return i["WeatherElement"]["AirTemperature"]
+                q.put(i["WeatherElement"]["AirTemperature"])
 
 def tpe_yb_stn(): #got Taipei YB ststion No list
     global apis
@@ -103,45 +108,45 @@ def tpe_yb_stn(): #got Taipei YB ststion No list
     #print(response.status_code)
     if response.status_code == 200:
         data = response.json()
-        
+
         for i in data:
             if i["area_code"]=="00":
                tpestn.append(i["station_no"])
-               
-        return tpestn  
+
+        return tpestn
 
 def tpe_yb_qy(station_no): #got the available ybs for a station in Taipei
     global apis
     url=apis[2]
-    
+
     response = session.get(url)
     #print(response.status_code)
     if response.status_code == 200:
         data = response.json()
-        
+
         for i in data:
             if i["station_no"]==station_no:
-               
-                return i["available_spaces"]  
-            
+
+                return i["available_spaces"]
+
             #Taipei station_no range:5001xxxxx
 
 def holiday_qy(date,q):   #got holoday status date format:20150101
     global apis
     url=apis[5]
-    
+
     response = session.get(url)
     #print(response.status_code)
     if response.status_code == 200:
         data = response.json()
-        
+
         for i in data:
             if i["date"]==date:
                q.put(1)
-                # return 1  
+                # return 1
         # return 0
         q.put(0)
-            
+
 
 
 if __name__ == "__main__":

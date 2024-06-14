@@ -45,7 +45,7 @@ urlpatterns = [
     # path('404/',web_views.custom_404),
     # path('404/', web_views.custom_404, name='custom_404'),
     path("callback/", linebot_views.callback),
-    path("weather/", linebot_views.weather)
+    path("weather/", linebot_views.weather),
     path("io/", web_views.io, name="io"),
     path("about/", web_views.about_us, name="about_us"),
     path("member/", web_views.member, name="member"),

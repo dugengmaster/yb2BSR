@@ -4,3 +4,4 @@ django-heroku
 scikit-learn
 matplotlib
 seaborn
+django-allauth

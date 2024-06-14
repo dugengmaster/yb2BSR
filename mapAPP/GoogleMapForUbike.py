@@ -123,12 +123,7 @@ class GoogleMapforUbike:
             myGPS = self.client.geolocate(home_mobile_country_code=466, home_mobile_network_code=int(pickthem[x[0]]["net"]),
                                         radio_type="lte", carrier=Carrier, consider_ip=True,
                                         cell_towers= cellTower, wifi_access_points=wifiAccessPoint)
-            myGPS = self.client.geolocate(home_mobile_country_code=466, home_mobile_network_code=int(pickthem[x[0]]["net"]),
-                                        radio_type="lte", carrier=Carrier, consider_ip=True,
-                                        cell_towers= cellTower, wifi_access_points=wifiAccessPoint)
         else:
-            myGPS = self.client.geolocate(home_mobile_country_code=466, home_mobile_network_code=None,
-                                        radio_type="lte", carrier=Carrier, consider_ip=True,
             myGPS = self.client.geolocate(home_mobile_country_code=466, home_mobile_network_code=None,
                                         radio_type="lte", carrier=Carrier, consider_ip=True,
                                         cell_towers= None, wifi_access_points=None)
@@ -148,7 +143,7 @@ class GoogleMapforUbike:
 
         #依照目前座標給出距離最近的5個站點
         coordinates = []
-        for result in place_search['results']:
+
         for result in place_search['results']:
             if result['business_status']=='OPERATIONAL':
                 coordinate = result['geometry']['location']
@@ -167,8 +162,8 @@ class GoogleMapforUbike:
         return result
 
 
-    def getDuration(self, location, destination, departuretime= datetime.now()) -> dict:
-        # departuretime = datetime.now()
+    def getDuration(self, location, destination) -> dict:
+        departuretime = datetime.now()
         matrix = self.client.distance_matrix(location, destination, mode='walking', units='metrics', departure_time=departuretime)
         for index, coor in enumerate(destination):
             coor['time_cost'] = matrix['rows'][0]['elements'][index]['duration']['value']
