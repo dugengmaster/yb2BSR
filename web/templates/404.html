@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {%load static%}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 page-notfound</title>
+    <style>
+        *{
+            margin:0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: monospace;
+        }
+        .container{
+            padding:25px 77px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            justify-content:space-between;
+            background-color: rgba(255, 255, 255, 0.8); /* 半透明背景以提高可读性 */
+        }
+        header{
+            font-family: "Inconsolata";
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        .content{
+            display: flex;
+        }
+        .left,.right{
+            flex:1;
+        }
+        .left > img{
+            width: 100%;
+            width: 539.22px;
+        }
+        .right > h1{
+            width: 586px;
+            font-style: normal;
+            font-weight: 700;
+            font-size: 74px;
+            line-height: 95px;
+            letter-spacing: -0.035em;
+        }
+        .right > p{
+            width: 381px;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 1.5rem;
+            line-height: 36px;
+            letter-spacing: -0.035em;
+            margin-top: 36px;
+        }
+        body {
+            font-family: monospace;
+            background-image: url("{% static 'images/background.png' %}"); /* 背景图片路径 */
+
+            background-size: cover; /* 使背景图片覆盖整个页面 */
+            background-position: center; /* 背景图片居中 */
+            background-repeat: no-repeat; /* 不重复背景图片 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        button{
+            width: 210px;
+            padding: 24px;
+            margin-top: 64px;
+            background: #333333;
+            color:#FFFFFF;
+        }
+        footer{
+            text-align: center;
+        }
+        @media screen and (max-width:750px) {
+            .container{
+                padding: 15px;
+                gap: 40px;
+            }
+            .content{
+                flex-direction: column;
+            }
+            .left > img{
+                width: 100%;
+            }
+            .right > h1, .right > p{
+                width: 100%;
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>404 PAGE NOT FOUND</header>
+        <main>
+            <section class="content">
+                <div class="left">
+                    <img src="{% static 'images/btn.png' %}" alt="">
+                    {% comment %} {% static 'img/arecrow.png' %} {% endcomment %}
+                </div>
+                <div class="right">
+                    <h1>I have bad news for you</h1>
+                    <p>The page you are looking for might be removed or
+                        is temporarily unavailable
+                    </p>
+                    {% comment %} <form id="myForm" action="{% url 'login2' %}" method="post">
+                        <!-- 这里放置表单内容 -->
+                    </form> {% endcomment %}
+                    <button onclick="goToHomepage()">BACK TO HOMEPAGE</button>
+                </div>
+                <script>
+                    function goToHomepage() {
+                        
+                        window.location.href = '{% url 'home' %}';
+                    }
+                </script>
+            </section>
+        </main>
+        <footer>
+            <div>Create by fantas36 - devchallenge.io</div>
+        </footer>
+    </div>
+</body>
+</html>
