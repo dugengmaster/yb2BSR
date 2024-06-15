@@ -2,7 +2,7 @@
 """
 Created on Wed May 22 10:00:04 2024
 
-@author: 88698
+@author: Eason Liao
 """
 
 import sqlite3 as sql
@@ -45,7 +45,6 @@ def geo_to_No(list_of_station) -> list:
     return stationnumbers
 
 def intomodel(list_of_station) -> list:
-    ybinfo = Yb_stn.objects.all()
     
     for number in list_of_station:
         print(number)
