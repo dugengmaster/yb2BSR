@@ -347,6 +347,9 @@ def member(request):
 def bike(request):
     return render(request, "bike.html")
 
+def bikemap(request):
+    return render(request, "bikemap.html")
+
 def chart(request):
     return render(request, "chart.html")
 
