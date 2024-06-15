@@ -1,3 +1,60 @@
+
+<style>
+    #map {
+        height: 600px;
+        width: 1000px;
+        z-index: 2;
+        margin: 0 auto; /* 使地圖在大屏幕居中 */
+    }
+
+    @media (max-width: 1180px) {
+        #map {
+            height: 500px;
+            width: 850px;
+            margin: 0 auto;
+        }
+    }
+
+    @media (max-width: 820px) {
+        #map {
+            height: 850px;
+            width: 500px;
+            margin: 0 auto;
+        }
+    }
+
+    @media (max-width: 420px) {
+        #map {
+            height: 600px;
+            width: 360px;
+            margin: 0 auto;
+        }
+    }
+
+    @media (max-width: 375px) {
+        #map {
+            height: 450px;
+            width: 335px;
+            margin: 0 auto;
+        }
+    }
+
+    /* 确保响应式设计 */
+    @media (max-width: 768px) {
+        .col-md-3, .col-md-9 {
+            flex: 1 1 100%; /* 在小屏幕上全宽 */
+        }
+
+    }
+
+    @media (max-width: 480px) {
+        .col-md-3, .col-md-9 {
+            flex: 1 1 100%; /* 在小屏幕上全宽 */
+        }
+
+    }
+</style>
+
 <div class="container-flex">
     <div id="map" class="position-relative"></div>
 </div>
