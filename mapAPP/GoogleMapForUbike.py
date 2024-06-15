@@ -4,16 +4,26 @@ Created on Fri May 10 14:14:59 2024
 
 @author: 88698
 """
+import os
+import django
+import sys
+project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_path)
+# 设置环境变量
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'yb2BSR.settings')
 
+# 初始化 Django
+django.setup()
 import googlemaps as gmap
 import pandas as pd
 import math
 import uuid
 from datetime import datetime
-import sqlite3 as sql
+# import sqlite3 as sql
 import time
 from mapAPP.models import LtecelltowerTpe, Yb_stn
 from django.db.models import Q
+import time
 
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -40,17 +50,21 @@ def haversine(lat1, lon1, lat2, lon2):
     #經緯度轉為弧度制
     lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
 
+
     dlat = lat1-lat2
     dlon = lon1-lon2
 
+
     a = math.sin(dlat/2)**2+ math.cos(lat1)*math.cos(lat2)*math.sin(dlon/2)**2
     c= 2*math.atan2(math.sqrt(a), math.sqrt(1-a))
+
 
     #地球半徑
     R = 6371.0
     #單位公里
     distance = R*c*1000
     return distance
+
 
 
 class GoogleMapforUbike:
@@ -60,13 +74,14 @@ class GoogleMapforUbike:
 
 
 
-    def getgeolocation(self, Carrier="中華電信"):
+    def getgeolocation(self, Carrier="中華電信") -> dict:
         #先取得粗略的GPS定位
         gps = self.client.geolocate()
         carrier = {'1':"遠傳電信", "5":"遠傳電信","89":"台灣大哥大","92":"中華電信","97":"台灣大哥大"}
         Net = []
         for key, value in carrier.items():
             if value == Carrier: Net.append(int(key))
+
 
         if len(Net) >1:
             towerList = self.lteCelltower.filter(Q(net=Net[0]) | Q(net=Net[1]))
@@ -83,8 +98,8 @@ class GoogleMapforUbike:
                 pickthem.append(temp)
                 distanceList.append(distance)
 
+
         x = [i for i in range(len(distanceList)) if distanceList[i] == min(distanceList)]
-        print('not in TPE')
         if len(x) > 0:
             cellTower = [{
                 "cellId": int(pickthem[x[0]]["cell"]),
@@ -114,7 +129,7 @@ class GoogleMapforUbike:
                                         cell_towers= None, wifi_access_points=None)
         return myGPS['location']
 
-    def getBikeStation(self, location):
+    def getBikeStation(self, location) -> dict:
         #先取得半徑500m的bike station {'lat': 123456, 'lng':4561}
         place_search = self.client.places_nearby(location, keyword="youbike", radius=500)
         #數量太少再擴大搜尋
@@ -122,10 +137,13 @@ class GoogleMapforUbike:
             place_search = self.client.places_nearby(location, keyword="youbike", radius=1000)
             if len(place_search['results']) ==0:
 
+
                 return "附近沒有YouBike站點"
+
 
         #依照目前座標給出距離最近的5個站點
         coordinates = []
+
         for result in place_search['results']:
             if result['business_status']=='OPERATIONAL':
                 coordinate = result['geometry']['location']
@@ -133,6 +151,7 @@ class GoogleMapforUbike:
                 coordinates.append(coordinate)
         df = pd.DataFrame(coordinates)
         df = df.sort_values(by='distance')
+
 
         top5 = df.head(5)
         del top5['distance']
@@ -142,8 +161,9 @@ class GoogleMapforUbike:
         result = top5.to_dict('records')
         return result
 
-    def getDuration(self, location, destination, departuretime= datetime.now()) -> dict:
-        # departuretime = datetime.now()
+
+    def getDuration(self, location, destination) -> dict:
+        departuretime = datetime.now()
         matrix = self.client.distance_matrix(location, destination, mode='walking', units='metrics', departure_time=departuretime)
         for index, coor in enumerate(destination):
             coor['time_cost'] = matrix['rows'][0]['elements'][index]['duration']['value']
@@ -160,8 +180,16 @@ class GoogleMapforUbike:
 
 
 
+
 if __name__ == '__main__':
-    print('0')
+    # gmap = GoogleMapforUbike('AIzaSyDeEzYq-fwNLOXJu7XzAXU2NgxJW3th_2A')
+    gmap = gmap.Client(key='AIzaSyDeEzYq-fwNLOXJu7XzAXU2NgxJW3th_2A')
+    start = time.time()
+    posi = gmap.geolocate()
+    end = time.time()
+    # myposi = {'lat': 25.048159037642492, 'lng': 121.51707574725279}
+    # bike = gmap.getBikeStation(myposi)
+    # print(gmap.getDuration(myposi,bike))
 
 
 
