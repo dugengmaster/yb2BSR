@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "user.apps.UserConfig",
     "aboutUS.apps.AboutusConfig",
     "mapAPP.apps.MapappConfig",
+    "web",
 ]
 
 

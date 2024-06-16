@@ -6,89 +6,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Youbike最佳站點推薦系統</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2AiYlSa0BYV-Ac-Dbpv39RWK48NNyT1g&libraries=places"></script>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <!-- 自定義 CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
-        .memberbackground {
-            background-image: url("{% static 'images/bikestation.jpg' %}");
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 6vw;
+        /* 設置地圖和搜尋框的樣式 */
+        #map {
+            height: 500px;
+            width: 1000px;
+            margin: 0 auto; /* 讓地圖居中顯示 */
         }
-        /* 會員專區標題 */
-        .member-section h1 {
-            color: #000; /* 黑色文字 */
-            font-weight: bold; /* 粗體 */
-            font-style: italic; /* 傾斜 */
-            margin-bottom: 20px; /* 底部間距 */
+        #pac-input {
+            margin-top: 10px;
+            width: 80%;
+            max-width: 300px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
-        /* 社交互動標題 */
-        .social-interaction h2 {
-            color: #000; /* 黑色文字 */
-            font-weight: bold; /* 粗體 */
-            font-style: italic; /* 傾斜 */
+        @media (max-width: 600px) {
+            #map {
+                height: 300px;
+                width: 300px;
+            }
         }
-
-            /* 會員專區 */
-        .member-section {
-            padding: 30px;
-            background-color: #f8f9fa;
-        }
-
-        /* 會員卡片 */
-        .member-card {
-            border: none;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        /* 會員卡片標題 */
-        .member-card .card-title {
-            color: #333;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        /* 會員卡片內容 */
-        .member-card .card-text {
-            color: #666;
-            font-size: 16px;
-        }
-
-        /* 按鈕 */
-        .member-card .btn-primary {
-            background-color: #007bff;
-            border: none;
-        }
-            /* 社交互動樣式 */
-        .social-interaction {
-            margin-top: 50px;
-            text-align: center;
-        }
-
-        .social-interaction h2 {
-            font-weight: bold;
-            font-style: italic;
-        }
-
-        #messageDisplayArea {
-            margin-top: 20px;
-        }
-
-        #messageInputArea {
-            margin-top: 20px;
-        }
-
-        /* 按鈕*/
-
     </style>
 </head>
 <body>
-     <!-- 導航欄 -->
+    <!-- 導航欄 -->
     <nav class="navbar navbar-dark bg-dark fixed-top navbar-expand-lg">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">YouBike最佳站點推薦系統</a>
@@ -205,85 +153,12 @@
         </div>
     </div>
 
-    <!-- 會員專區 -->
-    <div class="memberbackground">
-        <div class="container mt-5 pt-5 member-section">
-            <h1 class="mb-4">會員專區</h1>
-            <div class="row">
-                <!-- 个人信息管理 -->
-                <div class="col-md-4">
-                    <div class="card member-card">
-                        <div class="card-body">
-                            <h5 class="card-title">個人資料</h5>
-                            <p class="card-text">管理您的個人信息和騎行記錄。</p>
-                            <a href="#" class="btn btn-primary">查看資料</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 推荐与收藏 -->
-                <div class="col-md-4">
-                    <div class="card member-card">
-                        <div class="card-body">
-                            <h5 class="card-title">推薦與收藏</h5>
-                            <p class="card-text">查看推薦站點和收藏的站點。</p>
-                            <a href="#" class="btn btn-primary">查看推薦</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 通知与提醒 -->
-                <div class="col-md-4">
-                    <div class="card member-card">
-                        <div class="card-body">
-                            <h5 class="card-title">通知與提醒</h5>
-                            <p class="card-text">查看站點狀態和活動通知。</p>
-                            <a href="#" class="btn btn-primary">查看通知</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <!-- 路径规划与导航 -->
-                <div class="col-md-4">
-                    <div class="card member-card">
-                        <div class="card-body">
-                            <h5 class="card-title">路徑規劃與導航</h5>
-                            <p class="card-text">查看和規劃最佳騎行路徑。</p>
-                            <a href="#" class="btn btn-primary">查看路徑</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 积分与奖励 -->
-                <div class="col-md-4">
-                    <div class="card member-card">
-                        <div class="card-body">
-                            <h5 class="card-title">積分與獎勵</h5>
-                            <p class="card-text">查看您的積分和獎勵。</p>
-                            <a href="#" class="btn btn-primary">查看積分</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- 社交与互动 -->
-                <div class="col-md-4">
-                    <div class="card member-card">
-                        <div class="card-body">
-                            <h5 class="card-title">社交與互動</h5>
-                            <p class="card-text">與好友互動，分享騎行經驗。</p>
-                            <button class="btn btn-primary" id="openMessageInput" onclick="openMessageInput()">立即留言</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- 社交互動的留言顯示區 -->
-            <div class="social-interaction">
-                <h2>社交互動</h2>
-                <div id="messageDisplayArea"></div> <!-- 這裡顯示留言 -->
-                <div id="messageInputArea" style="display: none;">
-                    <textarea id="messageInput" class="form-control mb-2" placeholder="請輸入留言"></textarea>
-                    <button class="btn btn-primary" id="sendMessage">發送留言</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <h1>Google 地圖和搜尋欄</h1>
+    <input id="pac-input" class="controls" type="text" placeholder="搜索地點">
+    <div id="map"></div>
+    <div id="photos"></div>
+
+
 
     <div class="custom-background2">
         <div class="container">
@@ -304,15 +179,71 @@
             </div>
         </div>
     </div>
-
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5+5hb7ie2ElVx2Lt5PLOME6/JCMVWvD2qxCUV6MG" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
     <script>
-    function openMessageInput() {
-            // 使用Bootstrap模態框顯示輸入框
-            $('#messageModal').modal('show');
+        function initMap() {
+            // 創建地圖
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 25.0330, lng: 121.5654}, // 預設中心為台北市
+                zoom: 13
+            });
+
+            // 創建搜索框並將其綁定到 UI 元素
+            var input = document.getElementById('pac-input');
+            var searchBox = new google.maps.places.SearchBox(input);
+
+            // 偵聽搜索框的結果並設置地圖的邊界
+            map.addListener('bounds_changed', function() {
+                searchBox.setBounds(map.getBounds());
+            });
+
+            var markers = [];
+
+            // 偵聽搜索框的地點選擇事件
+            searchBox.addListener('places_changed', function() {
+                var places = searchBox.getPlaces();
+
+                if (places.length == 0) {
+                    return;
+                }
+
+                // 清除舊的地標
+                markers.forEach(function(marker) {
+                    marker.setMap(null);
+                });
+                markers = [];
+
+                // 獲取地點的邊界
+                var bounds = new google.maps.LatLngBounds();
+                places.forEach(function(place) {
+                    if (!place.geometry) {
+                        console.log("Returned place contains no geometry");
+                        return;
+                    }
+
+                    // 創建地標
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        title: place.name,
+                        position: place.geometry.location
+                    });
+                    markers.push(marker);
+
+                    if (place.geometry.viewport) {
+                        bounds.union(place.geometry.viewport);
+                    } else {
+                        bounds.extend(place.geometry.location);
+                    }
+                });
+                map.fitBounds(bounds);
+            });
         }
+
+        // 當網頁加載完成時初始化地圖
+        window.onload = initMap;
     </script>
+
 </body>

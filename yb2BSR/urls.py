@@ -19,6 +19,8 @@ from django.contrib import admin
 from django.urls import path, include
 from web import views as web_views
 from Line_Official_Account_Bot import views as linebot_views
+from django.contrib.auth import views as auth_views
+from django.urls import path
 
 
 urlpatterns = [
@@ -41,6 +43,14 @@ urlpatterns = [
     path("about/", web_views.about_us, name="about_us"),
     path("member/", web_views.member, name="member"),
     path("bike/", web_views.bike, name="bike"),
+    path("chart/", web_views.select_district, name="chart"),
+    path("get-locations/", web_views.get_locations, name="get_locations"),
+    path("food/", web_views.food, name="food"),
+    path("bikemap/", web_views.bikemap, name="bikemap"),
+    path(
+        "login/", auth_views.LoginView.as_view(template_name="login.html"), name="login"
+    ),
+    path("logout/", auth_views.LogoutView.as_view(next_page="/"), name="logout"),
 ]
 handler404 = web_views.custom_404
 # 將自定義 404 視圖與指定路徑關聯

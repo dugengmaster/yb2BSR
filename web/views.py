@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-import json
-import os
+from django.http import JsonResponse
+from web.models import Yb_stn
+from django.http import HttpResponse
 
 
 # Create your views here.
@@ -80,7 +81,8 @@ def custom_404(request, exception):
 
 
 def io(request):
-    return render(request,"1.html")
+    return render(request, "1.html")
+
 
 def about_us(request):
     return render(request, "team.html")
@@ -89,5 +91,41 @@ def about_us(request):
 def member(request):
     return render(request, "member.html")
 
+
 def bike(request):
     return render(request, "bike.html")
+
+
+def chart(request):
+    return render(request, "chart.html")
+
+
+def food(request):
+    return render(request, "food.html")
+
+
+def bikemap(request):
+    return render(request, "bikemap.html")
+
+
+# unique_districts = Yb_stn.objects.values_list("district_tw", flat=True).distinct()
+# print(unique_districts)
+# 将结果转换为列表并打印输出
+# unique_districts_list = list(unique_districts)
+# print(unique_districts_list)
+
+
+def select_district(request):
+    # 獲取所有不重複的 district_en 值
+    unique_districts = Yb_stn.objects.values_list("district_tw", flat=True).distinct()
+
+    # 将唯一地区列表传递给模板
+    return render(request, "chart.html", {"unique_districts": unique_districts})
+
+
+def get_locations(request):
+    district = request.GET.get("district")
+    if district:
+        locations = Yb_stn.objects.filter(district_tw=district).values("name_tw")
+        return JsonResponse(list(locations), safe=False)
+    return JsonResponse([], safe=False)

@@ -31,7 +31,7 @@ class LtecelltowerTpe(models.Model):
 
     class Meta:
         # managed = False
-        db_table = "LTEcelltower_tpe"
+        db_table = "LTEcelltower_tpe_mapapp"
 
 
 class Yb_cnty(models.Model):

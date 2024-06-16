@@ -253,6 +253,7 @@
         }
 
     </style>
+
 </head>
 <body>
     <!-- 導航欄 -->
@@ -273,16 +274,16 @@
                             <a class="nav-link active" aria-current="page" href="{% url 'io' %}">首頁</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">站點地圖</a>
+                            <a class="nav-link" href="{% url 'bikemap' %}">站點地圖</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'bike' %}">腳踏車步道</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">YouBike米其淋</a>
+                            <a class="nav-link" href="{% url 'food' %}">YouBike米其淋</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">站點地圖分析</a>
+                            <a class="nav-link" href="{% url 'chart' %}">站點地圖分析</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'member' %}">會員專區</a>
@@ -430,6 +431,22 @@
         </div>
     </div>
 
+    <!-- 公告欄 -->
+    <div class="announcement-board">
+        <h1>公告欄</h1>
+        <ul>
+            <li>2024/06/11(二) 09:00-13:00 新北市 永和區 YouBike 2.0『中正路666巷口』 暫停營運</li>
+            <li>2024/06/06(五) 10:00 台北市 新增大安區1站 YouBike 2.0 正式營運公告</li>
+            <li>2024/06/5(五)及06/07(五)09:00 - 16:00，06/08(六)及06/09(日)08:00 - 20:00新北市 中和區YouBike 2.0『捷運中原站』、『板南路492號』、『板南立言街口』 暫停營運</li>
+            <li>2024/06/04(二) - 06/30(日) 新北市 新莊區 60 站 YouBike 1.0 場站升級營運公告</li>
+            <li>2024/06/04(二) 即刻起-06/08(六)00:00 新北市 新莊區 YouBike 2.0『龍安福營路口』 暫停營運</li>
+            <li>溫馨提醒 - 2024/06/04(二) 起 新北市 新莊區 YouBike 2.0 『龍安福營路口』因現場施工，請注意騎乘安全</li>
+            <li>2024/06/04 (二) 10:00 台北市 新增大安區1站 YouBike 2.0 正式營運公告</li>
+            <li>2024/06/01(六) 08:00 - 06/02(日) 23:00 新北市 三重區YouBike 1.0及YouBike 2.0『先嗇宮』暫停營運</li>
+            <li>2024/06/03 (一) 09:00 - 17:00 台北市 大安區YouBike 2.0『臨江公園』暫停營運</li>
+            <li>2024/06/01(六) 08:00-20:00 新北市 三重區 YouBike 2.0『三重區停八停車場』 暫停營運</li>
+        </ul>
+    </div>
      <!-- 第二個 div 空間 -->
     <div class="custom-background">
         <div class="container info-section">
@@ -452,22 +469,6 @@
         </div>
     </div>
 
-    <!-- 公告欄 -->
-    <div class="announcement-board">
-        <h1>公告欄</h1>
-        <ul>
-            <li>2024/06/11(二) 09:00-13:00 新北市 永和區 YouBike 2.0『中正路666巷口』 暫停營運</li>
-            <li>2024/06/06(五) 10:00 台北市 新增大安區1站 YouBike 2.0 正式營運公告</li>
-            <li>2024/06/5(五)及06/07(五)09:00 - 16:00，06/08(六)及06/09(日)08:00 - 20:00新北市 中和區YouBike 2.0『捷運中原站』、『板南路492號』、『板南立言街口』 暫停營運</li>
-            <li>2024/06/04(二) - 06/30(日) 新北市 新莊區 60 站 YouBike 1.0 場站升級營運公告</li>
-            <li>2024/06/04(二) 即刻起-06/08(六)00:00 新北市 新莊區 YouBike 2.0『龍安福營路口』 暫停營運</li>
-            <li>溫馨提醒 - 2024/06/04(二) 起 新北市 新莊區 YouBike 2.0 『龍安福營路口』因現場施工，請注意騎乘安全</li>
-            <li>2024/06/04 (二) 10:00 台北市 新增大安區1站 YouBike 2.0 正式營運公告</li>
-            <li>2024/06/01(六) 08:00 - 06/02(日) 23:00 新北市 三重區YouBike 1.0及YouBike 2.0『先嗇宮』暫停營運</li>
-            <li>2024/06/03 (一) 09:00 - 17:00 台北市 大安區YouBike 2.0『臨江公園』暫停營運</li>
-            <li>2024/06/01(六) 08:00-20:00 新北市 三重區 YouBike 2.0『三重區停八停車場』 暫停營運</li>
-        </ul>
-    </div>
 
     <!-- 第四個 div 空間 -->
     <div class="custom-background2">
@@ -493,20 +494,8 @@
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5+5hb7ie2ElVx2Lt5PLOME6/JCMVWvD2qxCUV6MG" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var navbar = document.querySelector('.navbar');
-            window.addEventListener('scroll', function() {
-                if (window.scrollY > 0) {
-                    navbar.classList.add('shadow-lg');
-                } else {
-                    navbar.classList.remove('shadow-lg');
-                }
-            });
-        });
-    </script>
+
 </body>
 </html>
