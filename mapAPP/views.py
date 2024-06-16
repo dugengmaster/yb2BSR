@@ -73,7 +73,8 @@ def mapAPP(request):
     holidaythread.join()
     statusthread.join()
     raincheck = q.get()      
-    temperature = q.get()    
+    temperature = q.get()
+    tempppp = q.get()    
     isholiday = q.get()   
     bikeStatus = q.get()
     
