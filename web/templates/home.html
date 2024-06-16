@@ -1,10 +1,28 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}Youbike最佳站點推薦系統{% endblock %}
+
+{% block content %}
+
+    {% if error_message %}
+        <p style="color: red;">{{ error_message }}</p>
+    {% endif %}
+    {% include "components/home/carousel.html" %}
+    {% include "components/home/video.html" %}
+    {% include "components/home/announcement.html" %}
+    {% include "components/home/info.html" %}
+
+{% endblock %}
+
+
+{% comment %} {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Youbike最佳站點推薦系統-home{% endblock %}
 
 {% block content %}
 <div class="container">
-    {% include "components/video.html" %}
+    {% include "components/imgs.html" %}
 </div>
-{% endblock %}
+{% endblock %} {% endcomment %}

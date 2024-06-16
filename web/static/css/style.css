@@ -1,384 +1,253 @@
-.navbar-custom {
-    height: 100px;
-    background-color: rgba(255, 255, 255, 1); /* 自定義背景色 */
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+.navbar {
+    transition: top 0.5s ease-in-out; /* 添加過渡效果 */
 }
-.navbar-custom .navbar-brand,
-.navbar-custom .nav-link {
-    color: #666; /* 自定義文字顏色 */
+.navbar.sticky-top {
+
+    transition: top 0.5s ease-in-out; /* 添加過渡效果 */
 }
-.navbar-custom .nav-link:hover {
-    color: #FFD700; /* 滑鼠懸停文字顏色 */
+.navbar.sticky-top.show {
+    top: 0; /* 彈起到頂部的位置 */
 }
 
-/* 首頁youyube影片 */
-.video-container {
-    position: relative;
-    width: 640px; /* 定義 iframe 寬度 */
-    height: 360px; /* 定義 iframe 高度 */
-    margin: 0 auto; /* 居中 */
+.carousel-caption h5 {
+    color: black; /* 設置字體顏色為黑色 */
+    font-size: 2rem; /* 設置字體大小 */
 }
-
-.video-placeholder, iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
+.carousel-caption p {
+    color: black; /* 設置字體顏色為黑色 */
+    font-size: 1.5rem; /* 設置字體大小 */
+}
+.carousel-item img {
+    object-fit: cover; /* 確保圖片填充容器，保持比例 */
+    height: 500px; /* 設置固定高度 */
     width: 100%;
-    height: 100%;
-    object-fit: cover; /* 確保圖像完全覆蓋容器 */
+}
+.custom-background {/* 介紹背景 */
+    background-image: url('../images/bikestation.jpg');;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 6vw;
+
+}
+.custom-imgbackground {/* 輪播圖背景 */
+    background-image: linear-gradient(to bottom, #ffffff, #add8e6); /* 添加漸層背景 */
+    padding: 100px; /* 添加適當的內邊距，確保內容不會被背景遮擋 */
+}
+.video-background {/* 影片背景 */
+    background: linear-gradient(to bottom, #ffffff, #add8e6); /* 左到右深藍灰到淺藍灰的漸層 */
+    padding: 50px; /* 可以根據需要調整間距 */
 }
 
 .video-overlay {
     position: absolute;
     top: 0;
     left: 0;
+    width: 66%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0); /* 可選：添加一個半透明的覆蓋層 */
+}
+
+.video-container {
+    position: relative;
+    width: auto;
+    height: auto;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+
+.video-container iframe,
+.video-container .video-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    z-index: 2; /* 覆蓋層在視頻之上 */
-    background: transparent; /* 設置為透明，防止點擊 */
 }
 
-.video-placeholder {
-    z-index: 1; /* 圖片在最上層 */
-}
-
-iframe {
-    z-index: -1;
-    border: none; /* 移除 iframe 邊框 */
-}
-
-/* 背景圖片 */
-body {
-    background-image: url("../images/bikestation.jpg");
+.custom-background2 {/* 底部背景 */
+    background-color: #C0C0C0;
     background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed; /* 背景圖片在滾動時固定 */
-    background-position: center center; /* 背景圖片在容器中水平和垂直方向居中 */
-    height: 100vh;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    text-align: center;
-    font-family: Arial, sans-serif;
+    background-position: center;
+    padding: 50px;
     color: white;
 }
 
-/* button-container 的樣式 */
-.menu {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0); /* 半透明白色背景 */
-    padding: 10px 0;
-}
-
-/* button-container 内部按钮的樣式 */
-.menu button {
-    margin: 0 10px; /* 调整按钮之間的水平間距 */
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    background-color: #ffffff; /* 按鈕背景色 */
-    color: #4CAF50; /* 按鈕文字颜色 */
-    cursor: pointer;
-}
-
-/* 按鈕的鼠標懸停效果 */
-.menu button:hover {
-    background-color: #f0f0f0;
-}
-
-/* 左侧部分樣式 */
-.left-section {
-    position: absolute;
-    top: 50%;
-    left: 20px;
-    transform: translateY(-50%);
-    background-color: #ffffff;
-    padding: 20px;
-    z-index: 1;
-    border-radius: 5px; /* 圆角 */
-}
-
-.left-section p {
-    color: black;
-}
-
-/* 右侧部分樣式 */
-.right-section {
-    position: absolute; /* 使用绝对定位 */
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%); /* 垂直居中 */
-    background-color: transparent;
-    padding: 20px;
-    z-index: 1;
+.info-section {/* 介紹 */
     display: flex;
     align-items: center;
-    justify-content: center;
+    padding: 200px 0;
 }
-
-.right-section img {
-    max-width: 160px; /* 图片的最大宽度 */
-    max-height: 160px; /* 图片的最大高度 */
-    width: auto; /* 使宽度自動適應 */
-    height: auto; /* 使高度自動適應 */
+.info-section img {
+    max-width: 100%;
+    height: auto;
 }
-
-/* 表单组標籤的樣式 */
-.form-group label {
-    text-align: left;
-    color: black;
-}
-
-/* mt-2 的樣式 */
-.mt-2 {
-    color: black;
-}
-
-/* 模態框内容的標籤樣式 */
-.modal-body label {
-    color: black;
-}
-
-
-.social-icons a:hover {
-    color: #007bff; /* 鼠标懸停的颜色 */
-}
-
-/* 熱門站點和地圖的布局 */
-.mt-4 {
-    width: 100%;
-    margin-top: 100px; /* 下移 */
-}
-
-.row {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.col-md-3 {
-    flex: 1 1 25%; /* 25%的宽度 */
-    min-width: 250px;
-	position: absolute;
-    top: -20%;
-    left: 0px;
-    transform: translateY(-50%);
-    background-color: #ffffff; /* 白色背景 */
+.contact-info, .social-icons {
     padding: 20px;
-    z-index: 1;
-    border-radius: 5px; /* 圆角 */
-	margin-top: 400px; /* 向下调整間距 */
+}
+.social-icons i {
+    font-size: 2rem;
+    margin-right: 10px;
+}
+.info-features {
+    display: flex;
+    align-items: center;
+    padding: 200px 0;
+}
+.contact-info h2,
+.contact-info p {
+    color: black; /* 設置字體顏色為黑色 */
+    font-weight: bold; /* 設置字體加粗 */
+    font-style: italic; /* 設置字體為斜體 */
+}
+.social-software h2 {
+    color: black; /* 字體顏色為黑色 */
+    font-weight: bold; /* 字體加粗 */
+    font-style: italic; /* 字體傾斜 */
+}
+.social-software .social-icon {
+    margin-right: 20px; /* 右边距 */
+}
+.social-software .facebook {
+    color: #1877f2; /* Facebook 蓝色 */
 }
 
-.col-md-9 {
-    flex: 1 1 75%; /* 75%的宽度 */
-    min-width: 300px; /* 确保有最小宽度 */
+.social-software .instagram {
+    color: #e4405f; /* Instagram 偏粉的红色 */
 }
 
-/* 地图的样式 */
-#map {
-    height: 600px;
-    width: 1000px;
-    z-index: 2;
-    margin: 0 auto; /* 使地圖在大屏幕居中 */
+.social-software .line {
+    color: #00c300; /* Line 绿色 */
 }
 
-@media (max-width: 1180px) {
-    #map {
-        height: 500px;
-        width: 850px;
-        margin: 0 auto;
-    }
+.social-software .youtube {
+    color: #ff0000; /* YouTube 红色 */
 }
 
-@media (max-width: 820px) {
-    #map {
-        height: 850px;
-        width: 500px;
-        margin: 0 auto;
-    }
+.social-software .discord {
+    color: #7289da; /* Discord 蓝紫色 */
 }
 
-@media (max-width: 420px) {
-    #map {
-        height: 600px;
-        width: 360px;
-        margin: 0 auto;
-    }
+/* 你可以添加悬停效果以增强用户体验 */
+.social-software a:hover {
+    opacity: 0.7;
+}
+.youbiketext {
+    color: black; /* 字體顏色設置為黑色 */
+    font-family: 'Arial', sans-serif; /* 設置字體 */
+    line-height: 1.6; /* 行高增加可讀性 */
+    padding: 20px; /* 內部間距 */
+    background-color: #f9f9f9; /* 背景顏色增加對比度 */
+    border-radius: 8px; /* 圓角邊框 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加陰影效果 */
 }
 
-@media (max-width: 375px) {
-    #map {
-        height: 450px;
-        width: 335px;
-        margin: 0 auto;
-    }
+.youbiketext h2 {
+    color: #0056b3; /* 設置標題顏色 */
+    font-weight: bold; /* 加粗字體 */
+    margin-bottom: 20px; /* 底部間距 */
+    border-bottom: 2px solid #0056b3; /* 底部邊框 */
+    padding-bottom: 10px; /* 下方內距 */
 }
 
-/* 确保响应式设计 */
-@media (max-width: 768px) {
-    .col-md-3, .col-md-9 {
-        flex: 1 1 100%; /* 在小屏幕上全宽 */
-    }
-
+.youbiketext h4 {
+    color: #0056b3; /* 設置副標題顏色 */
+    font-weight: bold; /* 加粗字體 */
 }
 
-@media (max-width: 480px) {
-	.col-md-3, .col-md-9 {
-        flex: 1 1 100%; /* 在小屏幕上全宽 */
-    }
-
+.youbiketext p {
+    margin-bottom: 10px; /* 底部間距 */
 }
 
-.custom-padding-right {
-    padding-right: 60px; /* 調整間距 */
-	width: 40%; /* 宽度 */
+.youbiketext p::before {
+    content: '•'; /* 添加裝飾元素 */
+    color: #0056b3; /* 設置裝飾元素顏色 */
+    font-weight: bold; /* 加粗字體 */
+    display: inline-block; /* 設置內聯塊 */
+    width: 1em; /* 設置寬度 */
+    margin-left: -1em; /* 左側間距 */
 }
-
-.custom-padding-left {
-    padding-left: 100px; /* 調整间距 */
+/* 布告欄 */
+.announcement-board {
+    max-width: 90%;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
 }
-
-.list-group {
-    padding: 0.25rem 0.5rem; /* 調整列表项的上下内邊距和左右内邊距 */
-    font-size: 1rem; /* 字體大小 */
-    line-height: 1.2; /* 調整行高 */
-	overflow: hidden; /* 隐藏超出容器的部分 */
-}
-
-/* 底部樣式 */
-.footer {
-    width: 100%;
-    background-color: rgba(255, 255, 255, 1); /* 半透明白色背景 */
+.announcement-board h1 {
     text-align: center;
-    padding: 20px;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-	position: relative;
-	display: flex;
-	justify-content: flex-end;
-	align-items: center;
-	z-index: 1;
-}*
-
-/* 社交軟體圖案樣式 */
-.icon-discord, .icon-instagram, .icon-youtube, .icon-line {
-	font-size: 1.5rem;
-	margin: 0 10px; /* 图案间距 */
-	transition: color 0.3s; /* 过度效果 */
+    margin-bottom: 30px;
 }
-
-.icon-line {
-    color: #00C300; /* line 的品牌颜色 */
+.announcement-board table {
+    width: 100%;
+    table-layout: fixed;
 }
-
-.icon-discord {
-	color: #7289da; /* Discord 的品牌颜色 */
+.announcement-board table th,
+.announcement-board table td {
+    text-align: center;
+    word-wrap: break-word;
 }
-
-.icon-instagram {
-	color: #C13584; /* Instagram 的品牌颜色 */
+/* .announcement-board ul {
+    list-style-type: none;
+    padding: 0;
 }
-
-.icon-youtube {
-	color: #FF0000; /* YouTube 的品牌颜色 */
+.announcement-board li {
+    background: #fff;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-
+.announcement-board li:nth-child(odd) {
+    background: #f0f0f0;
+} */
+/* 模態框 */
 .modal-content {
-    background: linear-gradient(135deg, rgba(173, 216, 230, 0.9), rgba(240, 248, 255, 0.9)); /* 添加漸層背景色 */
-    padding: 20px; /* 調整填充 */
-    border: 1px solid #ccc; /* 添加邊框 */
-    box-shadow: 0 0 10px rgba(114, 62, 62, 0.1); /* 添加陰影效果 */
-    border-radius: 50px; /* 添加圓角 */
+    background: linear-gradient(45deg, #ffffff, #e0f7fa);
+    border-radius: 10px;
+    padding: 20px;
 }
-.modal-title {
-    font-size: 24px; /* 調整標題字體大小 */
-    color: #000000; /* 調整標題顏色 */
-    font-family: 'Arial', sans-serif; /* 調整字體樣式 */
-    font-weight: bold; /* 調整字體粗細 */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* 添加文字陰影 */
-    margin-bottom: 20px; /* 調整標題下方的間距 */
+
+.form-label {
+    font-weight: bold;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #0080FF); /* 添加淡灰色的渐变背景色 */
-    border: none; /* 移除邊框，使用陰影代替 */
-    color: #ffffff; /* 調整按鈕文字顏色 */
-    border-radius: 25px; /* 添加圓角 */
-    padding: 10px 20px; /* 調整按鈕填充 */
-    font-size: 16px; /* 調整按鈕字體大小 */
-    font-weight: bold; /* 調整按鈕字體粗細 */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加按鈕陰影 */
-    transition: background 0.3s, box-shadow 0.3s; /* 添加過渡效果 *//
+    background-color: #007bff;
+    border-color: #007bff;
 }
 
-/* 按鈕懸停樣式 */
 .btn-primary:hover {
-    background: linear-gradient(135deg, rgba(211, 211, 211, 0.9), rgba(192, 192, 192, 0.9)); /* 悬停时调整渐变方向 */
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* 懸停時加強陰影效果 */
+    background-color: #0056b3;
+    border-color: #0056b3;
 }
 
-/* 按鈕激活樣式 */
-.btn-primary:active {
-    background: linear-gradient(135deg, rgba(192, 192, 192, 0.9), rgba(211, 211, 211, 0.9)); /* 激活时调整渐变颜色 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 激活時減弱陰影效果 */
-}
-
-.modal-body label {
-    display: block; /* 將標籤設置為塊級元素 */
-    margin-bottom: 5px; /* 添加下邊距 */
-    font-weight: bold; /* 調整字體粗細 */
-    color: #000000; /* 調整字體顏色 */
-}
-
-/* 輸入框樣式 */
-.form-control {
-    border-radius: 5px; /* 添加圓角 */
-    border: 1px solid #ccc; /* 調整邊框 */
-    padding: 10px; /* 調整內邊距 */
-    font-size: 16px; /* 調整字體大小 */
-    margin-bottom: 15px; /* 添加下邊距 */
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* 添加內陰影 */
-    transition: border-color 0.3s, box-shadow 0.3s; /* 添加過渡效果 */
-}
-
-
-.form-control:focus {
-    border-color: #000000; /* 聚焦時調整邊框顏色 */
-    box-shadow: 0 0 5px rgba(142, 161, 223, 0.5); /* 聚焦時添加陰影 */
-}
-
-/* 取消按鈕樣式 */
 .btn-secondary {
-    background-color: #ccc; /* 設置背景色為淡灰色 */
-    color: #333; /* 設置文字顏色為深灰色 */
-    border: none; /* 移除邊框 */
-    border-radius: 25px; /* 添加圓角 */
-    padding: 10px 20px; /* 調整填充 */
-    font-size: 16px; /* 調整字體大小 */
-    font-weight: bold; /* 設置文字加粗 */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加陰影效果 */
-    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s; /* 添加過渡效果 */
+    background-color: #6c757d;
+    border-color: #6c757d;
 }
 
-/* 取消按鈕懸停樣式 */
 .btn-secondary:hover {
-    background-color: #aaa; /* 懸停時稍深的灰色 */
-    color: #333; /* 文字顏色不變 */
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* 懸停時加強陰影效果 */
+    background-color: #5a6268;
+    border-color: #545b62;
 }
 
-/* 取消按鈕激活樣式 */
-.btn-secondary:active {
-    background-color: #999; /* 激活時更深的灰色 */
-    color: #333; /* 文字顏色不變 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 激活時減弱陰影效果 */
+.btn-close {
+    background: #f8f9fa;
+    border-radius: 50%;
+    padding: 5px;
 }
 
+.modal-header {
+    border-bottom: 1px solid #e0f7fa;
+}
 
+.modal-footer {
+    border-top: 1px solid #e0f7fa;
+}
 
-
+/* .row {
+    display:flex;
+    flex-wrap: wrap;
+} */

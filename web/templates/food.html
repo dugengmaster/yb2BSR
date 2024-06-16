@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Youbike 米其林{% endblock %}
+
+{% block content %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2AiYlSa0BYV-Ac-Dbpv39RWK48NNyT1g&libraries=places"></script>
+
+<style>
+    /* 設置地圖和搜尋框的樣式 */
+    #pac-input {
+        margin-top: 10px;
+        width: 80%;
+        max-width: 300px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    #map {
+        height: 600px;
+        width: 1000px;
+        margin-top: 500px;
+        z-index: 2;
+        margin: 0 auto; /* 使地圖在大屏幕居中 */
+    }
+
+    @media (max-width: 1180px) {
+        #map {
+            height: 500px;
+            width: 850px;
+            margin: 0 auto;
+        }
+    }
+
+    @media (max-width: 820px) {
+        #map {
+            height: 850px;
+            width: 500px;
+            margin: 0 auto;
+        }
+    }
+
+    @media (max-width: 420px) {
+        #map {
+            height: 600px;
+            width: 360px;
+            margin: 0 auto;
+        }
+
+    }
+
+    @media (max-width: 375px) {
+        #map {
+            height: 450px;
+            width: 335px;
+            margin: 0 auto;
+        }
+    }
+</style>
+
+<div class="mt-5 mb-5 pt- pb-5">
+    <input id="pac-input" class="controls" type="text" placeholder="搜索地點">
+    <div id="map"></div>
+    <div id="photos"></div>
+</div>
+
+<script>
+    // 當網頁加載完成時初始化地圖
+    window.onload = initMap_food();
+</script>
+
+{% endblock %}

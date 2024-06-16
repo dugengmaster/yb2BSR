@@ -1,30 +1,58 @@
-<!--登入表單的彈窗-->
-<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="loginModalLabel">登入</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-
-                <form action="/login" method="post">
-                    {% csrf_token %}
-                    <!-- 登入表單的內容 -->
-                    <label for="username">帳號：</label>
-                    <input type="text" class="form-control" id="username" name="username">
-
-                    <label for="password">密碼：</label>
-                    <input type="password" class="form-control" id="password" name="password">
-
-                    <button type="submit" class="btn btn-primary">登入</button>
-                </form>
-                <!-- 註冊按鈕 -->
-                <p class="mt-2" style="font-size: 16px; color: #555;">沒有帳號嗎？<button type="button" class="btn btn-link" data-toggle="modal" data-target="#registerModal" data-dismiss="modal" style="text-decoration: underline; color: #007bff;">註冊</button></p>
-
+<form action="{% url 'my_login' %}" method="post">
+    {% csrf_token %}
+    <div class="modal fade {% if error_message %}show{% endif %}" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">登入</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                    {% endif %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">帳 號</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="請輸入帳號">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">密 碼</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="請輸入密碼">
+                    </div>
+                </div>
+                <div class="d-grid gap-2 ps-3 pe-3 mb-3">
+                    <button type="submit" class="btn btn-primary rounded-pill" style="background-color: #59C9CB; border-color: #59C9CB;">
+                        <span>登 入</span>
+                    </button>
+                    <button type="button" class="btn btn-primary rounded-pill" style="background-color: #59C9CB; border-color: #59C9CB;" data-bs-toggle="modal" data-bs-target="#registerModal">
+                        <span>註 冊</span>
+                    </button>
+                    <button type="button" class="btn btn-primary rounded-pill" style="background-color: #00C200; border-color: #00C200;" onclick="window.location.href = '{% url 'custom_line_login' %}'; return false;">
+                        <span>line 登 入</span>
+                    </button>
+                    {% comment %} <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">
+                        <span>關 閉</span>
+                    </button> {% endcomment %}
+                </div>
             </div>
         </div>
     </div>
+</form>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        {% if show_modal_1 %}
+        var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+        myModal.show();
+        {% endif %}
+    });
+</script>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">登入</button>
+    <button type="button" class="btn btn-secondary" >line登入</button>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal">
+        註冊
+    </button>
 </div>
