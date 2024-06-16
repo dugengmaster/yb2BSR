@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 <!-- 站點查詢 -->
 
 <!-- 網頁title -->
@@ -9,6 +9,5 @@
 
 <!-- 內容 -->
 {% block content %}
-
     {%include "components/maps/map.html" with api_key=api_key coordinates=coordinates msg=msg bikeStation=bikeStation%}
 {% endblock %}

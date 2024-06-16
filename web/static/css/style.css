@@ -23,7 +23,7 @@
     width: 100%;
 }
 .custom-background {/* 介紹背景 */
-    background-image: url("{% static 'images/bikestation.jpg' %}");
+    background-image: url('../images/bikestation.jpg');;
     background-size: cover;
     background-position: center;
     color: white;
