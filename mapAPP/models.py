@@ -30,9 +30,15 @@ class LtecelltowerTpe(models.Model):
     )  # Field name made lowercase.
 
     class Meta:
+<<<<<<< HEAD
         # managed = False
         db_table = "LTEcelltower_tpe_mapapp"
 
+=======
+        managed = False
+        db_table = 'LTEcelltower_tpe'
+        app_label = 'mapAPP'
+>>>>>>> a2504ef8968ff4d4b09f0e27f5332aa5a8f4ca58
 
 class Yb_cnty(models.Model):
     uid = models.CharField(max_length=50)
@@ -100,7 +106,6 @@ class Yb_yb(models.Model):
     class Meta:
         db_table = "yb_yb"
         managed = False
-
 
 # set up the yb model by using Teipei's data
 class Tpe_yb(models.Model):

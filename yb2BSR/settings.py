@@ -31,6 +31,7 @@ GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 GOOGLE_MAPS_API_KEY2 = os.getenv("GOOGLE_MAPS_API_KEY2")
 LINE_CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET")
 LINE_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
+METEOROLOGICAL_DATA_OPEN_PLATFORM = os.getenv("METEOROLOGICAL_DATA_OPEN_PLATFORM")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     "aboutUS.apps.AboutusConfig",
     "mapAPP.apps.MapappConfig",
     "web",
+    "Line_Official_Account_Bot",
 ]
 
 

@@ -1,0 +1,131 @@
+{
+  "weather_bubble": {
+    "type": "bubble",
+    "size": "giga",
+    "hero": {
+      "type": "box",
+      "layout": "horizontal",
+      "contents": [
+        {
+          "type": "image",
+          "url": "https://www.cwa.gov.tw/V8/assets/img/weather_icons/weathers/png_icon/day/01.png",
+          "size": "xxs",
+          "aspectMode": "fit",
+          "gravity": "top",
+          "position": "absolute",
+          "offsetStart": "16px"
+        },
+        {
+          "type": "text",
+          "text": "晴天",
+          "weight": "bold",
+          "color": "#ffffff",
+          "size": "xxl",
+          "offsetStart": "56px"
+        }
+      ],
+      "backgroundColor": "#1a67b1",
+      "height": "56px",
+      "justifyContent": "flex-start",
+      "paddingAll": "5px",
+      "borderColor": "#ffffff",
+      "alignItems": "center"
+    },
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "contents": [
+        {
+          "type": "box",
+          "layout": "horizontal",
+          "margin": "lg",
+          "spacing": "sm",
+          "contents": [
+            {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "氣溫：",
+                  "size": "sm",
+                  "color": "#1a67b1"
+                },
+                {
+                  "type": "box",
+                  "layout": "horizontal",
+                  "contents": [
+                    {
+                      "type": "text",
+                      "size": "xxl",
+                      "contents": [
+                        {
+                          "type": "span",
+                          "text": "25"
+                        },
+                        {
+                          "type": "span",
+                          "text": "-"
+                        },
+                        {
+                          "type": "span",
+                          "text": "32"
+                        },
+                        {
+                          "type": "span",
+                          "text": "°C"
+                        }
+                      ],
+                      "color": "#1a67b1",
+                      "weight": "bold"
+                    }
+                  ]
+                }
+              ],
+              "justifyContent": "flex-start"
+            },
+            {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "降雨機率：",
+                  "size": "sm",
+                  "color": "#1a67b1"
+                },
+                {
+                  "type": "text",
+                  "text": "70",
+                  "size": "xxl",
+                  "contents": [
+                    {
+                      "type": "span",
+                      "text": "70"
+                    },
+                    {
+                      "type": "span",
+                      "text": "%"
+                    }
+                  ],
+                  "color": "#1a67b1",
+                  "weight": "bold"
+                }
+              ],
+              "justifyContent": "flex-start",
+              "offsetStart": "36px"
+            }
+          ]
+        },
+        {
+          "type": "box",
+          "layout": "baseline",
+          "contents": [],
+          "position": "relative"
+        }
+      ],
+      "paddingTop": "md",
+      "paddingBottom": "lg"
+    }
+  }
+}

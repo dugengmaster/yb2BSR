@@ -27,7 +27,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", web_views.home, name="home"),
     path("login", web_views.home, name="home"),
-    path("stations/", web_views.stations, name="stations"),
+    #     path("stations/", web_views.stations, name="stations"),
     path("analysis/", web_views.analysis_view, name="analysis"),
     path(
         "analysis/<str:station_name>/",
@@ -51,6 +51,7 @@ urlpatterns = [
         "login/", auth_views.LoginView.as_view(template_name="login.html"), name="login"
     ),
     path("logout/", auth_views.LogoutView.as_view(next_page="/"), name="logout"),
+    path("weather/", linebot_views.weather),
 ]
 handler404 = web_views.custom_404
 # 將自定義 404 視圖與指定路徑關聯
