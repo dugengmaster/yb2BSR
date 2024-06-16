@@ -4,8 +4,23 @@ from django.conf import settings
 import requests
 import logging
 from django.contrib import messages
+from django.conf import settings
+import requests
+import logging
+from django.contrib import messages
 
 # Create your views here.
+from django.contrib.auth.models import User  # 导入用户模型
+from django.contrib.auth.hashers import check_password
+
+def custom_authenticate(username, password):
+    try:
+        user = User.objects.get(username=username)
+        if check_password(password, user.password):
+            return user
+    except User.DoesNotExist:
+        return None
+
 from django.contrib.auth.models import User  # 导入用户模型
 from django.contrib.auth.hashers import check_password
 
@@ -20,9 +35,21 @@ def custom_authenticate(username, password):
 def my_login(request):
     show_modal_1 = False  # 預設不顯示模態窗口
 
+    show_modal_1 = False  # 預設不顯示模態窗口
+
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
+        print("username:", username)
+        print("password:", password)
+
+        # 使用自定義身份驗證方法
+        user = custom_authenticate(username=username, password=password)
+        print("user:", user)
+
+        if user is not None:
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')  # 將用戶信息存儲在會話中，實現保持登錄狀態
+            return redirect("home")  # 登錄成功後重定向到首頁
         print("username:", username)
         print("password:", password)
 
@@ -45,6 +72,7 @@ def my_login(request):
 
 # @login_required
 
+
 def home(request):
     if request.user.is_authenticated:
         return render(request, 'home.html')
@@ -55,9 +83,13 @@ def home(request):
 def logout_view(request):
     if request.user.is_authenticated:
         auth_logout(request)
+    if request.user.is_authenticated:
+        auth_logout(request)
     return redirect("my_login")
 
 def stations(request):
+    map_key = {"GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY}
+    return render(request, "mapAPP.html", map_key)
     map_key = {"GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY}
     return render(request, "mapAPP.html", map_key)
 

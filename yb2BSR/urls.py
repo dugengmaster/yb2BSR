@@ -24,11 +24,19 @@ from django.contrib.auth.views import LogoutView
 from django.contrib.auth import views as auth_views
 
 
+from Line_Official_Account_Bot import views as linebot_views
+from web import views
+from django.contrib.auth.views import LogoutView
+from django.contrib.auth import views as auth_views
+
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", web_views.home, name="home"),
     path("login", web_views.home, name="home"),
+    path('my_login/', views.my_login, name='my_login'),
+    path('home/', web_views.home, name='home'),
     path('my_login/', views.my_login, name='my_login'),
     path('home/', web_views.home, name='home'),
     path("stations/", web_views.stations, name="stations"),
