@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Youbike 腳踏車步道{% endblock %}
+
+{% block content %}
+
+<style>
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .card-text {
+        font-size: 1rem;
+    }
+
+    .difficulty {
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    .rating {
+        color: #FFD700;
+    }
+
+    .star-rating i {
+        cursor: pointer;
+        color: #ddd;
+    }
+
+    .star-rating .checked {
+        color: #FFD700;
+    }
+    .bike-trail-title {
+        font-weight: bold;
+        color: black;
+        font-style: italic;
+    }
+    .custom-bikebackground {
+        background-color: #d5f5d5; /* 浅绿色背景 */
+        padding: 20px; /* 内边距 */
+        border-radius: 10px; /* 边框圆角 */
+    }
+
+</style>
+
+<div class="container mt-5">
+    <div class="custom-bikebackground">
+        <h1 class="mb-4 bike-trail-title">腳踏車步道</h1>
+        <div class="row">
+            <!-- Card 1 -->
+            <div class="col-md-4 mb-4">
+                <div class="card" onclick="openModal('trail1')">
+                    <img src="{% static 'images/ben.jpg' %}" class="card-img-top" alt="Scenic Photo 1">
+                    <div class="card-body">
+                        <h5 class="card-title">景點一</h5>
+                        <p class="card-text">景點一介紹</p>
+                        <p class="difficulty">難度: Easy</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Repeat similar divs for other cards -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal Template -->
+<div class="modal fade" id="trailModal" tabindex="-1" aria-labelledby="trailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="trailModalLabel">Trail Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Dynamic Content -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-primary" id="saveToFavorites">收藏</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const trails = {
+        trail1: {
+            title: "景點",
+            description: "景點 的詳細介紹",
+            scenicSpots: "關於沿途景點的詳細信息",
+            estimatedTime: "預估騎乘時間: 2 小時",
+            difficulty: "簡單",
+            rating: 4.5,
+        },
+        // Add similar objects for other trails
+    };
+
+
+    document.getElementById('saveToFavorites').addEventListener('click', () => {
+        const comment = document.getElementById('userComment').value;
+        // Save the comment and favorite trail logic here
+        alert('Comment saved: ' + comment);
+        const modal = bootstrap.Modal.getInstance(document.getElementById('trailModal'));
+        modal.hide();
+    });
+</script>
+
+{% endblock %}

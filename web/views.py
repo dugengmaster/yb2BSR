@@ -39,7 +39,7 @@ def my_login(request):
             show_modal_1 = True
 
     # GET 請求或登入失敗後顯示表單
-    return render(request, "1.html", {"error_message":error_message,'show_modal_1': show_modal_1})
+    return render(request, "home.html", {"error_message":error_message,'show_modal_1': show_modal_1})
 
 
 
@@ -47,9 +47,9 @@ def my_login(request):
 
 def home(request):
     if request.user.is_authenticated:
-        return render(request, '1.html', {'username': request.user.username})
+        return render(request, 'home.html')
     else:
-        return render(request, '1.html')
+        return render(request, 'home.html')
 
 
 def logout_view(request):
@@ -57,28 +57,22 @@ def logout_view(request):
         auth_logout(request)
     return redirect("my_login")
 
-
-
-
 def stations(request):
     map_key = {"GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY}
     return render(request, "mapAPP.html", map_key)
 
+# def analysis_view(request):
+#     # 示例热门站点数据，可以从数据库或其他数据源获取
+#     hot_stations = ["台北市", "台中市", "桃園市", "高雄市", "台南市"]
+#     return render(request, "analysis.html", {"hot_stations": hot_stations})
 
-def analysis_view(request):
-    # 示例热门站点数据，可以从数据库或其他数据源获取
-    hot_stations = ["台北市", "台中市", "桃園市", "高雄市", "台南市"]
-    return render(request, "analysis.html", {"hot_stations": hot_stations})
-
-
-def station_analysis_view(request, station_name):
-    # 根据站点名称获取分析数据
-    analysis_data = {
-        "station_name": station_name,
-        "chart_data": [10, 20, 30, 40, 50],  # 示例数据
-    }
-    return render(request, "analysis.html", analysis_data)
-
+# def station_analysis_view(request, station_name):
+#     # 根据站点名称获取分析数据
+#     analysis_data = {
+#         "station_name": station_name,
+#         "chart_data": [10, 20, 30, 40, 50],  # 示例数据
+#     }
+#     return render(request, "analysis.html", analysis_data)
 
 # from django.http import Http404
 # def my_view(request):
@@ -90,6 +84,7 @@ def station_analysis_view(request, station_name):
 #     except Http404:
 #         # 如果引發了 Http404 異常，導向到自定義的 404 錯誤頁面
 #         return custom_404(request)
+
 import requests
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
@@ -162,7 +157,6 @@ def custom_line_login(request):
         # 生成随机的 state 值并将其存储在会话中
         state = secrets.token_urlsafe(16)
         request.session['line_login_state'] = state
-        print("request",request)
         # print("state",state)
         base_url = "https://access.line.me/oauth2/v2.1/authorize"
         client_id = settings.LINE_CLIENT_ID
@@ -323,8 +317,8 @@ def send_line_notification(user_id, message):
     else:
         return HttpResponseBadRequest('Failed to send notification')
 
-def login_failed(request):
-    return render(request, 'login_failed.html')
+# def login_failed(request):
+#     return render(request, 'login_failed.html')
 
 
 
@@ -335,17 +329,17 @@ def custom_404(request, exception):
 
 
 def io(request):
-    return render(request,"1.html")
+    return render(request,"home.html")
 
 def about_us(request):
-    return render(request, "team.html")
+    return render(request, "about_us.html")
 
 
 def member(request):
     return render(request, "member.html")
 
-def bike(request):
-    return render(request, "bike.html")
+def bike_trail(request):
+    return render(request, "bike_trail.html")
 
 def chart(request):
     return render(request, "chart.html")

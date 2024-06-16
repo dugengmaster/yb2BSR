@@ -3,13 +3,24 @@
     #map {
         height: 600px;
         width: 1000px;
+        margin-top: 500px;
         z-index: 2;
         margin: 0 auto; /* 使地圖在大屏幕居中 */
+    }
+
+    h3 {
+        width: 1000px;
+        margin: 0 auto;
     }
 
     @media (max-width: 1180px) {
         #map {
             height: 500px;
+            width: 850px;
+            margin: 0 auto;
+        }
+
+        h3 {
             width: 850px;
             margin: 0 auto;
         }
@@ -21,6 +32,11 @@
             width: 500px;
             margin: 0 auto;
         }
+
+        h3 {
+            width: 500px;
+            margin: 0 auto;
+        }
     }
 
     @media (max-width: 420px) {
@@ -29,11 +45,21 @@
             width: 360px;
             margin: 0 auto;
         }
+
+        h3 {
+            width: 360px;
+            margin: 0 auto;
+        }
     }
 
     @media (max-width: 375px) {
         #map {
             height: 450px;
+            width: 335px;
+            margin: 0 auto;
+        }
+
+        h3 {
             width: 335px;
             margin: 0 auto;
         }
@@ -55,15 +81,16 @@
     }
 </style>
 
-<div class="container-flex">
-    <div id="map" class="position-relative"></div>
+<div class="container container-flex mt-5 mb-5 pt-4 pb-3">
+    <div id="map"></div>
+    <h3 class="text-center" style="background-color:DodgerBlue;">{{ msg }}</h3>
 </div>
-<h3 style="background-color:DodgerBlue;">{{ msg }}</h3>
+
 <!-- Google Maps API script -->
-<script src="https://maps.googleapis.com/maps/api/js?v=beta&key={{ api_key }}&loading=async&callback=initMap&libraries=marker" defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=beta&key={{ api_key }}&loading=async&callback=initMap_mapAPP&libraries=marker" defer></script>
 
 <script>
-    function initMap() {
+    function initMap_mapAPP() {
         var myPosition = {{ coordinates }};
 
         var bikePin = document.createElement('img')
@@ -115,12 +142,6 @@
 
     }
 
-    window.onload = () => {
-        if (typeof google === 'object' && typeof google.maps === 'object') {
-            initMap();
-        } else {
-            console.error('Google Maps JavaScript API not loaded.');
-        }
-    };
+    window.onload = initMap_mapAPP();
 
 </script>

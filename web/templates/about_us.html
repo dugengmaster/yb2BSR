@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}關於我們{% endblock %}
+
+{% block content %}
+
+{% include "components/about_us/card.html" %}
+
+{% endblock %}
+{% comment %} <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var navbar = document.querySelector('.navbar');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 0) {
+                navbar.classList.add('shadow-lg');
+            } else {
+                navbar.classList.remove('shadow-lg');
+            }
+        });
+    });
+</script> {% endcomment %}
+    <!-- 卡片點擊效果 -->
+
