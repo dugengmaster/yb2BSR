@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.conf import settings
 from mapAPP.GoogleMapForUbike import GoogleMapforUbike
-from mapAPP.models import LtecelltowerTpe, Yb_stn
+# from mapAPP.models import LtecelltowerTpe, Yb_stn
 from django.db.models import Q
 from django.http import HttpResponse
 import os

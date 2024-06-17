@@ -114,3 +114,19 @@ class Tpe_yb(models.Model):
     class Meta:
         db_table = "tpe_yb"
         managed = False
+
+class Yb_stn2(models.Model):
+    area_code = models.CharField(max_length=10)
+    station_no = models.CharField(max_length=20)
+    name_tw = models.CharField(max_length=30)
+    district_tw = models.CharField(max_length=30)
+    address_tw = models.CharField(max_length=50)
+    name_en = models.CharField(max_length=30)
+    district_en = models.CharField(max_length=30)
+    address_en = models.CharField(max_length=50)
+    lat = models.CharField(max_length=20)
+    lng = models.CharField(max_length=20)
+
+    class Meta:
+        db_table = "Yb_stn2"
+        managed = False

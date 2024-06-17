@@ -40,22 +40,22 @@ def my_login(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
-        print("username:", username)
-        print("password:", password)
+        # print("username:", username)
+        # print("password:", password)
 
         # 使用自定義身份驗證方法
         user = custom_authenticate(username=username, password=password)
-        print("user:", user)
+        # print("user:", user)
 
         if user is not None:
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')  # 將用戶信息存儲在會話中，實現保持登錄狀態
             return redirect("home")  # 登錄成功後重定向到首頁
-        print("username:", username)
-        print("password:", password)
+        # print("username:", username)
+        # print("password:", password)
 
         # 使用自定義身份驗證方法
         user = custom_authenticate(username=username, password=password)
-        print("user:", user)
+        # print("user:", user)
 
         if user is not None:
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')  # 將用戶信息存儲在會話中，實現保持登錄狀態
