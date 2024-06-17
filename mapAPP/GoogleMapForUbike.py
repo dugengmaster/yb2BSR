@@ -92,7 +92,7 @@ class GoogleMapforUbike:
         lat1, lon1 = gps["location"]["lat"], gps["location"]["lng"]
         #從表裡面找到最近的基地台資訊
         for tower in towerList:
-            distance = haversine(lat1, lon1, tower.lat, tower.lon)
+            distance = haversine(lat1, lon1, float(tower.lat), float(tower.lon))
             if distance <= 1000:
                 temp = {'lat':tower.lat, 'lng':tower.lon}
                 pickthem.append(temp)
@@ -136,7 +136,6 @@ class GoogleMapforUbike:
         if len(place_search['results']) <5:
             place_search = self.client.places_nearby(location, keyword="youbike", radius=1000)
             if len(place_search['results']) ==0:
-
 
                 return "附近沒有YouBike站點"
 

@@ -76,7 +76,6 @@ def mapAPP(request):
     raincheck = q.get()
     temperature = q.get()
     isholiday = q.get()
-    temp_1 = q.get() # bug 補丁
     bikeStatus = q.get()
 
     #取得走路到各站點需要花費的時間，並轉換為時段

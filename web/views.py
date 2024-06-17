@@ -90,13 +90,7 @@ def logout_view(request):
 def stations(request):
     map_key = {"GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY}
     return render(request, "mapAPP.html", map_key)
-    map_key = {"GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY}
-    return render(request, "mapAPP.html", map_key)
 
-# def analysis_view(request):
-#     # 示例热门站点数据，可以从数据库或其他数据源获取
-#     hot_stations = ["台北市", "台中市", "桃園市", "高雄市", "台南市"]
-#     return render(request, "analysis.html", {"hot_stations": hot_stations})
 
 # def station_analysis_view(request, station_name):
 #     # 根据站点名称获取分析数据
@@ -144,7 +138,7 @@ def custom_line_login(request):
         token_url = "https://api.line.me/oauth2/v2.1/token"
         client_id = settings.LINE_CLIENT_ID
         client_secret = settings.LINE_CLIENT_SECRET
-        redirect_uri = "http://127.0.0.1:8000/line/login/callback/"
+        redirect_uri = "https://yb-select-site-cf3061dbdf38.herokuapp.com/line/login/callback/"
 
         response = requests.post(token_url, data={
             'grant_type': 'authorization_code',
@@ -192,7 +186,7 @@ def custom_line_login(request):
         # print("state",state)
         base_url = "https://access.line.me/oauth2/v2.1/authorize"
         client_id = settings.LINE_CLIENT_ID
-        redirect_uri = "http://127.0.0.1:8000/line/login/callback/"
+        redirect_uri = "https://yb-select-site-cf3061dbdf38.herokuapp.com/line/login/callback/"
         response_type = "code"
         scope = "profile openid"
         line_login_url = f"{base_url}?response_type={response_type}&client_id={client_id}&redirect_uri={redirect_uri}&state={state}&scope={scope}"
@@ -207,7 +201,7 @@ def line_login_callback(request):
 
     state = request.GET.get('state')
     code = request.GET.get('code')
-    redirect_uri = "http://127.0.0.1:8000/line/login/callback/"
+    redirect_uri = "https://yb-select-site-cf3061dbdf38.herokuapp.com/line/login/callback/"
     # print("state",state)
 
     # 檢查 state 參數是否與 Session 中的 line_login_state 匹配

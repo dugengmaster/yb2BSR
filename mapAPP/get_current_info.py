@@ -130,8 +130,8 @@ def tpe_yb_qy(station_no): #got the available ybs for a station in Taipei
                 return i["available_spaces"]
 
             #Taipei station_no range:5001xxxxx
-
-def holiday_qy(date,q):   #got holoday status date format:20150101
+#got holoday status date format:20150101
+def holiday_qy(date,q):
     global apis
     url=apis[5]
 
@@ -142,10 +142,11 @@ def holiday_qy(date,q):   #got holoday status date format:20150101
 
         for i in data:
             if i["date"]==date:
-               q.put(1)
-                # return 1
-        # return 0
-        q.put(0)
+                q.put(1)
+                return
+            else:
+                q.put(0)
+                return
 
 
 
