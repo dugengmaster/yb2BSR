@@ -138,16 +138,12 @@ def holiday_qy(date,q):   #got holoday status date format:20150101
     #print(response.status_code)
     if response.status_code == 200:
         data = response.json()
-        count = 0
+        
         for i in data:
             if i["date"]==date:
-                count+=1
-                print(count)
                 q.put(1)
                 return 
             else:
-                count+=1
-                print(count)
                 q.put(0)
                 return
 
