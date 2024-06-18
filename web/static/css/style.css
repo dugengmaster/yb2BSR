@@ -44,7 +44,7 @@
     top: 0;
     left: 0;
     width: 66%;
-    height: 100%;
+    height: auto;
     background: rgba(0, 0, 0, 0); /* 可選：添加一個半透明的覆蓋層 */
 }
 
@@ -82,7 +82,7 @@
     height: auto;
 }
 .contact-info, .social-icons {
-    padding: 20px;
+    padding-left: 60px;
 }
 .social-icons i {
     font-size: 2rem;

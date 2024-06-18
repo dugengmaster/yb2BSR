@@ -8,3 +8,4 @@ django-allauth
 requests
 line-bot-sdk
 googlemaps
+python-dotenv
