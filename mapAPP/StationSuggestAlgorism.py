@@ -2,7 +2,7 @@
 """
 Created on Wed May 22 10:00:04 2024
 
-@author: 88698
+@author: Eason Liao
 """
 
 import sqlite3 as sql
@@ -21,7 +21,8 @@ django.setup()
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import  classification_report, accuracy_score
-from sklearn.svm import SVC
+# from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
 import seaborn as sns
 from datetime import datetime
 from mapAPP.models import Tpe_yb, Yb_stn2
@@ -50,7 +51,7 @@ def intomodel(list_of_station) -> list:
     for number in list_of_station:
         print(number)
         try:
-            table = Tpe_yb.objects.filter(Q(station_no=number) & Q(updated_at__range=('2024-05-23 00:00:00','2024-05-30 02:55:00')))
+            table = Tpe_yb.objects.filter(Q(station_no=number) & Q(updated_at__range=('2024-05-23 00:00:00','2024-06-18 02:55:00')))
 
             df = pd.DataFrame([{'station_no':info.station_no, 'available_spaces':info.available_spaces, 'isholiday':info.isholiday, 'rain_amt':info.rain_amt, 'dc_time':info.dc_time, 'temp_now':info.temp_now} for info in table])
             # print(df['dc_time'])
@@ -100,7 +101,7 @@ def intomodel(list_of_station) -> list:
             # 建模
             x_train, x_test, y_train, y_test = train_test_split(X,y , test_size=0.3)
 
-            model = SVC(kernel='rbf', C=1E5)
+            model = DecisionTreeClassifier()
             model.fit(x_train, y_train)
             # temp = {'stationno':number, 'model':model }
             # models.append(temp)
@@ -114,8 +115,8 @@ def intomodel(list_of_station) -> list:
     # return models
 
 
-# stationNumberList = Yb_stn.objects.all().filter(area_code = '00')
-# stationNumberList = [code.station_no for code in stationNumberList]
+stationNumberList = Yb_stn2.objects.all().filter(area_code = '00')
+stationNumberList = [code.station_no for code in stationNumberList]
 # print(stationNumberList)
 # # thelist = ['500103059', '500106080', '500103051', '500110008', '500203094', '500103037', '500106067']
-# intomodel(stationNumberList)
+intomodel(stationNumberList)

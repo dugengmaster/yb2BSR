@@ -27,9 +27,9 @@ def mapAPP(request):
 
     #多工緒處理爬蟲
     q = queue.Queue()
-    rainthread = threading.Thread(target=tpe_cur_rain, args=(q,))
-    tempthread = threading.Thread(target=tpe_cur_temp, args=(q,))
-    holidaythread = threading.Thread(target=holiday_qy, args=(now.date().strftime("%Y%m%d"), q))
+    rainthread = threading.Thread(target=tpe_cur_rain, args=(q,))#降雨資料
+    tempthread = threading.Thread(target=tpe_cur_temp, args=(q,))#即時溫度
+    holidaythread = threading.Thread(target=holiday_qy, args=(now.date().strftime("%Y%m%d"), q))#是否為工作日
     rainthread.start()
     tempthread.start()
     holidaythread.start()
@@ -45,7 +45,7 @@ def mapAPP(request):
     tpeStaion = {'lat': 25.048159037642492, 'lng': 121.51707574725279}#台北車站座標
     if (myPosition['lat']<lat_min or myPosition['lat']>lat_max) or (myPosition['lng']<lng_min or myPosition['lng']>lng_max):
         temp = "{lat: 25.048159037642492, lng: 121.51707574725279}"
-        msg = "您不在台北市，請使用大眾交通工具移動到台北市"
+        msg = "很抱歉，台北市以外的功能尚未開發"
         bikeStation = gmap.getBikeStation(tpeStaion)
         myPosition = tpeStaion
     else:
@@ -73,9 +73,9 @@ def mapAPP(request):
     tempthread.join()
     holidaythread.join()
     statusthread.join()
-    raincheck = q.get()
-    temperature = q.get()
-    isholiday = q.get()
+    raincheck = q.get()          
+    temperature = q.get()       
+    isholiday = q.get() 
     bikeStatus = q.get()
 
     #取得走路到各站點需要花費的時間，並轉換為時段
