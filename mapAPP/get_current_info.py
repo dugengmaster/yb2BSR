@@ -63,9 +63,8 @@ def tpe_cur_rain(q): #got current rain status
         data = response.json()
         #print(data)
         # print(type(data))
-
         for i in data["records"]["Station"]:
-
+            
             if i["StationName"]=="信義":
                 rain_amt = i["RainfallElement"]["Past10Min"]["Precipitation"]
                 if rain_amt/10 >(0.3/6):
@@ -139,7 +138,7 @@ def holiday_qy(date,q):
     #print(response.status_code)
     if response.status_code == 200:
         data = response.json()
-
+        
         for i in data:
             if i["date"]==date:
                 q.put(1)
