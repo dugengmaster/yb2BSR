@@ -181,7 +181,7 @@ def line_login_callback(request):
 
     state = request.GET.get('state')
     code = request.GET.get('code')
-    redirect_uri = "http://127.0.0.1:8000/line/login/callback/"
+    redirect_uri = "https://yb-select-site-cf3061dbdf38.herokuapp.com/line/login/callback/"
     # print("state",state)
 
     # 檢查 state 參數是否與 Session 中的 line_login_state 匹配
