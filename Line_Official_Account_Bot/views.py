@@ -144,7 +144,13 @@ def handle_location_message(event):
                 )
             # 判斷使用者要查詢最佳站點
             elif last_session.task == "yb_select_site":
-                print("yb")
+
+                line_bot_api.reply_message(
+                    ReplyMessageRequest(
+                        reply_token=event.reply_token,
+                        messages=[TextMessage(text="開發中")]
+                    )
+                )
         else:
             line_bot_api.reply_message(
                     ReplyMessageRequest(
@@ -152,8 +158,6 @@ def handle_location_message(event):
                         messages=[TextMessage(text="超過反應時間")]
                     )
                 )
-
-@handler.add(PostbackEvent)
 
 # weather records
 def weather(request):
