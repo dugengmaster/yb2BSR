@@ -37,7 +37,7 @@ def geo_to_No(list_of_station) -> list:
     ybinfo = Yb_stn2.objects.all()
     stationnumbers = []
     for i in range(len(list_of_station)):
-        statioNo = ybinfo.filter(Q(lat=list_of_station[i]['lat']) | Q(lng=list_of_station[i]['lng']))
+        statioNo = ybinfo.filter(Q(lat=list_of_station[i]['lat']) & Q(lng=list_of_station[i]['lng']))
         if statioNo.exists:
             for sta in statioNo:
                 stationnumbers.append(sta.station_no)
@@ -114,9 +114,10 @@ def intomodel(list_of_station) -> list:
             pass
     # return models
 
-
-stationNumberList = Yb_stn2.objects.all().filter(area_code = '00')
-stationNumberList = [code.station_no for code in stationNumberList]
-# print(stationNumberList)
-# # thelist = ['500103059', '500106080', '500103051', '500110008', '500203094', '500103037', '500106067']
-intomodel(stationNumberList)
+if __name__ == "__main__":
+    stationNumberList = Yb_stn2.objects.all().filter(area_code = '00')
+    stationNumberList = [code.station_no for code in stationNumberList]
+st = ['500103059', '500106080', '500103051', '500110008', '500203094', '500103037', '500106067']
+    # print(stationNumberList)
+    # thelist = ['500103059', '500106080', '500103051', '500110008', '500203094', '500103037', '500106067']
+    intomodel(stationNumberList)
