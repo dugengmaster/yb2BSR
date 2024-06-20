@@ -26,7 +26,8 @@ from linebot.v3.messaging import (
 from linebot.v3.webhooks import (
     MessageEvent,
     PostbackEvent,
-    LocationMessageContent
+    LocationMessageContent,
+
 )
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -43,7 +44,7 @@ handler = WebhookHandler(settings.LINE_CHANNEL_SECRET)
 def callback(request):
     signature = request.META.get('HTTP_X_LINE_SIGNATURE', '')
     body = request.body.decode('utf-8')
-
+    print(json.loads(body).get('events'))
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
@@ -151,6 +152,8 @@ def handle_location_message(event):
                         messages=[TextMessage(text="超過反應時間")]
                     )
                 )
+
+@handler.add(PostbackEvent)
 
 # weather records
 def weather(request):

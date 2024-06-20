@@ -121,6 +121,7 @@ from web.models import UserProfile
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 logger = logging.getLogger(__name__)
+
 def custom_line_login(request):
     if 'code' in request.GET and 'state' in request.GET:
         # 校验 state，确保不被 CSRF 攻击
@@ -248,7 +249,7 @@ def line_login_callback(request):
 
             if created:
                 # 如果是新用戶，返回 1.html 並顯示註冊模態
-                return render(request, '1.html', {'show_modal': True})
+                return render(request, 'home.html', {'show_modal': True})
 
             # 登錄已存在的用戶
             user.backend = 'django.contrib.auth.backends.ModelBackend'
