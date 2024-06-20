@@ -5,3 +5,7 @@ scikit-learn
 matplotlib
 seaborn
 django-allauth
+requests
+line-bot-sdk
+googlemaps
+python-dotenv

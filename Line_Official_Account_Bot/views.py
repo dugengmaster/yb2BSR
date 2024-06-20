@@ -7,6 +7,7 @@ from Line_Official_Account_Bot.models import WeatherRecord, LineUserSessions
 from Line_Official_Account_Bot.scraper import weather as scweather
 import json
 import time
+import os
 from linebot.v3 import (
     WebhookHandler
 )
@@ -28,6 +29,10 @@ from linebot.v3.webhooks import (
     PostbackEvent,
     LocationMessageContent
 )
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+quick_reply_path = os.path.join(base_dir, 'messages_components', 'quick_reply.json')
+flex_message_path = os.path.join(base_dir, 'messages_components', 'Flex_message.json')
 configuration = Configuration(access_token=settings.LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(settings.LINE_CHANNEL_SECRET)
 # Create your views here.
@@ -64,7 +69,7 @@ def handle_postback(event):
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
         if action == "shareLocation":
-            with open(r".\Line_Official_Account_Bot\messages_components\quick_reply.json", "r", encoding="utf-8") as file:
+            with open(quick_reply_path, "r", encoding="utf-8") as file:
                 quick_reply = QuickReply.from_dict(json.load(file).get('shareLocation'))
                 message = TextMessage(text="確認分享您的所在位置", quickReply=quick_reply)
                 line_bot_api.reply_message(
@@ -106,7 +111,7 @@ def handle_location_message(event):
                     #理論上只會有一筆資料，但留著保平安
                     weather_record = weather_records.first()
 
-                    with open(r".\Line_Official_Account_Bot\messages_components\Flex_message.json", "r", encoding="utf-8") as file:
+                    with open(flex_message_path, "r", encoding="utf-8") as file:
                         bubble_string = json.load(file).get('weather_bubble')
                     bubble = FlexContainer.from_dict(bubble_string)
                     # 圖片
@@ -152,6 +157,7 @@ def handle_location_message(event):
 def weather(request):
     METEOROLOGICAL_DATA_OPEN_PLATFORM = settings.METEOROLOGICAL_DATA_OPEN_PLATFORM
 
+    WeatherRecord.objects.all().delete()
     weather_data_list = scweather(METEOROLOGICAL_DATA_OPEN_PLATFORM)
     # print(weather_data_list)
     if weather_data_list is not None:

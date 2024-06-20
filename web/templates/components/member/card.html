@@ -1,0 +1,174 @@
+<style>
+    .memberbackground {
+        background: linear-gradient(to bottom, #ffffff, #add8e6); /* 左到右深藍灰到淺藍灰的漸層 */
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 6vw;
+    }
+    /* 會員專區標題 */
+    .member-section h1 {
+        color: #000; /* 黑色文字 */
+        font-weight: bold; /* 粗體 */
+        font-style: italic; /* 傾斜 */
+        margin-bottom: 20px; /* 底部間距 */
+    }
+    /* 社交互動標題 */
+    .social-interaction h2 {
+        color: #000; /* 黑色文字 */
+        font-weight: bold; /* 粗體 */
+        font-style: italic; /* 傾斜 */
+    }
+
+        /* 會員專區 */
+    .member-section {
+        padding: 30px;
+        background-color: #f8f9fa;
+    }
+
+    /* 會員卡片 */
+    .member-card {
+        border: none;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 會員卡片標題 */
+    .member-card .card-title {
+        color: #333;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    /* 會員卡片內容 */
+    .member-card .card-text {
+        color: #666;
+        font-size: 16px;
+    }
+
+    /* 按鈕 */
+    .member-card .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+        /* 社交互動樣式 */
+    .social-interaction {
+        margin-top: 50px;
+        text-align: center;
+    }
+
+    .social-interaction h2 {
+        font-weight: bold;
+        font-style: italic;
+    }
+
+    #messageDisplayArea {
+        margin-top: 20px;
+    }
+
+    #messageInputArea {
+        margin-top: 20px;
+    }
+
+    /* 按鈕*/
+
+</style>
+
+<div class="memberbackground">
+    <div class="container mt-1 pt-5 member-section">
+        <h1 class="mb-4">會員專區</h1>
+        <div class="row">
+            <!-- 个人信息管理 -->
+            <div class="col-md-4">
+                <div class="card member-card">
+                    <div class="card-body">
+                        <h5 class="card-title">個人資料</h5>
+                        <p class="card-text">管理您的個人信息和騎行記錄。</p>
+                        <a href="#" class="btn btn-primary">查看資料</a>
+                    </div>
+                </div>
+            </div>
+            <!-- 推荐与收藏 -->
+            <div class="col-md-4">
+                <div class="card member-card">
+                    <div class="card-body">
+                        <h5 class="card-title">推薦與收藏</h5>
+                        <p class="card-text">查看推薦站點和收藏的站點。</p>
+                        <a href="#" class="btn btn-primary">查看推薦</a>
+                    </div>
+                </div>
+            </div>
+            <!-- 通知与提醒 -->
+            <div class="col-md-4">
+                <div class="card member-card">
+                    <div class="card-body">
+                        <h5 class="card-title">通知與提醒</h5>
+                        <p class="card-text">查看站點狀態和活動通知。</p>
+                        <a href="#" class="btn btn-primary">查看通知</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- 路径规划与导航 -->
+            <div class="col-md-4">
+                <div class="card member-card">
+                    <div class="card-body">
+                        <h5 class="card-title">路徑規劃與導航</h5>
+                        <p class="card-text">查看和規劃最佳騎行路徑。</p>
+                        <a href="#" class="btn btn-primary">查看路徑</a>
+                    </div>
+                </div>
+            </div>
+            <!-- 积分与奖励 -->
+            <div class="col-md-4">
+                <div class="card member-card">
+                    <div class="card-body">
+                        <h5 class="card-title">積分與獎勵</h5>
+                        <p class="card-text">查看您的積分和獎勵。</p>
+                        <a href="#" class="btn btn-primary">查看積分</a>
+                    </div>
+                </div>
+            </div>
+            <!-- 社交与互动 -->
+            <div class="col-md-4">
+                <div class="card member-card">
+                    <div class="card-body">
+                        <h5 class="card-title">社交與互動</h5>
+                        <p class="card-text">與好友互動，分享騎行經驗。</p>
+                        <button class="btn btn-primary" id="openMessageInput" onclick="openMessageInput()">立即留言</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 社交互動的留言顯示區 -->
+        <div class="social-interaction">
+            <h2>社交互動</h2>
+            <div id="messageDisplayArea"></div> <!-- 這裡顯示留言 -->
+                <div id="messageInputArea">
+                    <textarea id="messageInput" class="form-control mb-2 p-3" placeholder="請輸入留言"></textarea>
+                    <button class="btn btn-primary" id="sendMessage">發送留言</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var navbar = document.querySelector('.navbar');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 0) {
+                navbar.classList.add('shadow-lg');
+            } else {
+                navbar.classList.remove('shadow-lg');
+            }
+        });
+    });
+</script>
+<script>
+function openMessageInput() {
+        // 使用Bootstrap模態框顯示輸入框
+        $('#messageModal').modal('show');
+    }
+</script>

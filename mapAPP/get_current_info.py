@@ -63,9 +63,8 @@ def tpe_cur_rain(q): #got current rain status
         data = response.json()
         #print(data)
         # print(type(data))
-
         for i in data["records"]["Station"]:
-
+            
             if i["StationName"]=="信義":
                 rain_amt = i["RainfallElement"]["Past10Min"]["Precipitation"]
                 if rain_amt/10 >(0.3/6):
@@ -130,8 +129,8 @@ def tpe_yb_qy(station_no): #got the available ybs for a station in Taipei
                 return i["available_spaces"]
 
             #Taipei station_no range:5001xxxxx
-
-def holiday_qy(date,q):   #got holoday status date format:20150101
+#got holoday status date format:20150101
+def holiday_qy(date,q):
     global apis
     url=apis[5]
 
@@ -139,13 +138,14 @@ def holiday_qy(date,q):   #got holoday status date format:20150101
     #print(response.status_code)
     if response.status_code == 200:
         data = response.json()
-
+        
         for i in data:
             if i["date"]==date:
-               q.put(1)
-                # return 1
-        # return 0
-        q.put(0)
+                q.put(1)
+                return
+            else:
+                q.put(0)
+                return
 
 
 

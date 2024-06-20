@@ -23,7 +23,7 @@
     width: 100%;
 }
 .custom-background {/* 介紹背景 */
-    background-image: url("{% static 'images/bikestation.jpg' %}");
+    background-image: url('../images/bikestation.jpg');;
     background-size: cover;
     background-position: center;
     color: white;
@@ -38,12 +38,21 @@
     background: linear-gradient(to bottom, #ffffff, #add8e6); /* 左到右深藍灰到淺藍灰的漸層 */
     padding: 50px; /* 可以根據需要調整間距 */
 }
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 66%;
+    height: auto;
+    background: rgba(0, 0, 0, 0); /* 可選：添加一個半透明的覆蓋層 */
+}
+
 .video-container {
     position: relative;
-    width: 100%;
+    width: auto;
+    height: auto;
     padding-bottom: 56.25%; /* 16:9 aspect ratio */
-    height: 0;
-    overflow: hidden;
 }
 
 .video-container iframe,
@@ -55,15 +64,6 @@
     height: 100%;
 }
 
-.video-container .video-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* 可選：添加一個半透明的覆蓋層 */
-}
-
 .custom-background2 {/* 底部背景 */
     background-color: #C0C0C0;
     background-size: cover;
@@ -71,6 +71,7 @@
     padding: 50px;
     color: white;
 }
+
 .info-section {/* 介紹 */
     display: flex;
     align-items: center;
@@ -81,7 +82,7 @@
     height: auto;
 }
 .contact-info, .social-icons {
-    padding: 20px;
+    padding-left: 60px;
 }
 .social-icons i {
     font-size: 2rem;
@@ -151,7 +152,6 @@
 .youbiketext h4 {
     color: #0056b3; /* 設置副標題顏色 */
     font-weight: bold; /* 加粗字體 */
-    margin-top: 20px; /* 頂部間距 */
 }
 
 .youbiketext p {
@@ -168,7 +168,7 @@
 }
 /* 布告欄 */
 .announcement-board {
-    max-width: 800px;
+    max-width: 90%;
     margin: 50px auto;
     padding: 20px;
     border: 1px solid #ccc;
@@ -179,7 +179,16 @@
     text-align: center;
     margin-bottom: 30px;
 }
-.announcement-board ul {
+.announcement-board table {
+    width: 100%;
+    table-layout: fixed;
+}
+.announcement-board table th,
+.announcement-board table td {
+    text-align: center;
+    word-wrap: break-word;
+}
+/* .announcement-board ul {
     list-style-type: none;
     padding: 0;
 }
@@ -192,7 +201,7 @@
 }
 .announcement-board li:nth-child(odd) {
     background: #f0f0f0;
-}
+} */
 /* 模態框 */
 .modal-content {
     background: linear-gradient(45deg, #ffffff, #e0f7fa);
@@ -237,3 +246,8 @@
 .modal-footer {
     border-top: 1px solid #e0f7fa;
 }
+
+/* .row {
+    display:flex;
+    flex-wrap: wrap;
+} */

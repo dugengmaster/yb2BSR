@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.conf import settings
 from mapAPP.GoogleMapForUbike import GoogleMapforUbike
-from mapAPP.models import LtecelltowerTpe, Yb_stn
+# from mapAPP.models import LtecelltowerTpe, Yb_stn
 from django.db.models import Q
 from django.http import HttpResponse
 import os
@@ -27,9 +27,9 @@ def mapAPP(request):
 
     #多工緒處理爬蟲
     q = queue.Queue()
-    rainthread = threading.Thread(target=tpe_cur_rain, args=(q,))
-    tempthread = threading.Thread(target=tpe_cur_temp, args=(q,))
-    holidaythread = threading.Thread(target=holiday_qy, args=(now.date().strftime("%Y%m%d"), q))
+    rainthread = threading.Thread(target=tpe_cur_rain, args=(q,))#降雨資料
+    tempthread = threading.Thread(target=tpe_cur_temp, args=(q,))#即時溫度
+    holidaythread = threading.Thread(target=holiday_qy, args=(now.date().strftime("%Y%m%d"), q))#是否為工作日
     rainthread.start()
     tempthread.start()
     holidaythread.start()
@@ -45,7 +45,7 @@ def mapAPP(request):
     tpeStaion = {'lat': 25.048159037642492, 'lng': 121.51707574725279}#台北車站座標
     if (myPosition['lat']<lat_min or myPosition['lat']>lat_max) or (myPosition['lng']<lng_min or myPosition['lng']>lng_max):
         temp = "{lat: 25.048159037642492, lng: 121.51707574725279}"
-        msg = "您不在台北市，請使用大眾交通工具移動到台北市"
+        msg = "很抱歉，台北市以外的功能尚未開發"
         bikeStation = gmap.getBikeStation(tpeStaion)
         myPosition = tpeStaion
     else:
@@ -76,7 +76,6 @@ def mapAPP(request):
     raincheck = q.get()
     temperature = q.get()
     isholiday = q.get()
-    temp_1 = q.get() # bug 補丁
     bikeStatus = q.get()
 
     #取得走路到各站點需要花費的時間，並轉換為時段
@@ -91,10 +90,10 @@ def mapAPP(request):
     #訓練結果轉換為msg
     for i in range(len(bikeStatus)):
         if have_bike[i]==1:
-            bikeStatus[i]['msg']="車輛充足"
+            bikeStatus[i]['msg']="車輛充裕，建議前往"
             bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
         else:
-            bikeStatus[i]['msg']="這時段車輛可能不足，需要等待幾分鐘"
+            bikeStatus[i]['msg']="車輛即將用盡，建議前往其他站點"
             bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
 
     #轉換地理座標格式，JS可讀取格式

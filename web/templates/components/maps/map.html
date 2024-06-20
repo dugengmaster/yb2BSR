@@ -1,14 +1,96 @@
-<div class="container-flex">
-    <div id="map" class="position-relative"></div>
+
+<style>
+    #map {
+        height: 600px;
+        width: 1000px;
+        margin-top: 500px;
+        z-index: 2;
+        margin: 0 auto; /* 使地圖在大屏幕居中 */
+    }
+
+    h3 {
+        width: 1000px;
+        margin: 0 auto;
+    }
+
+    @media (max-width: 1180px) {
+        #map {
+            height: 500px;
+            width: 850px;
+            margin: 0 auto;
+        }
+
+        h3 {
+            width: 850px;
+            margin: 0 auto;
+        }
+    }
+
+    @media (max-width: 820px) {
+        #map {
+            height: 850px;
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        h3 {
+            width: 500px;
+            margin: 0 auto;
+        }
+    }
+
+    @media (max-width: 420px) {
+        #map {
+            height: 600px;
+            width: 360px;
+            margin: 0 auto;
+        }
+
+        h3 {
+            width: 360px;
+            margin: 0 auto;
+        }
+    }
+
+    @media (max-width: 375px) {
+        #map {
+            height: 450px;
+            width: 335px;
+            margin: 0 auto;
+        }
+
+        h3 {
+            width: 335px;
+            margin: 0 auto;
+        }
+    }
+
+    /* 确保响应式设计 */
+    @media (max-width: 768px) {
+        .col-md-3, .col-md-9 {
+            flex: 1 1 100%; /* 在小屏幕上全宽 */
+        }
+
+    }
+
+    @media (max-width: 480px) {
+        .col-md-3, .col-md-9 {
+            flex: 1 1 100%; /* 在小屏幕上全宽 */
+        }
+
+    }
+</style>
+
+<div class="container container-flex mt-5 mb-5 pt-4 pb-3">
+    <div id="map"></div>
+    <h3 class="text-center" style="background-color:DodgerBlue;">{{ msg }}</h3>
 </div>
 
 <!-- Google Maps API script -->
-<script src="https://maps.googleapis.com/maps/api/js?v=beta&key={{ api_key }}&loading=async&callback=initMap&libraries=marker" defer></script>
-<h3 style="background-color:DodgerBlue;">{{ msg }}</h3>
+<script src="https://maps.googleapis.com/maps/api/js?v=beta&key={{ api_key }}&loading=async&callback=initMap_mapAPP&libraries=marker" defer></script>
+
 <script>
-    
-    function initMap() {
-     
+    function initMap_mapAPP() {
         var myPosition = {{ coordinates }};
 
         var bikePin = document.createElement('img')
@@ -25,45 +107,41 @@
             map: map,
             position: myPosition,
             title: "you are here",
-            
         });
+
         var contents = [
             {% for item in bikeStatus %}
                 "{% for key, value in item.items %}{% if forloop.counter == 1 %}<h5 style='color:black'>{{ value }}</h3>{% elif forloop.counter == 2 %}<p style='color:black'>目前車輛數: {{ value }}</p>{% elif forloop.counter == 4 %}<p style='color:black'>{{ value }}</p>{% elif forloop.counter == 5 %}<p style='color:black'>走路前往需花費{{ value }}分鐘</p>{% elif forloop.counter == 3 %}<p style='color:black'>更新時間: {{ value }}</p>{% endif %}{% endfor %}",
             {% endfor %}
         ]
-        
+
         function makemarker(position, title) {
-                var bikePinClone = bikePin.cloneNode(true);       
+                var bikePinClone = bikePin.cloneNode(true);
                 var station=new google.maps.marker.AdvancedMarkerElement({
                 map: map,
                 position: position,
                 title: title,
                 content: bikePinClone,
-                gmpClickable: true,               
-                
-            }); 
-            return station        
-        }                    
+                gmpClickable: true,
+
+            });
+            return station
+        }
+
         {% for i in bikeStation %}
-            {% for key, value in i.items %}            
+            {% for key, value in i.items %}
                  var sta_{{ forloop.parentloop.counter0 }} = makemarker({{ value }}, "{{ key }}");
                  var infoWindow = new google.maps.InfoWindow();
-                 sta_{{ forloop.parentloop.counter0 }}.addListener("click", () => {                    
+                 sta_{{ forloop.parentloop.counter0 }}.addListener("click", () => {
                     infoWindow.close();
                     infoWindow.setContent(contents[{{ forloop.parentloop.counter0 }}]);
                     infoWindow.open(map, sta_{{ forloop.parentloop.counter0 }});
-                }); 
+                });
             {% endfor %}
         {% endfor %}
-        
+
     }
-   
-    window.onload = function() {
-        if (typeof google === 'object' && typeof google.maps === 'object') {
-            initMap();
-        } else {
-            console.error('Google Maps JavaScript API not loaded.');
-        }
-    };
-</script> 
+
+    window.onload = initMap_mapAPP();
+
+</script>

@@ -1,0 +1,80 @@
+<style>
+    .card-center {
+        text-align: center;
+        margin-top: 50px;
+        }
+
+    .row-container {
+    display: block;
+    margin-bottom: 30px;
+    }
+
+    .card {
+    display: inline-block;
+    width: 300px;
+    margin: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    vertical-align: top;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    }
+
+    .card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .card img {
+    width: 100%;
+    height: auto;
+    border-bottom: 1px solid #ddd;
+    }
+
+    .description {
+    display: none;
+    padding: 15px;
+    background-color: #f0f0f0;
+    border-top: 1px solid #ddd;
+    }
+
+    .card.show .description {
+    display: block;
+    }
+</style>
+
+<div class="custom-imgbackground">
+    <div class="container card-center">
+        <div class="row-container">
+            <div class="card" onclick="toggleDescription(this)">
+                <img src="{% static 'images/ben.jpg' %}" alt="Member 1">
+                <div class="description">6/9號肝指數爆表</div>
+            </div>
+            <div class="card" onclick="toggleDescription(this)">
+                <img src="{% static 'images/ben.jpg' %}" alt="Member 2">
+                <div class="description">6/9號早上5.11分才做好</div>
+            </div>
+            <div class="card" onclick="toggleDescription(this)">
+                <img src="{% static 'images/ben.jpg' %}" alt="Member 3">
+                <div class="description">來看看是我先掛掉還是網頁先做好</div>
+            </div>
+        </div>
+        <div class="row-container">
+            <div class="card" onclick="toggleDescription(this)">
+                <img src="{% static 'images/ben.jpg' %}" alt="Member 4">
+                <div class="description">這攔沒東西點點看旁邊>>>></div>
+            </div>
+            <div class="card" onclick="toggleDescription(this)">
+                <img src="{% static 'images/ben.jpg' %}" alt="Member 5">
+                <div class="description">再旁邊>>>>></div>
+            </div>
+            <div class="card" onclick="toggleDescription(this)">
+                <img src="{% static 'images/ben.jpg' %}" alt="Member 6">
+                <div class="description">凸( •̀_•́ )凸</div>
+            </div>
+        </div>
+    </div>
+</div>
