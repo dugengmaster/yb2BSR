@@ -24,6 +24,7 @@ import time
 from mapAPP.models import LtecelltowerTpe, Yb_stn2
 from django.db.models import Q
 import time
+import numpy as np
 
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -65,6 +66,12 @@ def haversine(lat1, lon1, lat2, lon2):
     distance = R*c*1000
     return distance
 
+def precisionmatch(a,b,precision):
+    for i in range(10,precision,-1):
+        if round(a,i)== round(b,i):
+            return True
+    else:
+        return False
 
 
 class GoogleMapforUbike:
@@ -130,34 +137,46 @@ class GoogleMapforUbike:
         return myGPS['location']
 
     def getBikeStation(self, location) -> dict:
-        #先取得半徑500m的bike station {'lat': 123456, 'lng':4561}
-        place_search = self.client.places_nearby(location, keyword="youbike", radius=500)
-        #數量太少再擴大搜尋
-        if len(place_search['results']) <5:
-            place_search = self.client.places_nearby(location, keyword="youbike", radius=1000)
-            if len(place_search['results']) ==0:
+        # #先取得半徑500m的bike station {'lat': 123456, 'lng':4561}
+        # place_search = self.client.places_nearby(location, keyword="youbike", radius=500)
+        # #數量太少再擴大搜尋
+        # if len(place_search['results']) <5:
+        #     place_search = self.client.places_nearby(location, keyword="youbike", radius=1000)
+        #     if len(place_search['results']) ==0:
 
-                return "附近沒有YouBike站點"
-
-
-        #依照目前座標給出距離最近的5個站點
-        coordinates = []
-
-        for result in place_search['results']:
-            if result['business_status']=='OPERATIONAL':
-                coordinate = result['geometry']['location']
-                coordinate['distance'] = haversine(location['lat'], location['lng'], coordinate['lat'], coordinate['lng'])
-                coordinates.append(coordinate)
-        df = pd.DataFrame(coordinates)
-        df = df.sort_values(by='distance')
+        #         return "附近沒有YouBike站點"
 
 
-        top5 = df.head(5)
-        del top5['distance']
-        staInfo = Yb_stn2.objects.filter(area_code='00')
-        sta_info_df = pd.DataFrame([{'lat': eval(sta.lat), 'lng': eval(sta.lng), 'name_tw': sta.name_tw} for sta in staInfo])
-        top5 = top5.merge(sta_info_df, how='left', left_on=['lat', 'lng'], right_on=['lat', 'lng'])
-        result = top5.to_dict('records')
+        # #依照目前座標給出距離最近的5個站點
+        # coordinates = []
+
+        # for result in place_search['results']:
+        #     if result['business_status']=='OPERATIONAL':
+        #         coordinate = result['geometry']['location']
+        #         coordinate['distance'] = haversine(location['lat'], location['lng'], coordinate['lat'], coordinate['lng'])
+        #         coordinates.append(coordinate)
+        # df = pd.DataFrame(coordinates)
+        # df = df.sort_values(by='distance')
+        
+        # top5 = df.head(5)
+        # del top5['distance']
+        staInfo = Yb_stn2.objects.all()#filter(area_code='00')
+        sta_info_df = pd.DataFrame([{'lat': float(sta.lat), 'lng': float(sta.lng), 'name_tw': sta.name_tw} for sta in staInfo])
+        sta_info_df = sta_info_df.drop_duplicates(subset=['name_tw'])
+        sta_info_df['distance']=sta_info_df.apply(lambda row: haversine(location['lat'], location['lng'], row['lat'], row['lng']), axis=1)
+        sta_info_df = sta_info_df.sort_values(by='distance')
+        sta_info_df = sta_info_df.head(5)
+        del sta_info_df['distance']
+        # for line in top5.index:
+        #     for l in sta_info_df.index:
+        #         if precisionmatch(top5.loc[line,'lat'],sta_info_df.loc[l,'lat'],4) and  precisionmatch(top5.loc[line,'lng'],sta_info_df.loc[l,'lng'],4):
+        #             top5.loc[line,'name_tw'] = sta_info_df.loc[l,'name_tw']
+        #         elif precisionmatch(top5.loc[line,'lat'],sta_info_df.loc[l,'lat'],3) and  precisionmatch(top5.loc[line,'lng'],sta_info_df.loc[l,'lng'],3):
+        #             top5.loc[line,'name_tw'] = sta_info_df.loc[l,'name_tw']
+        #         elif precisionmatch(top5.loc[line,'lat'],sta_info_df.loc[l,'lat'],2) and  precisionmatch(top5.loc[line,'lng'],sta_info_df.loc[l,'lng'],2):
+        #             top5.loc[line,'name_tw'] = sta_info_df.loc[l,'name_tw']
+        # top5 = top5.merge(sta_info_df, how='left', left_on=['lat', 'lng'], right_on=['lat', 'lng'])
+        result = sta_info_df.to_dict('records')
         return result
 
 
