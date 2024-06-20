@@ -11,6 +11,7 @@ import datetime
 import queue
 import pandas as pd
 
+
 agent = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"}
 session = requests.Session()
 session.headers.update(agent)
@@ -26,32 +27,47 @@ def getstationbike(coordinates,q) -> list:
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
         }
-    url = 'https://apis.youbike.com.tw/json/station-yb2.json'
+    dfs = []
     sess = requests.session()
-    r = sess.get(url, headers = header)
-    if r.status_code==requests.codes.ok:
-        data = json.loads(r.text)
-        tpeStation = [sta for sta in data if sta['area_code']=='00']
-        df = pd.DataFrame(tpeStation)
-        df['lat']= df['lat'].astype(float)
-        df['lng']= df['lng'].astype(float)
-        stationStatus = []
-        for coor in coordinates:
-            for j in df.index:
-                if coor['lat']==df.loc[j, 'lat'] and coor['lng']==df.loc[j, 'lng']:
-                    temp = {
-                        'name':df.loc[j, 'name_tw'],
-                        'available_spaces': str(df.loc[j, 'available_spaces'])+'/'+str(df.loc[j, 'parking_spaces']),
-                        'update_time': df.loc[j, 'updated_at']
-                        }
+    for url in apis[1:3]:
+        r = sess.get(url, headers = header)
+        if r.status_code==requests.codes.ok:
+            data = json.loads(r.text)
+            tpeStation = [sta for sta in data] 
+            df = pd.DataFrame(tpeStation)
+            df['lat']= df['lat'].astype(float)
+            df['lng']= df['lng'].astype(float)
+            dfs.append(df)        
+    stationStatus = []
+    for coor in coordinates:
+        condition1 = dfs[0]['name_tw']==coor['name_tw']
+        condition2 = dfs[1]['name_tw']==coor['name_tw']
+        availabel_spaces = 0
+        parking_spaces = 0
+        updated_time = None
+        if condition1.any():
+            availabel_spaces += dfs[0].loc[condition1,'available_spaces'].iloc[0]
+            parking_spaces += dfs[0].loc[condition1,'parking_spaces'].iloc[0]
+            updated_time = dfs[0].loc[condition1,'updated_at'].iloc[0] 
+        if condition2.any():
+            availabel_spaces += dfs[1].loc[condition2,'available_spaces'].iloc[0]
+            parking_spaces += dfs[1].loc[condition2,'parking_spaces'].iloc[0]
+            try:
+                if dfs[1].loc[condition2,'updated_at'].iloc[0] > updated_time:
+                    updated_time = dfs[1].loc[condition2,'updated_at'].iloc[0] 
+            except:
+                updated_time = dfs[1].loc[condition2,'updated_at'].iloc[0]
+        temp = {
+            'name':coor['name_tw'],
+            'available_spaces': str(availabel_spaces)+'/'+str(parking_spaces),
+            'update_time': updated_time
+            }
 
-                    stationStatus.append(temp)
-                    break
-        q.put(stationStatus)
-        # return
-    else:
-        print('載入數值失敗')
-        return None
+        stationStatus.append(temp)
+            
+    q.put(stationStatus)
+    
+
 
 def tpe_cur_rain(q): #got current rain status
     global apis

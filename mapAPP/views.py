@@ -17,12 +17,142 @@ import numpy as np
 import joblib
 import threading
 import queue
+from django.http import JsonResponse
 # Create your views here.
 
+def mapfunctionplus(myPosition=None):
+    now = datetime.now()
+    q = queue.Queue()
+     #取得使用者GPS
+    gmap = GoogleMapforUbike(settings.GOOGLE_MAPS_API_KEY)
+    if myPosition == None:
+        myPosition = gmap.getgeolocation()
+    #台北市的經緯度範圍，不再這範圍內的人，會定位在台北車站，並以定位點為中心取得周邊的Ubike站點
+    lat_min, lat_max = 24.97619, 25.14582
+    lng_min, lng_max = 121.46288, 121.62306
+    
+    if (myPosition['lat']<lat_min or myPosition['lat']>lat_max) or (myPosition['lng']<lng_min or myPosition['lng']>lng_max):
+        temp = "{lat:"+str(myPosition['lat'])+","+"lng:"+str(myPosition['lng'])+'}'
+        msg = "很抱歉，台北市以外的功能尚未開放推薦功能"
+        bikeStation = gmap.getBikeStation(myPosition)
+        # print(bikeStation)
 
-# 顯示有地圖的頁面
-def mapAPP(request):
-    start = time.time()
+        getstationbike(bikeStation,q)
+        bikeStatus = q.get()
+        
+        duration = gmap.getDuration(myPosition,bikeStation)
+        #訓練結果轉換為msg
+        for i in range(len(bikeStatus)):
+            bikeStatus[i]['msg']=" "
+            bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
+        bikestations = []
+        #轉換地理座標格式，JS可讀取格式
+        for sta in bikeStation:
+            change = "{lat:"+str(sta['lat'])+","+"lng:"+str(sta['lng'])+'}'
+            bike = {sta['name_tw']: change}
+            bikestations.append(bike)
+        
+        #資料彙整成dict傳入html
+        parameter = {
+            "api_key": settings.GOOGLE_MAPS_API_KEY,
+            'coordinates':temp,
+            'msg':msg,
+            'bikeStation':bikestations,
+            'bikeStatus':bikeStatus
+        }
+        return parameter
+    else:
+        temp = "{lat:"+str(myPosition['lat'])+","+"lng:"+str(myPosition['lng'])+'}'
+        msg = ' '
+        bikeStation = gmap.getBikeStation(myPosition)
+        
+        #多工緒處理爬蟲
+        rainthread = threading.Thread(target=tpe_cur_rain, args=(q,))#降雨資料
+        tempthread = threading.Thread(target=tpe_cur_temp, args=(q,))#即時溫度
+        holidaythread = threading.Thread(target=holiday_qy, args=(now.date().strftime("%Y%m%d"), q))#是否為工作日
+        statusthread = threading.Thread(target=getstationbike, args=(bikeStation,q))
+        rainthread.start()
+        tempthread.start()
+        holidaythread.start() 
+
+        #多工爬蟲抓取站點即時資料
+        
+        statusthread.start()
+
+        #從./mlmodles 取得各站點的預測模型
+        station_no = geo_to_No(bikeStation)
+        
+        models = []
+        for x in station_no:
+            try:
+                model_path = os.path.join(os.path.dirname(__file__), 'mlmodels', f'model{x}.joblib')
+                model = joblib.load(model_path)
+                models.append(model)
+            except:
+                pass
+
+        #取回各個爬蟲的回傳值
+
+        rainthread.join()
+        tempthread.join()
+        holidaythread.join()
+        statusthread.join()
+        raincheck = q.get()          
+        temperature = q.get()       
+        isholiday = q.get() 
+        bikeStatus = q.get()
+
+        #取得走路到各站點需要花費的時間，並轉換為時段
+        bikestations = []
+        duration = gmap.getDuration(myPosition,bikeStation)
+        timeSwap = [minuteChange(dur['time_cost']/60 + now.minute) for dur in duration]
+        bikes_now = [int(bikeStatus[s]['available_spaces'].split('/')[0]) for s in range(len(bikeStatus))]
+        bikes_total = [int(bikeStatus[s]['available_spaces'].split('/')[1]) for s in range(len(bikeStatus))]
+        #輸入參數hour(00.00), isholiday(0,1), rainCheck(0,1), temp_now
+        X_input = [pd.DataFrame([{'hour':(now.hour+timeSwap[i]), 'isholiday':isholiday, 'rainCheck':raincheck, 'temp_now':temperature}]) for i in range(len(timeSwap))]
+        for j in range(len(X_input)):
+        # 確認 X_input[j] 的格式
+            if isinstance(X_input[j], pd.DataFrame):
+                X_input[j] = X_input[j].values  # 將 DataFrame 轉換為 numpy 陣列
+        
+            # 確保 X_input[j] 是一個二為數組
+            X_input[j] = np.asarray(X_input[j])
+            if X_input[j].ndim == 1:
+                X_input[j] = X_input[j].reshape(1, -1)  # 將一維轉換為二維
+            else:
+                X_input[j] = pd.DataFrame(X_input[j], columns=['hour', 'isholiday', 'rainCheck', 'temp_now'])
+        
+        have_bike = [models[z].predict(X_input[z]) for z in range(len(models))]
+        
+        #訓練結果轉換為msg
+        for i in range(len(bikeStatus)):
+            try:
+                if (have_bike[i]==0) and (bikes_now[i]/bikes_total[i]<=0.15) and (bikes_now[i]<5):
+                    bikeStatus[i]['msg']="這時段車輛可能不足，需要等待幾分鐘"
+                    bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
+                else:
+                    bikeStatus[i]['msg']="車輛充足"
+                    bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
+            except:
+                bikeStatus[i]['msg']="車輛充足"
+                bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
+
+        #轉換地理座標格式，JS可讀取格式
+        for sta in bikeStation:
+            change = "{lat:"+str(sta['lat'])+","+"lng:"+str(sta['lng'])+'}'
+            bike = {sta['name_tw']: change}
+            bikestations.append(bike)
+
+        #資料彙整成dict傳入html
+        parameter = {
+            "api_key": settings.GOOGLE_MAPS_API_KEY,
+            'coordinates':temp,
+            'msg':msg,
+            'bikeStation':bikestations,
+            'bikeStatus':bikeStatus
+        }
+        return parameter
+def mapfunction():
     now = datetime.now()
 
     #多工緒處理爬蟲
@@ -110,9 +240,18 @@ def mapAPP(request):
         'bikeStation':bikestations,
         'bikeStatus':bikeStatus
     }
-    end = time.time()
+    return parameter
+# 顯示有地圖的頁面
+def mapAPP(request):
+    # 25.040280970828704, 121.51193996655002
+    # coor = {'lat':25.040280970828704, 'lng':121.51193996655002}
+    parameter = mapfunctionplus()
+    
     return render(request, "mapAPP.html", parameter)
 
+def mapJson(request):
+    parameter = mapfunction()
+    return JsonResponse(parameter)
 
 # 查詢特定站點
 
