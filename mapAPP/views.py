@@ -203,9 +203,9 @@ def mapfunction():
     tempthread.join()
     holidaythread.join()
     statusthread.join()
-    raincheck = q.get()          
-    temperature = q.get()       
-    isholiday = q.get() 
+    raincheck = q.get()
+    temperature = q.get()
+    isholiday = q.get()
     bikeStatus = q.get()
 
     #取得走路到各站點需要花費的時間，並轉換為時段
@@ -215,15 +215,16 @@ def mapfunction():
 
     #輸入參數hour(00.00), isholiday(0,1), rainCheck(0,1), temp_now
     X_input = [pd.DataFrame([{'hour':(now.hour+timeSwap[i]), 'isholiday':isholiday, 'rainCheck':raincheck, 'temp_now':temperature}]) for i in range(len(timeSwap))]
+    print(type(X_input))
     have_bike = [models[j].predict(X_input[j]) for j in range(len(timeSwap))]
 
     #訓練結果轉換為msg
     for i in range(len(bikeStatus)):
         if have_bike[i]==1:
-            bikeStatus[i]['msg']="車輛充足"
+            bikeStatus[i]['msg']="車輛充裕，建議前往"
             bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
         else:
-            bikeStatus[i]['msg']="這時段車輛可能不足，需要等待幾分鐘"
+            bikeStatus[i]['msg']="車輛即將用盡，建議前往其他站點"
             bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
 
     #轉換地理座標格式，JS可讀取格式
