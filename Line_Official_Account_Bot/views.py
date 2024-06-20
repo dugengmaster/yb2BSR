@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.contrib.sessions.backends.db import SessionStore
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST

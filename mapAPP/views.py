@@ -85,6 +85,7 @@ def mapAPP(request):
 
     #輸入參數hour(00.00), isholiday(0,1), rainCheck(0,1), temp_now
     X_input = [pd.DataFrame([{'hour':(now.hour+timeSwap[i]), 'isholiday':isholiday, 'rainCheck':raincheck, 'temp_now':temperature}]) for i in range(len(timeSwap))]
+    print(type(X_input))
     have_bike = [models[j].predict(X_input[j]) for j in range(len(timeSwap))]
 
     #訓練結果轉換為msg
