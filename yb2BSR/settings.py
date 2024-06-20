@@ -46,7 +46,7 @@ HOST = os.getenv('HOST')
 PORT = os.getenv('PORT')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
