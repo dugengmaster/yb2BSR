@@ -91,36 +91,49 @@ def handle_postback(event):
             )
             show_loading_animation_request = ShowLoadingAnimationRequest(chatId=user_id)
         elif action == "selectStation":
-            # 從資料庫中找到使用者使用車站查詢紀錄的資料
-            bike_status_obj = LineUserOnTimeBikeStatus.objects.filter(user_id=user_id).all()
-            bikeStatus = []
-            for status in bike_status_obj:
-                temp = {}
-                temp.update(
-                    {"name": status.name,
-                     "available_spaces": status.available_spaces,
-                     "parking_spaces": status.parking_spaces,
-                     "duration": status.duration,
-                     "msg": status.msg,
-                     "update_time": status.update_time}
-                    )
-                bikeStatus.append(temp)
+            # 提取 line 返回的 user id 在 sessions 中的資料並倒序排列
+            session = LineUserSessions.objects.filter(user_id = user_id).order_by('-id')
+            last_session = session.first()
 
-            user_location_information = LineUserLocationsInformation.objects.filter(user_id=user_id).first()
-            station_index = data.get('station')
-            gps = (user_location_information.latitude, user_location_information.longitude)
-            bubble = make_bike_status_bubble(station_index, bikeStatus, gps)
-            # 設定站點切換按鍵 ( Quick Reply )
-            quick_reply = make_station_reply(station_index, len(bikeStatus))
-            # 發送資訊給使用者
-            message = FlexMessage(alt_text="最佳站點推薦", contents=bubble, quickReply=quick_reply)
-            line_bot_api.reply_message(
-            ReplyMessageRequest(
-                reply_token=event.reply_token,
-                messages=[message]
+             # 如果使用者的時間戳記小於 session 時間，代表 session 有效。
+            if last_session.expiry_date >= timestamp:
+                # 從資料庫中找到使用者使用車站查詢紀錄的資料
+                bike_status_obj = LineUserOnTimeBikeStatus.objects.filter(user_id=user_id).all()
+                bikeStatus = []
+                for status in bike_status_obj:
+                    temp = {}
+                    temp.update(
+                        {"name": status.name,
+                        "available_spaces": status.available_spaces,
+                        "parking_spaces": status.parking_spaces,
+                        "duration": status.duration,
+                        "msg": status.msg,
+                        "update_time": status.update_time}
+                        )
+                    bikeStatus.append(temp)
+
+                user_location_information = LineUserLocationsInformation.objects.filter(user_id=user_id).first()
+                station_index = data.get('station')
+                gps = (user_location_information.latitude, user_location_information.longitude)
+                bubble = make_bike_status_bubble(station_index, bikeStatus, gps)
+                # 設定站點切換按鍵 ( Quick Reply )
+                quick_reply = make_station_reply(station_index, len(bikeStatus))
+                # 發送資訊給使用者
+                message = FlexMessage(alt_text="最佳站點推薦", contents=bubble, quickReply=quick_reply)
+                line_bot_api.reply_message(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[message]
+                    )
                 )
-            )
-            show_loading_animation_request = ShowLoadingAnimationRequest(chatId=user_id)
+                show_loading_animation_request = ShowLoadingAnimationRequest(chatId=user_id)
+            else:
+                line_bot_api.reply_message(
+                        ReplyMessageRequest(
+                            reply_token=event.reply_token,
+                            messages=[TextMessage(text="超過查詢時間，請重新查詢")]
+                        )
+                    )
 
 @handler.add(MessageEvent, message=LocationMessageContent)
 def handle_location_message(event):
@@ -141,7 +154,7 @@ def handle_location_message(event):
 
     user_location_information.save()
 
-    # 提取 line 返回的 user id 在 sessions 中的資料
+    # 提取 line 返回的 user id 在 sessions 中的資料並倒序排列
     session = LineUserSessions.objects.filter(user_id = user_id).order_by('-id')
     last_session = session.first()
 
