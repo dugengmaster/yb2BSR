@@ -14,6 +14,7 @@ import queue
 from django.http import JsonResponse
 # Create your views here.
 
+# myPosition -> {'lat': float, 'lng': float}
 def mapfunctionplus(myPosition=None):
     now = datetime.now()
     q = queue.Queue()
@@ -27,7 +28,7 @@ def mapfunctionplus(myPosition=None):
 
     if (myPosition['lat']<lat_min or myPosition['lat']>lat_max) or (myPosition['lng']<lng_min or myPosition['lng']>lng_max):
         temp = "{lat:"+str(myPosition['lat'])+","+"lng:"+str(myPosition['lng'])+'}'
-        msg = "很抱歉，台北市以外的功能尚未開放推薦功能"
+        msg = "很抱歉，台北市以外的區域尚未開放推薦功能"
         bikeStation = gmap.getBikeStation(myPosition)
         # print(bikeStation)
 
@@ -35,10 +36,11 @@ def mapfunctionplus(myPosition=None):
         bikeStatus = q.get()
 
         duration = gmap.getDuration(myPosition,bikeStation)
+        # print(duration[0]['time_cost'], type(duration[0]['time_cost']))
         #訓練結果轉換為msg
         for i in range(len(bikeStatus)):
-            bikeStatus[i]['msg']=" "
-            bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
+            bikeStatus[i]['msg']="台北市以外區域尚無推薦服務"
+            bikeStatus[i]['duration'] = f"{duration[i]['time_cost'] / 60 : .0f}"
         bikestations = []
         #轉換地理座標格式，JS可讀取格式
         for sta in bikeStation:
@@ -100,8 +102,8 @@ def mapfunctionplus(myPosition=None):
         bikestations = []
         duration = gmap.getDuration(myPosition,bikeStation)
         timeSwap = [minuteChange(dur['time_cost']/60 + now.minute) for dur in duration]
-        bikes_now = [int(bikeStatus[s]['available_spaces'].split('/')[0]) for s in range(len(bikeStatus))]
-        bikes_total = [int(bikeStatus[s]['available_spaces'].split('/')[1]) for s in range(len(bikeStatus))]
+        bikes_now = [bikeStatus[s]['available_spaces'] for s in range(len(bikeStatus))]
+        bikes_total = [bikeStatus[s]['parking_spaces'] for s in range(len(bikeStatus))]
         #輸入參數hour(00.00), isholiday(0,1), rainCheck(0,1), temp_now
         X_input = [pd.DataFrame([{'hour':(now.hour+timeSwap[i]), 'isholiday':isholiday, 'rainCheck':raincheck, 'temp_now':temperature}]) for i in range(len(timeSwap))]
         for j in range(len(X_input)):
@@ -122,14 +124,14 @@ def mapfunctionplus(myPosition=None):
         for i in range(len(bikeStatus)):
             try:
                 if (have_bike[i]==0) and (bikes_now[i]/bikes_total[i]<=0.15) and (bikes_now[i]<5):
-                    bikeStatus[i]['msg']="這時段車輛可能不足，需要等待幾分鐘"
-                    bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
+                    bikeStatus[i]['msg']="車輛緊張，建議更換站點"
+                    bikeStatus[i]['duration'] = f"{duration[i]['time_cost'] / 60 : .0f}"
                 else:
-                    bikeStatus[i]['msg']="車輛充足"
-                    bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
+                    bikeStatus[i]['msg']="車輛充裕，建議前往"
+                    bikeStatus[i]['duration'] = f"{duration[i]['time_cost'] / 60 : .0f}"
             except:
-                bikeStatus[i]['msg']="車輛充足"
-                bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
+                bikeStatus[i]['msg']="車輛充裕，建議前往"
+                bikeStatus[i]['duration'] = f"{duration[i]['time_cost'] / 60 : .0f}"
 
         #轉換地理座標格式，JS可讀取格式
         for sta in bikeStation:
@@ -145,6 +147,7 @@ def mapfunctionplus(myPosition=None):
             'bikeStation':bikestations,
             'bikeStatus':bikeStatus
         }
+        print(parameter)
         return parameter
 
 def mapfunction():
@@ -238,15 +241,22 @@ def mapfunction():
     return parameter
 # 顯示有地圖的頁面
 def mapAPP(request):
+    lat = request.GET.get('lat')
+    lng = request.GET.get('lng')
+
+    if lat and lng:
+        coor = {'lat': float(lat), 'lng': float(lng)}
+        parameter = mapfunctionplus(coor)
+    else:
     # 25.040280970828704, 121.51193996655002
     # coor = {'lat':25.040280970828704, 'lng':121.51193996655002}
-    parameter = mapfunctionplus()
+        parameter = mapfunctionplus()
 
     return render(request, "mapAPP.html", parameter)
 
-def mapJson(request):
-    parameter = mapfunction()
-    return JsonResponse(parameter)
+# def mapJson(request):
+#     parameter = mapfunction()
+#     return JsonResponse(parameter)
 
 # 查詢特定站點
 

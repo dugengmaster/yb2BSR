@@ -1,5 +1,5 @@
 {
-  "shareLocation": {
+  "location": {
     "items": [
       {
         "type": "action",
@@ -9,6 +9,23 @@
         }
       }
     ]
+  },
+  "postBack": {
+    "items": [
+      {
+        "type": "action",
+        "action": {
+          "type": "postback",
+          "label": "站點 1",
+          "data": "{\"action\": \"selectStation\", \"station\": \"1\"}"
+        }
+      }
+    ]
+  },
+  "message": {
+    "type": "message",
+    "label": "Yes",
+    "text": "Yes"
   }
 }
 

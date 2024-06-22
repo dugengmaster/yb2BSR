@@ -127,5 +127,168 @@
       "paddingTop": "md",
       "paddingBottom": "lg"
     }
+  },
+  "ybSelectSite": {
+    "type": "bubble",
+    "size": "mega",
+    "header": {
+      "type": "box",
+      "layout": "vertical",
+      "contents": [
+        {
+          "type": "text",
+          "text": "hello, world",
+          "contents": [
+            {
+              "type": "span",
+              "text": "最佳站點推薦"
+            }
+          ],
+          "color": "#fffdc5",
+          "size": "xl",
+          "weight": "bold"
+        }
+      ],
+      "backgroundColor": "#0c3e2e"
+    },
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "contents": [
+        {
+          "type": "text",
+          "text": "hello, world",
+          "contents": [
+            {
+              "type": "span",
+              "text": "站點： "
+            },
+            {
+              "type": "span",
+              "text": "臺北轉運站"
+            }
+          ],
+          "size": "lg",
+          "weight": "bold"
+        },
+        {
+          "type": "text",
+          "text": "hello, world",
+          "contents": [
+            {
+              "type": "span",
+              "text": "剩餘車輛： "
+            },
+            {
+              "type": "span",
+              "text": "10"
+            },
+            {
+              "type": "span",
+              "text": " / "
+            },
+            {
+              "type": "span",
+              "text": "26"
+            },
+            {
+              "type": "span",
+              "text": "輛"
+            }
+          ],
+          "margin": "sm",
+          "weight": "bold",
+          "size": "lg"
+        },
+        {
+          "type": "text",
+          "text": "hello, world",
+          "contents": [
+            {
+              "type": "span",
+              "text": "步行前往需要約 "
+            },
+            {
+              "type": "span",
+              "text": "5"
+            },
+            {
+              "type": "span",
+              "text": " 分鐘"
+            }
+          ],
+          "margin": "xl",
+          "size": "lg",
+          "weight": "bold"
+        },
+        {
+          "type": "text",
+          "text": "hello, world",
+          "contents": [
+            {
+              "type": "span",
+              "text": "車輛緊張，建議更換站點",
+              "color": "#f04d4d"
+            }
+          ],
+          "margin": "sm",
+          "weight": "bold",
+          "size": "lg"
+        },
+        {
+          "type": "text",
+          "text": "hello, world",
+          "contents": [
+            {
+              "type": "span",
+              "text": "資料更新時間： "
+            },
+            {
+              "type": "span",
+              "text": "2024-05-23 00:00:27"
+            }
+          ],
+          "weight": "bold",
+          "align": "start",
+          "margin": "xl",
+          "size": "xs"
+        }
+      ],
+      "paddingStart": "30px"
+    },
+    "footer": {
+      "type": "box",
+      "layout": "vertical",
+      "spacing": "sm",
+      "contents": [
+        {
+          "type": "box",
+          "layout": "vertical",
+          "contents": [
+            {
+              "type": "text",
+              "color": "#fffdc5",
+              "size": "xl",
+              "contents": [
+                {
+                  "type": "span",
+                  "text": "打開地圖"
+                }
+              ],
+              "weight": "bold",
+              "align": "center"
+            }
+          ],
+          "margin": "sm"
+        }
+      ],
+      "flex": 0,
+      "backgroundColor": "#008b17",
+      "action": {
+        "type": "uri",
+        "label": "action",
+        "uri": "http://127.0.0.1:8000/map/?lat=25.040280970828704&lng=121.51193996655002"
+      }
+    }
   }
 }
