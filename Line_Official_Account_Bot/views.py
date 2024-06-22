@@ -89,6 +89,7 @@ def handle_postback(event):
                     messages=[message]
                 )
             )
+            show_loading_animation_request = ShowLoadingAnimationRequest(chatId=user_id)
         elif action == "selectStation":
             # 從資料庫中找到使用者使用車站查詢紀錄的資料
             bike_status_obj = LineUserOnTimeBikeStatus.objects.filter(user_id=user_id).all()
@@ -119,6 +120,7 @@ def handle_postback(event):
                 messages=[message]
                 )
             )
+            show_loading_animation_request = ShowLoadingAnimationRequest(chatId=user_id)
 
 @handler.add(MessageEvent, message=LocationMessageContent)
 def handle_location_message(event):
@@ -237,6 +239,7 @@ def handle_location_message(event):
                     messages=[message]
                     )
                 )
+                show_loading_animation_request = ShowLoadingAnimationRequest(chatId=user_id)
 
     else:
         line_bot_api.reply_message(

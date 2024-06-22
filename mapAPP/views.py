@@ -147,7 +147,6 @@ def mapfunctionplus(myPosition=None):
             'bikeStation':bikestations,
             'bikeStatus':bikeStatus
         }
-        print(parameter)
         return parameter
 
 def mapfunction():
