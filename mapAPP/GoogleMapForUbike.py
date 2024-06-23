@@ -84,6 +84,7 @@ class GoogleMapforUbike:
     def getgeolocation(self, Carrier="中華電信") -> dict:
         #先取得粗略的GPS定位
         gps = self.client.geolocate()
+        print(gps)
         carrier = {'1':"遠傳電信", "5":"遠傳電信","89":"台灣大哥大","92":"中華電信","97":"台灣大哥大"}
         Net = []
         for key, value in carrier.items():
