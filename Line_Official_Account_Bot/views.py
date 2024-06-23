@@ -14,6 +14,7 @@ import json
 import time
 import os
 import copy
+from typing import Optional, Tuple
 from linebot.v3 import (
     WebhookHandler
 )
@@ -36,12 +37,14 @@ from linebot.v3.webhooks import (
     PostbackEvent,
     LocationMessageContent
 )
-
+# 設定 Line Bot 的基本參數和路徑設置。
 base_dir = os.path.dirname(os.path.abspath(__file__))
 quick_reply_path = os.path.join(base_dir, 'messages_components', 'quick_reply.json')
 flex_message_path = os.path.join(base_dir, 'messages_components', 'Flex_message.json')
+# 設定 Line Bot 配置和處理程序
 configuration = Configuration(access_token=settings.LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(settings.LINE_CHANNEL_SECRET)
+
 # Create your views here.
 
 # line bot
@@ -113,11 +116,11 @@ def handle_postback(event):
                     bikeStatus.append(temp)
 
                 user_location_information = LineUserLocationsInformation.objects.filter(user_id=user_id).first()
-                station_index = data.get('station')
+                station_number = data.get('station')
                 gps = (user_location_information.latitude, user_location_information.longitude)
-                bubble = make_bike_status_bubble(station_index, bikeStatus, gps)
+                bubble = make_bike_status_bubble(station_number, bikeStatus, gps)
                 # 設定站點切換按鍵 ( Quick Reply )
-                quick_reply = make_station_reply(station_index, len(bikeStatus))
+                quick_reply = make_station_reply(station_number, len(bikeStatus))
                 # 發送資訊給使用者
                 message = FlexMessage(alt_text="最佳站點推薦", contents=bubble, quickReply=quick_reply)
                 line_bot_api.reply_message(
@@ -169,6 +172,8 @@ def handle_location_message(event):
                 address = event.message.address
                 if "台灣" in address:
                     location = address.split("台灣")[1][0:3]
+                elif "省" in address:
+                    location = address.split("省")[1][0:3]
                 else:
                     location = address[0:3]
 
@@ -239,11 +244,11 @@ def handle_location_message(event):
                     bike_station_status.save()
 
                 # 設定 default 使用者介面-資訊站點資訊 ( Flex Message )
-                station_index = 1
+                station_number = 1
                 gps = (latitude, longitude)
-                bubble = make_bike_status_bubble(station_index, bikeStatus, gps)
+                bubble = make_bike_status_bubble(station_number, bikeStatus, gps)
                 # 設定站點切換按鍵 ( Quick Reply )
-                quick_reply = make_station_reply(station_index, len(bikeStatus))
+                quick_reply = make_station_reply(station_number, len(bikeStatus))
                 # 發送資訊給使用者
                 message = FlexMessage(alt_text="最佳站點推薦", contents=bubble, quickReply=quick_reply)
                 line_bot_api.reply_message(
@@ -268,7 +273,7 @@ def weather(request):
 
     WeatherRecord.objects.all().delete()
     weather_data_list = scweather(METEOROLOGICAL_DATA_OPEN_PLATFORM)
-    # print(weather_data_list)
+
     if weather_data_list is not None:
         for weather_data in weather_data_list:
             weather_record = WeatherRecord(
@@ -291,7 +296,9 @@ def weather(request):
         return HttpResponse("Failed to fetch data", status=403)
 
 # 建立站點選項的 quick reply
-def make_station_reply(station_index: int, bikeStatus_len: int) -> QuickReply:
+def make_station_reply(station_number: int, bikeStatus_len: int) -> QuickReply:
+    station_index = station_number - 1
+
     with open(quick_reply_path, "r", encoding="utf-8") as quick_reply_component:
             quick_reply_string = json.load(quick_reply_component).get('postBack')
     items = quick_reply_string.get('items')
@@ -310,13 +317,14 @@ def make_station_reply(station_index: int, bikeStatus_len: int) -> QuickReply:
         temp_select_station['action']['data'] = str(temp_select_station['action']['data'])
         new_items.append(temp_select_station)
 
-    new_items.pop(station_index-1)
+    new_items.pop(station_index)
     quick_reply_string['items'] = new_items
 
     return QuickReply.from_dict(quick_reply_string)
 
-def make_bike_status_bubble(station_index: int, bikeStatus: list[dict], gps: tuple) -> FlexContainer:
+def make_bike_status_bubble(station_number: int, bikeStatus: list[dict], gps: Tuple[float, float]) -> FlexContainer:
     latitude, longitude = gps
+    station_index = station_number - 1
 
     with open(flex_message_path, "r", encoding="utf-8") as file:
         bubble_string = json.load(file).get('ybSelectSite')
@@ -325,28 +333,28 @@ def make_bike_status_bubble(station_index: int, bikeStatus: list[dict], gps: tup
     # 設定 default 站點資訊 Flex Message
 
     # 站點
-    bubble.body.contents[0].contents[1].text = bikeStatus[station_index-1].get('name')
+    bubble.body.contents[0].contents[1].text = bikeStatus[station_index].get('name')
     # 剩餘車輛
-    bubble.body.contents[1].contents[1].text = str(bikeStatus[station_index-1].get('available_spaces'))
+    bubble.body.contents[1].contents[1].text = str(bikeStatus[station_index].get('available_spaces'))
     # 全部車輛
-    bubble.body.contents[1].contents[3].text = str(bikeStatus[station_index-1].get('parking_spaces'))
+    bubble.body.contents[1].contents[3].text = str(bikeStatus[station_index].get('parking_spaces'))
     # 路程時間推算
-    bubble.body.contents[2].contents[1].text = str(bikeStatus[station_index-1].get('duration'))
+    bubble.body.contents[2].contents[1].text = str(bikeStatus[station_index].get('duration'))
     # 最佳站點建議
     if bikeStatus[0].get('msg') == "車輛充裕，建議前往":
-        bubble.body.contents[3].contents[0].text = bikeStatus[station_index-1].get('msg')
+        bubble.body.contents[3].contents[0].text = bikeStatus[station_index].get('msg')
         bubble.body.contents[3].contents[0].color = "#119e1a"
     elif bikeStatus[0].get('msg') == "車輛緊張，建議更換站點":
-        bubble.body.contents[3].contents[0].text = bikeStatus[station_index-1].get('msg')
+        bubble.body.contents[3].contents[0].text = bikeStatus[station_index].get('msg')
         bubble.body.contents[3].contents[0].color = "#f04d4d"
     else:
-        bubble.body.contents[3].contents[0].text = bikeStatus[station_index-1].get('msg')
+        bubble.body.contents[3].contents[0].text = bikeStatus[station_index].get('msg')
         bubble.body.contents[3].contents[0].color = "#D3D3D3"
         bubble.body.contents[3].size = "md"
     # 資料更新時間
-    bubble.body.contents[4].contents[1].text = str(bikeStatus[station_index-1].get('update_time'))
+    bubble.body.contents[4].contents[1].text = str(bikeStatus[station_index].get('update_time'))
     # 打開 yb_select_side
-    bubble.footer.action.uri = f"https://5b0e-1-161-197-123.ngrok-free.app/map/?lat={latitude}&lng={longitude}"
+    bubble.footer.action.uri = f"https://yb-select-site-cf3061dbdf38.herokuapp.com/map/?lat={latitude}&lng={longitude}"
 
     return bubble
 
@@ -369,4 +377,3 @@ def make_weather_record_bubble(weather_record: WeatherRecord) -> FlexContainer:
     bubble.body.contents[0].contents[1].contents[1].contents[0].text = weather_record.pop_value
 
     return bubble
-

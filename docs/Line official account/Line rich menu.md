@@ -38,91 +38,42 @@
 
 ## 製作 Rich Menu
 
-## 常見的 Action 類型
+使用 [line_richmenu_manager](https://github.com/dugengmaster/line_richmenu_manager)。
 
-1. **Postback Action**：
-    - 用戶點擊後不會打開瀏覽器或發送消息，而是發送隱藏的 postback 數據給你的機器人。
-    - 適合用於需要後端處理的操作，例如表單提交等。
+1. clone line_richmenu_manager 到本地端。
 
-    ```json
-    {
-      "type": "postback",
-      "label": "Buy",
-      "data": "action=buy&itemid=123"
-    }
+    ```terminal
+    git clone https://github.com/dugengmaster/line_richmenu_manager.git && cd line_richmenu_manager
+    ```
+2. 在 `rich_menu_configs` 資料夾放入 `yb_select_side_rich_menu_default.json` 與 `yb_select_side_rich_menu_main.json` 等設定文件，在 `images` 資料夾放入 `yb_select_side_rich_menu_default.jpg` 與 `yb_select_side_rich_menu_main.jpg` 等圖片。
+3. 使用指令創造圖文選單與設置圖文選單顯示的圖片，example：
+
+    ```terminal
+    python line_richmenu_manager.py -C yb_select_side_rich_menu_default.json
+    ```
+    這會返回一個 rich menu id 記下這個 id 並用此 id 設置圖片，example：
+
+    ```terminal
+    python line_richmenu_manager.py -U <rich_menu_id> yb_select_side_rich_menu_default.jpg
+    ```
+4. 在 line 官方帳號將圖文選單設置為 default 以顯示在用戶端。
+
+    ```terminal
+    python line_richmenu_manager.py -sd <rich_menu_id>
     ```
 
-2. **Message Action**：
-    - 用戶點擊後會發送一條預定義的消息。
-    - 適合用於快速回復或觸發預定義消息。
+5. 設置 Webhook Endpoint URL 來接收 Line server Webhook api 發送過來的事件。請將以下 Endpoint URL 替換為你的伺服器的地址：
+    - Heroku: `https://yb-select-site-cf3061dbdf38.herokuapp.com/callback/`
+    - 本地端測試 (需使用 ngrok): `你的 ngrok 地址/callback/`
 
-    ```json
-    {
-      "type": "message",
-      "label": "Say Hello",
-      "text": "Hello, World!"
-    }
+    請執行以下命令，將 <endpoint_url> 替換為你的伺服器的 Endpoint URL：
+
+    ```terminal
+    python line_richmenu_manager.py -se <endpoint_url>
     ```
 
-3. **URI Action**：
-    - 用戶點擊後會打開指定的 URL。
-    - 適合用於導流到網站或其他網頁。
-
-    ```json
-    {
-      "type": "uri",
-      "label": "Visit Website",
-      "uri": "https://example.com"
-    }
-    ```
-
-4. **Datetime Picker Action**：
-    - 用戶點擊後會彈出日期時間選擇器，選擇的日期時間會以 postback 數據形式發送。
-    - 適合用於預約或時間選擇。
-
-    ```json
-    {
-      "type": "datetimepicker",
-      "label": "Select date",
-      "data": "storeId=12345",
-      "mode": "datetime"
-    }
-    ```
-
-5. **Camera Action**：
-    - 用戶點擊後會打開 LINE 的相機，拍攝的照片會發送給你的機器人。
-
-    ```json
-    {
-      "type": "camera",
-      "label": "Open Camera"
-    }
-    ```
-
-6. **Camera Roll Action**：
-    - 用戶點擊後會打開 LINE 的相簿，選擇的照片會發送給你的機器人。
-
-    ```json
-    {
-      "type": "cameraRoll",
-      "label": "Open Camera Roll"
-    }
-    ```
-
-7. **Location Action**：
-    - 用戶點擊後會打開地點選擇器，選擇的地點會發送給你的機器人。
-
-    ```json
-    {
-      "type": "location",
-      "label": "Send Location"
-    }
-    ```
-## 設置 Webhook Endpoint
-
-### 步驟三：建立處理 Webhook 的視圖
-
-1. 在 `line_bot` 應用的 `views.py` 文件中添加一個視圖來處理 webhook 事件：
+## Line Bot Callback 函數
+設置一個用於處理 Line Messaging API Webhook 事件的 callback 函數。該函數位於 Django 應用程式中，並使用 `line-bot-sdk` 來處理 Line Server 發送的事件。
 
 
 ## 參考資料
