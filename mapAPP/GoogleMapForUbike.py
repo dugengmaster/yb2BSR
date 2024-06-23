@@ -120,6 +120,7 @@ class GoogleMapforUbike:
                 }]
             #取得本機wifi實體位置
             mac = hex(uuid.getnode())[2:]
+            print(mac)
             macAddress = ":".join(mac[i:i+2] for i in range(0, len(mac), 2))
             wifiAccessPoint = [{
             "macAddress": macAddress,
