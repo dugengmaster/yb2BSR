@@ -21,20 +21,7 @@ def custom_authenticate(username, password):
     except User.DoesNotExist:
         return None
 
-from django.contrib.auth.models import User  # 导入用户模型
-from django.contrib.auth.hashers import check_password
-
-def custom_authenticate(username, password):
-    try:
-        user = User.objects.get(username=username)
-        if check_password(password, user.password):
-            return user
-    except User.DoesNotExist:
-        return None
-
 def my_login(request):
-
-    show_modal_1 = False  # 預設不顯示模態窗口
 
     if request.method == "POST":
         username = request.POST.get("username")
@@ -67,10 +54,7 @@ def my_login(request):
     # GET 請求或登入失敗後顯示表單
     return render(request, "home.html", {"error_message":error_message,'show_modal_1': show_modal_1})
 
-
-
 # @login_required
-
 
 def home(request):
     if request.user.is_authenticated:
@@ -121,6 +105,7 @@ from django.contrib.auth import login
 from web.models import UserProfile
 from django.contrib.auth.hashers import make_password
 logger = logging.getLogger(__name__)
+
 def custom_line_login(request):
     if 'code' in request.GET and 'state' in request.GET:
         # 校验 state，确保不被 CSRF 攻击
@@ -318,8 +303,7 @@ def line_login_callback(request):
 
     state = request.GET.get('state')
     code = request.GET.get('code')
-    redirect_uri = "http://127.0.0.1:8000/line/login/callback/"
-
+    redirect_uri = "https://yb-select-site-cf3061dbdf38.herokuapp.com/line/login/callback/"
     # print("state",state)
 
     # 檢查 state 參數是否與 Session 中的 line_login_state 匹配
@@ -383,19 +367,17 @@ def line_login_callback(request):
         return HttpResponseBadRequest(f"Error in line_login_callback: {e}")
 
 
+
 def registerModal(request):
     if request.method == 'POST':
         # 獲取註冊表單提交的數據
         new_username = request.POST.get('new_username')
         new_password = request.POST.get('new_password')
-        telecom = request.POST.get('registerCarrier')
+        carrier = request.POST.get('registerCarrier')
         email = request.POST.get('email')
-        print(new_username)
-        print(new_password)
-        print(telecom)
-        print(email)
+
         # 檢查所有字段是否已填寫
-        if not (new_username and new_password and telecom and email):
+        if not (new_username and new_password and carrier and email):
             return HttpResponseBadRequest('所有字段都是註冊所需的。')
 
         try:
@@ -403,7 +385,7 @@ def registerModal(request):
             user = User.objects.create_user(username=new_username, password=new_password, email=email)
 
             # 將電信信息保存到用戶的 UserProfile 中
-            user_profile = UserProfile.objects.create(user=user, telecom=telecom)
+            user_profile = UserProfile.objects.create(user=user, carrier=carrier)
             print(user_profile)  # 打印 UserProfile 對象，用於調試
 
             # 自動登入新註冊的用戶
