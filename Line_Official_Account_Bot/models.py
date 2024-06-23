@@ -25,3 +25,22 @@ class LineUserSessions(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.expiry_date += 300000
         super().save(force_insert, force_update, using, update_fields)
+
+class LineUserLocationsInformation(models.Model):
+    user_id = models.CharField(max_length=50)
+    timestamp = models.BigIntegerField()
+    address = models.CharField(max_length=1024)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+
+class LineUserOnTimeBikeStatus(models.Model):
+    user_id = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
+    available_spaces = models.CharField(max_length=10)
+    parking_spaces = models.CharField(max_length=10)
+    duration = models.CharField(max_length=10)
+    msg = models.CharField(max_length=50)
+    update_time = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = "bike_status"
