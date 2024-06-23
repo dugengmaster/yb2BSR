@@ -38,7 +38,7 @@ urlpatterns = [
     path('my_login/', views.my_login, name='my_login'),
     path('home/', web_views.home, name='home'),
     # path("stations/", web_views.stations, name="stations"),
-    path('register/', views.registerModal, name='register_page'),
+    path('register/', views.registerModal, name='registerModal'),
     path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
     path("map/", include("mapAPP.urls")),
     path("callback/", linebot_views.callback),
@@ -46,13 +46,13 @@ urlpatterns = [
     path("about_us/", web_views.about_us, name="about_us"),
     path("member/", web_views.member, name="member"),
     path("bike_trail/", web_views.bike_trail, name="bike_trail"),
-    path("bike/", web_views.bike, name="bike"),
+    # path("bike/", web_views.bike, name="bike"),
     path("bikemap/", web_views.bikemap, name="bikemap"),
     path('line/login/callback/', views.line_login_callback, name='line_login_callback'),
     path('custom_line_login/', views.custom_line_login, name='custom_line_login'),
     path('chart/', views.chart, name='chart'),
     path('food/', views.food, name='food'),
-    path('registerModal/', views.registerModal, name='registerModal'),
+    # path('registerModal/', views.register_user, name='registerModal'),
 
 ]
 handler404 = web_views.custom_404

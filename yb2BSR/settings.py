@@ -74,6 +74,7 @@ INSTALLED_APPS = [
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
+    'web.backends.UserProfileBackend',
 ]
 SITE_ID = 2
 LOGIN_REDIRECT_URL = '/'
@@ -140,7 +141,8 @@ WSGI_APPLICATION = "yb2BSR.wsgi.application"
 #         'PORT': PORT,
 #     }
 # }
-#Local use
+# AUTH_USER_MODEL = 'web.models.CustomUser'
+# Local use
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
