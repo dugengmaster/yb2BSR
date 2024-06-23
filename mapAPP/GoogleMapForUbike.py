@@ -183,7 +183,9 @@ class GoogleMapforUbike:
 
     def getDuration(self, location, destination) -> dict:
         departuretime = datetime.now()
+        print(departuretime)
         matrix = self.client.distance_matrix(location, destination, mode='walking', units='metrics', departure_time=departuretime)
+        print(matrix)
         for index, coor in enumerate(destination):
             coor['time_cost'] = matrix['rows'][0]['elements'][index]['duration']['value']
         return destination
