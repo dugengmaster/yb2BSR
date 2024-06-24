@@ -32,6 +32,7 @@ def minuteChange(minute) -> float:
     min_div = 0.083333333333333 #60/12
     level = round(((minute/60)//min_div)*min_div,10)
     return level
+
 def geo_to_No(list_of_station) -> list:
     ybinfo = Yb_stn2.objects.all()
     stationnumbers = []

@@ -62,27 +62,69 @@
     python line_richmenu_manager.py -sd <rich_menu_id>
     ```
 
-5. 設置 Webhook Endpoint URL 來接收 Line server Webhook api 發送過來的事件。請將以下 Endpoint URL 替換為你的伺服器的地址：
-    - Heroku: `https://yb-select-site-cf3061dbdf38.herokuapp.com/callback/`
-    - 本地端測試 (需使用 ngrok): `你的 ngrok 地址/callback/`
+## 設置 Webhook Endpoint 來接收來自 LINE 伺服器的事件。
+請將以下 Endpoint URL 替換為伺服器的地址：
+  - Heroku: `https://yb-select-site-cf3061dbdf38.herokuapp.com/callback/`
+  - 本地端測試 (需使用 ngrok): `你的 ngrok 地址/callback/`
 
-    請執行以下命令，將 <endpoint_url> 替換為你的伺服器的 Endpoint URL：
+  請執行以下命令，將 <endpoint_url> 替換為你的伺服器的 Endpoint URL：
 
-    ```terminal
-    python line_richmenu_manager.py -se <endpoint_url>
-    ```
+  ```terminal
+  python line_richmenu_manager.py -se <endpoint_url>
+  ```
 
-## Line Bot Callback 函數
+## 接收並解析來自 LINE 伺服器的事件請求
+
 設置一個用於處理 Line Messaging API Webhook 事件的 callback 函數。該函數位於 Django 應用程式中，並使用 `line-bot-sdk` 來處理 Line Server 發送的事件。
+
+  ```python
+  from django.conf import settings
+  from django.http import HttpResponse, HttpResponseForbidden
+  from django.views.decorators.csrf import csrf_exempt
+  from django.views.decorators.http import require_POST
+  from linebot.v3 import WebhookHandler
+
+  @csrf_exempt
+  @require_POST
+  def callback(request):
+    # 從請求的標頭中獲取 Line 的簽名
+    signature = request.META.get('HTTP_X_LINE_SIGNATURE', '')
+    # 從請求的主體中獲取事件內容
+    body = request.body.decode('utf-8')
+    try:
+        # 使用 WebhookHandler 處理事件內容和簽名
+        handler.handle(body, signature)
+    except InvalidSignatureError:
+        # 如果簽名無效，返回 HTTP 403 Forbidden 錯誤
+        return HttpResponseForbidden()
+    # 回應 HTTP 200 OK 表示成功處理請求
+    return HttpResponse(status=200)
+  ```
+## 根據事件類型進行相應的處理並回應用戶操作
+### Postback Event
+當用戶在圖文選單或按鈕上進行操作（如點擊按鈕）時，LINE 伺服器會發送 Postback 事件。可以根據接收到的數據進行相應的業務邏輯處理，例如導航到特定頁面、執行特定指令等。
+
+### Message Event
+當用戶發送訊息時，LINE 伺服器會發送 Message 事件。根據訊息的內容進行處理，主要包括以下類型：
+
+#### Location Message Content
+當用戶發送地點訊息時，可以根據用戶提供的地點資訊進行相應的處理，如查找附近的服務點、提供路線導航等。
+
+
+
 
 
 ## 參考資料
 - Line developers 官方文件
-https://developers.line.biz/en/reference/messaging-api/#rich-menu-object
-https://developers.line.biz/en/reference/messaging-api/#rich-menu-response-object
-- Django 官方文件
-https://docs.djangoproject.com/en/3.2/ref/request-response/#django.http.HttpRequest.body
 
+  https://developers.line.biz/en/reference/messaging-api/#rich-menu-object
+  https://developers.line.biz/en/reference/messaging-api/#rich-menu-response-object
+- Django 官方文件
+
+  https://docs.djangoproject.com/en/3.2/ref/request-response/#django.http.HttpRequest.body
+- line-bot-sdk-python 技術文件
+
+  https://github.com/line/line-bot-sdk-python
 
 
 

@@ -103,11 +103,11 @@ class GoogleMapforUbike:
             latitude = None
             longitude = None
 
-        return {            
+        return {
             'lat': latitude,
             'lng': longitude
         }
-    
+
     def getgeolocation(self,ip, Carrier="中華電信") -> dict:
         #先取得粗略的GPS定位
         gps = self.takeGpsByIP(ip)
@@ -115,7 +115,6 @@ class GoogleMapforUbike:
         Net = []
         for key, value in carrier.items():
             if value == Carrier: Net.append(int(key))
-
 
         if len(Net) >1:
             towerList = self.lteCelltower.filter(Q(net=Net[0]) | Q(net=Net[1]))
@@ -208,7 +207,9 @@ class GoogleMapforUbike:
 
     def getDuration(self, location, destination) -> dict:
         departuretime = datetime.now()
+
         matrix = self.client.distance_matrix(location, destination, mode='walking', units='metrics', departure_time=departuretime)
+
         for index, coor in enumerate(destination):
             coor['time_cost'] = matrix['rows'][0]['elements'][index]['duration']['value']
         return destination
@@ -227,7 +228,7 @@ class GoogleMapforUbike:
 
 if __name__ == '__main__':
     # gmap = GoogleMapforUbike('AIzaSyDeEzYq-fwNLOXJu7XzAXU2NgxJW3th_2A')
-    gmap = gmap.Client(key='AIzaSyDeEzYq-fwNLOXJu7XzAXU2NgxJW3th_2A')
+    gmap = gmap.Client(key='')
     start = time.time()
     posi = gmap.geolocate()
     end = time.time()
