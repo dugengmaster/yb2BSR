@@ -262,7 +262,7 @@ def mapAPP(request):
         parameter = mapfunctionplus(coor)
     else:
     #   ip=get_client_ip(request)
-        client_ip, is_routable = get_client_ip(request, request_header_order=["HTTP_CLIENT_IP"])
+        client_ip, is_routable = get_client_ip(request, request_header_order=["HTTP_X_FORWARDED_FOR"])
         if client_ip is None:
             print("Unable to get the client's IP address")
         else:
