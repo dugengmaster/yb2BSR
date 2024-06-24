@@ -295,7 +295,7 @@ def registerModal( request):
             # 將註冊用戶的數據保存到數據庫中
             user = User.objects.create_user(username=new_username, password=new_password, email=email)
 
-            # 將電信信息保存到用戶的 UserProfile 中
+            # 將用戶訊息儲存到用戶的 UserProfile 中
             user_profile = UserProfile.objects.create(
                 user=user,
                 username=new_username,
