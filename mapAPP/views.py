@@ -26,13 +26,13 @@ def get_client_ip(request):
     return ip
 
 # myPosition -> {'lat': float, 'lng': float}
-def mapfunctionplus(ip,myPosition=None):
+def mapfunctionplus(myPosition=None):
     now = datetime.now()
     q = queue.Queue()
      #取得使用者GPS
     gmap = GoogleMapforUbike(settings.GOOGLE_MAPS_API_KEY)
     if myPosition == None:
-        myPosition = gmap.getgeolocation(ip)
+        myPosition = gmap.getgeolocation()
     #台北市的經緯度範圍，不再這範圍內的人，會定位在台北車站，並以定位點為中心取得周邊的Ubike站點
     lat_min, lat_max = 24.97619, 25.14582
     lng_min, lng_max = 121.46288, 121.62306
@@ -249,6 +249,7 @@ def mapfunction():
         'bikeStatus':bikeStatus
     }
     return parameter
+
 # 顯示有地圖的頁面
 def mapAPP(request):
     lat = request.GET.get('lat')
@@ -260,8 +261,7 @@ def mapAPP(request):
         coor = {'lat': float(lat), 'lng': float(lng)}
         parameter = mapfunctionplus(coor)
     else:
-        ip=get_client_ip(request)
-        parameter = mapfunctionplus(ip)
+        parameter = mapfunctionplus()
 
     return render(request, "mapAPP.html", parameter)
 
