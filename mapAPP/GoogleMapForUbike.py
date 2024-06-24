@@ -79,8 +79,6 @@ class GoogleMapforUbike:
         self.client = gmap.Client(key=key)
         self.lteCelltower = LtecelltowerTpe.objects.all()
 
-
-
     def getgeolocation(self, Carrier="中華電信") -> dict:
         #先取得粗略的GPS定位
         gps = self.client.geolocate()
@@ -89,7 +87,6 @@ class GoogleMapforUbike:
         Net = []
         for key, value in carrier.items():
             if value == Carrier: Net.append(int(key))
-
 
         if len(Net) >1:
             towerList = self.lteCelltower.filter(Q(net=Net[0]) | Q(net=Net[1]))
@@ -120,7 +117,6 @@ class GoogleMapforUbike:
                 }]
             #取得本機wifi實體位置
             mac = hex(uuid.getnode())[2:]
-            print(mac)
             macAddress = ":".join(mac[i:i+2] for i in range(0, len(mac), 2))
             wifiAccessPoint = [{
             "macAddress": macAddress,
@@ -130,11 +126,11 @@ class GoogleMapforUbike:
             "age": 0
             }]
             myGPS = self.client.geolocate(home_mobile_country_code=466, home_mobile_network_code=int(pickthem[x[0]]["net"]),
-                                        radio_type="lte", carrier=Carrier, consider_ip=True,
+                                        radio_type="lte", carrier=Carrier, consider_ip=False,
                                         cell_towers= cellTower, wifi_access_points=wifiAccessPoint)
         else:
             myGPS = self.client.geolocate(home_mobile_country_code=466, home_mobile_network_code=None,
-                                        radio_type="lte", carrier=Carrier, consider_ip=True,
+                                        radio_type="lte", carrier=Carrier, consider_ip=False,
                                         cell_towers= None, wifi_access_points=None)
         return myGPS['location']
 
