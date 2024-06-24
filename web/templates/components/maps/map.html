@@ -79,6 +79,16 @@
         }
 
     }
+    .stationStatus {
+        font-size: 16px;
+        margin:3px;
+        font-weight: bold;
+    }
+    .gm-style-iw-chr {
+        width: auto;
+        height: 35px;
+    }
+
 </style>
 
 <div class="container container-flex mt-5 mb-5 pt-4 pb-3">
@@ -110,8 +120,41 @@
         });
 
         var contents = [
-            {% for item in bikeStatus %}
-                "{% for key, value in item.items %}{% if forloop.counter == 1 %}<h5 style='color:black'>{{ value }}</h3>{% elif forloop.counter == 2 %}<p style='color:black'>目前車輛數: {{ value }}</p>{% elif forloop.counter == 4 %}<p style='color:black'>{{ value }}</p>{% elif forloop.counter == 5 %}<p style='color:black'>走路前往需花費{{ value }}分鐘</p>{% elif forloop.counter == 3 %}<p style='color:black'>更新時間: {{ value }}</p>{% endif %}{% endfor %}",
+            {% for station in bikeStatus %}
+                `
+                    <div class="stationStatus">
+                        <h5 style="margin-bottom: 15px">站點： {{station.name}}</h5>
+                        <p>
+                            <span>剩餘車輛： </span>
+                            <span>{{station.available_spaces}}</span>
+                            <span> / </span>
+                            <span>{{station.parking_spaces}}</span>
+                        </p>
+                        <p>
+                            <span>步行前往需要約 </span>
+                            <span>{{station.duration}}</span>
+                            <span> 分鐘</span>
+                        </p>
+                        {% if station.msg == "車輛充裕，建議前往" %}
+                        <p style="color:#119e1a;">
+                            <span>{{station.msg}}</span>
+                        </p>
+                        {% elif station.msg == "車輛緊張，建議更換站點" %}
+                        <p style="color:#f04d4d;">
+                            <span>{{station.msg}}</span>
+                        </p>
+                        {% else %}
+                        <p style="color:black;">
+                            <span>{{station.msg}}</span>
+                        </p>
+                        {% endif %}
+                        <p style="font-size: 12px;">
+                            <span>資料更新時間： </span>
+                            <span>{{station.update_time}}</span>
+                        </p>
+                    </div>
+                `
+                {% if not forloop.last %},{% endif %}
             {% endfor %}
         ]
 

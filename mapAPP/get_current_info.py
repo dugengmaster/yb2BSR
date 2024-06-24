@@ -38,40 +38,41 @@ def getstationbike(coordinates, q) -> list:
         r = sess.get(url, headers = header)
         if r.status_code==requests.codes.ok:
             data = json.loads(r.text)
-            tpeStation = [sta for sta in data] 
+            tpeStation = [sta for sta in data]
             df = pd.DataFrame(tpeStation)
             df['lat']= df['lat'].astype(float)
             df['lng']= df['lng'].astype(float)
-            dfs.append(df)        
+            dfs.append(df)
     stationStatus = []
     for coor in coordinates:
         condition1 = dfs[0]['name_tw']==coor['name_tw']
         condition2 = dfs[1]['name_tw']==coor['name_tw']
-        availabel_spaces = 0
+        available_spaces = 0
         parking_spaces = 0
         updated_time = None
         if condition1.any():
-            availabel_spaces += dfs[0].loc[condition1,'available_spaces'].iloc[0]
+            available_spaces += dfs[0].loc[condition1,'available_spaces'].iloc[0]
             parking_spaces += dfs[0].loc[condition1,'parking_spaces'].iloc[0]
-            updated_time = dfs[0].loc[condition1,'updated_at'].iloc[0] 
+            updated_time = dfs[0].loc[condition1,'updated_at'].iloc[0]
         if condition2.any():
-            availabel_spaces += dfs[1].loc[condition2,'available_spaces'].iloc[0]
+            available_spaces += dfs[1].loc[condition2,'available_spaces'].iloc[0]
             parking_spaces += dfs[1].loc[condition2,'parking_spaces'].iloc[0]
             try:
                 if dfs[1].loc[condition2,'updated_at'].iloc[0] > updated_time:
-                    updated_time = dfs[1].loc[condition2,'updated_at'].iloc[0] 
+                    updated_time = dfs[1].loc[condition2,'updated_at'].iloc[0]
             except:
                 updated_time = dfs[1].loc[condition2,'updated_at'].iloc[0]
         temp = {
             'name':coor['name_tw'],
-            'available_spaces': str(availabel_spaces)+'/'+str(parking_spaces),
+            'available_spaces': available_spaces,
+            'parking_spaces': parking_spaces,
             'update_time': updated_time
             }
 
         stationStatus.append(temp)
-            
+
     q.put(stationStatus)
-    
+
 
 
 #got current rain status

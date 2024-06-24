@@ -75,7 +75,7 @@ INSTALLED_APPS = [
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
-    # 'web.backends.UserProfileBackend',
+    'web.backed.LineUserBackend',
 ]
 SITE_ID = 2
 LOGIN_REDIRECT_URL = '/'
@@ -132,6 +132,7 @@ WSGI_APPLICATION = "yb2BSR.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# postgreSQL use
 # DATABASES = {
 #     'default': {
 #         'ENGINE': ENGINE,
@@ -142,15 +143,13 @@ WSGI_APPLICATION = "yb2BSR.wsgi.application"
 #         'PORT': PORT,
 #     }
 # }
-# AUTH_USER_MODEL = 'web.models.CustomUser'
-# Local use
+#Local use
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-# SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 使用數據庫儲存 session
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"  # 使用數據庫儲存 session
 LOGGING = {
@@ -212,7 +211,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+AUTH_USER_MODEL = 'web.UserProfile'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
