@@ -12,6 +12,7 @@ from web.models import UserProfile
 # Create your views here.
 from django.contrib.auth.models import User  # 导入用户模型
 from django.contrib.auth.hashers import check_password
+from django.contrib.auth.decorators import login_required
 
 def custom_authenticate(username, password):
     try:
@@ -20,6 +21,8 @@ def custom_authenticate(username, password):
             return user
     except UserProfile.DoesNotExist:
         return None
+
+
 
 def my_login(request):
     show_modal_1 = False  # 預設不顯示模態窗口
@@ -52,9 +55,24 @@ def my_login(request):
     return render(request, "home.html", {"error_message":error_message,'show_modal_1': show_modal_1})
 
 
+
 def home(request):
     if request.user.is_authenticated:
-        return render(request, 'home.html')
+        line_name = request.user.line_name
+        email = request.user.email
+        # user_profile = UserProfile.objects.get(line_name=line_name, email=email)
+        # line_name = UserProfile.objects.get(line_name=request.user.line_name)
+        # email = UserProfile.objects.get(email=request.user.email)
+        email = email.split("@")[0]
+        print("line_name",line_name)
+        print("email",email)
+        context = {
+            # 'user_profile': user_profile,
+            "line_name":line_name,
+            "email":email,
+        }
+        return render(request, 'home.html', context)
+        # return render(request, 'home.html')
     else:
         return render(request, 'home.html')
 
