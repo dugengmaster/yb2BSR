@@ -13,17 +13,18 @@ import joblib
 import threading
 import queue
 import requests
+from ipware import get_client_ip
 
 # Create your views here.
 
 #上架到heroku之後，程式會優先抓取伺服器的IP而不是使用者IP
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
+# def get_client_ip(request):
+#     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+#     if x_forwarded_for:
+#         ip = x_forwarded_for.split(',')[0]
+#     else:
+#         ip = request.META.get('REMOTE_ADDR')
+#     return ip
 
 # myPosition -> {'lat': float, 'lng': float}
 def mapfunctionplus(ip,myPosition=None):
@@ -260,8 +261,17 @@ def mapAPP(request):
         coor = {'lat': float(lat), 'lng': float(lng)}
         parameter = mapfunctionplus(coor)
     else:
-      ip=get_client_ip(request)
-      parameter = mapfunctionplus(ip)
+    #   ip=get_client_ip(request)
+        client_ip, is_routable = get_client_ip(request, request_header_order=["HTTP_CLIENT_IP"])
+        if client_ip is None:
+            print("Unable to get the client's IP address")
+        else:
+            print("We got the client's IP address")
+        if is_routable:
+            print("The client's IP address is publicly routable on the Internet")
+        else:
+            print("The client's IP address is private")
+        parameter = mapfunctionplus(client_ip)
     
     return render(request, "mapAPP.html", parameter)
 

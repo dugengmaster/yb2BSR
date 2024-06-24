@@ -44,9 +44,9 @@ USER = os.getenv('USER')
 PASSWORD = os.getenv('PASSWORD')
 HOST = os.getenv('HOST')
 PORT = os.getenv('PORT')
-
+#X-Forwarded-For 用
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = False
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
@@ -131,7 +131,6 @@ WSGI_APPLICATION = "yb2BSR.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# postgreSQL use
 DATABASES = {
     'default': {
         'ENGINE': ENGINE,
@@ -149,6 +148,7 @@ DATABASES = {
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+# SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 使用數據庫儲存 session
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"  # 使用數據庫儲存 session
 LOGGING = {
