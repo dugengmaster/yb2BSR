@@ -42,7 +42,10 @@
         padding: 20px; /* 内边距 */
         border-radius: 10px; /* 边框圆角 */
     }
-
+    .card img {
+        width: auto;
+        height: 240px;
+    }
 </style>
 
 <div class="container mt-5">
@@ -52,17 +55,34 @@
             <!-- Card 1 -->
             <div class="col-md-4 mb-4">
                 <div class="card" onclick="openModal('trail1')">
-                    <img src="{% static 'images/ben.jpg' %}" class="card-img-top" alt="Scenic Photo 1">
+                    <img src="{% static 'images/1024x768_attractions-image-bk4ymc_ltesqijdsuw30iw.jpg' %}" class="card-img-top" alt="Scenic Photo 1">
                     <div class="card-body">
-                        <h5 class="card-title">景點一</h5>
-                        <p class="card-text">景點一介紹</p>
-                        <p class="difficulty">難度: Easy</p>
+                        <h5 class="card-title">關渡水岸腳踏車道</h5>
+                        <p class="card-text">全長約 7 公里，沿途可欣賞淡水河、基隆河風光，鄰近關渡宮、陽明山國家公園等景點</p>
+                        <p class="difficulty">難度: Hard</p>
                         <div class="rating">
                             <i class="fas fa-star"></i>
                             <i class="fas fa-star"></i>
                             <i class="fas fa-star"></i>
                             <i class="fas fa-star"></i>
                             <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card" onclick="openModal('trail2')">
+                    <img src="{% static 'images/donam.jpg' %}" class="card-img-top" alt="Scenic Photo 2">
+                    <div class="card-body">
+                        <h5 class="card-title">道南河濱公園河濱腳踏車道</h5>
+                        <p class="card-text">全長約 1.5 公里，沿途可欣賞大坑溪風光，鄰近指南山生態公園、木柵動物園、貓空纜車等景點</p>
+                        <p class="difficulty">難度: Easy</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
                         </div>
                     </div>
                 </div>
@@ -94,10 +114,18 @@
 <script>
     const trails = {
         trail1: {
-            title: "景點",
-            description: "景點 的詳細介紹",
-            scenicSpots: "關於沿途景點的詳細信息",
-            estimatedTime: "預估騎乘時間: 2 小時",
+            title: "關渡水岸腳踏車道",
+            description: "關渡水岸腳踏車道位於台北市北投區，全長約 7 公里，沿途可欣賞淡水河、基隆河風光。步道寬敞平坦，適合挑戰自我。附近有關渡宮、陽明山國家公園等景點，可結合遊覽。",
+            scenicSpots: "起點：關渡宮，終點：陽明山國家公園",
+            estimatedTime: "預估騎乘時間: 35 分鐘",
+            difficulty: "困難",
+            rating: 4.5,
+        },
+        trail2: {
+            title: "道南河濱公園河濱腳踏車道",
+            description: "道南河濱公園河濱腳踏車道位於台北市文山區，全長約 1.5 公里，沿途可欣賞大坑溪風光。步道寬敞平坦，適合休閒騎乘。附近有指南山生態公園、木柵動物園、貓空纜車等景點，可結合遊覽。",
+            scenicSpots: "起點：指南山生態公園，終點：貓空纜車",
+            estimatedTime: "預估騎乘時間: 30 分鐘",
             difficulty: "簡單",
             rating: 4.5,
         },

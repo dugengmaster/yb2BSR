@@ -107,11 +107,11 @@ def handle_postback(event):
                     temp = {}
                     temp.update(
                         {"name": status.name,
-                        "available_spaces": status.available_spaces,
-                        "parking_spaces": status.parking_spaces,
-                        "duration": status.duration,
-                        "msg": status.msg,
-                        "update_time": status.update_time}
+                         "available_spaces": status.available_spaces,
+                         "parking_spaces": status.parking_spaces,
+                         "duration": status.duration,
+                         "msg": status.msg,
+                         "update_time": status.update_time}
                         )
                     bikeStatus.append(temp)
 
@@ -218,7 +218,7 @@ def handle_location_message(event):
                     line_bot_api.reply_message(
                     ReplyMessageRequest(
                         reply_token=event.reply_token,
-                        messages=[TextMessage(text="僅支援台灣地區")]
+                        messages=[TextMessage(text="資料重整中")]
                     )
                 )
             # 判斷使用者要查詢最佳站點
