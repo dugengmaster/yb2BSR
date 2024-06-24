@@ -1,28 +1,38 @@
 from django.shortcuts import render
 from django.conf import settings
+from django.http import JsonResponse
 from mapAPP.GoogleMapForUbike import GoogleMapforUbike
-# from mapAPP.models import LtecelltowerTpe, Yb_stn
-import os
-from datetime import datetime
-import pandas as pd
 from mapAPP.StationSuggestAlgorism import minuteChange, geo_to_No
 from mapAPP.get_current_info import tpe_cur_rain, tpe_cur_temp, holiday_qy, getstationbike
+# from mapAPP.models import LtecelltowerTpe, Yb_stn
+from datetime import datetime
+import pandas as pd
 import numpy as np
+import os
 import joblib
 import threading
 import queue
-from django.http import JsonResponse
 import requests
+
 # Create your views here.
 
+#上架到heroku之後，程式會優先抓取伺服器的IP而不是使用者IP
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
 # myPosition -> {'lat': float, 'lng': float}
-def mapfunctionplus(myPosition=None):
+def mapfunctionplus(ip,myPosition=None):
     now = datetime.now()
     q = queue.Queue()
      #取得使用者GPS
     gmap = GoogleMapforUbike(settings.GOOGLE_MAPS_API_KEY)
     if myPosition == None:
-        myPosition = gmap.getgeolocation()
+        myPosition = gmap.getgeolocation(ip)
     #台北市的經緯度範圍，不再這範圍內的人，會定位在台北車站，並以定位點為中心取得周邊的Ubike站點
     lat_min, lat_max = 24.97619, 25.14582
     lng_min, lng_max = 121.46288, 121.62306
@@ -245,22 +255,15 @@ def mapAPP(request):
     lng = request.GET.get('lng')
 
     if lat and lng:
+        # 25.040280970828704, 121.51193996655002
+        # coor = {'lat':25.040280970828704, 'lng':121.51193996655002}
         coor = {'lat': float(lat), 'lng': float(lng)}
         parameter = mapfunctionplus(coor)
     else:
-    # 25.040280970828704, 121.51193996655002
-    # coor = {'lat':25.040280970828704, 'lng':121.51193996655002}
-        parameter = mapfunctionplus()
+        ip=get_client_ip(request)
+        parameter = mapfunctionplus(ip)
 
     return render(request, "mapAPP.html", parameter)
-
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
 
 def mapJson(request):
     ip = get_client_ip(request)
@@ -286,19 +289,12 @@ def mapJson(request):
         'longitude': longitude
     })
 
-# def mapJson(request):
-#     parameter = mapfunction()
-#     return JsonResponse(parameter)
 
 # 查詢特定站點
 
 # 推薦站點
 
 # 站點分析
-
-
-
-
 
 # by C F Chu for yb data collection and yb model setup
 

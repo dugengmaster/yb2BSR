@@ -9,10 +9,8 @@ import django
 import sys
 project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_path)
-# 设置环境变量
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'yb2BSR.settings')
 
-# 初始化 Django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'yb2BSR.settings')
 django.setup()
 import googlemaps as gmap
 import pandas as pd
@@ -25,28 +23,22 @@ from mapAPP.models import LtecelltowerTpe, Yb_stn2
 from django.db.models import Q
 import time
 import numpy as np
+import requests
 
 
 def haversine(lat1, lon1, lat2, lon2):
     """
     在地圖上用經緯度計算距離
-
     Parameters
     ----------
-    lat1 : TYPE
-        float
-    lon1 : TYPE
-        float
-    lat2 : TYPE
-        float
-    lon2 : TYPE
-        float
+    lat1 : TYPE float
+    lon1 : TYPE float
+    lat2 : TYPE float
+    lon2 : TYPE float
 
     Returns
     -------
-    distance : TYPE
-        float
-
+    distance : TYPE float
     """
     #經緯度轉為弧度制
     lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
@@ -78,12 +70,47 @@ class GoogleMapforUbike:
     def __init__(self, key):
         self.client = gmap.Client(key=key)
         self.lteCelltower = LtecelltowerTpe.objects.all()
+        self.key = key
 
+    def takeGpsByIP(self, ip ,home_mobile_country_code=None,
+              home_mobile_network_code=None, radio_type=None, carrier=None,
+              consider_ip=None, cell_towers=None, wifi_access_points=None) -> dict:
+        # Geolocation API URL
+        geolocation_url = 'https://www.googleapis.com/geolocation/v1/geolocate?key=' + self.key
+        params={"ip": ip }
+        if home_mobile_country_code is not None:
+            params["homeMobileCountryCode"] = home_mobile_country_code
+        if home_mobile_network_code is not None:
+            params["homeMobileNetworkCode"] = home_mobile_network_code
+        if radio_type is not None:
+            params["radioType"] = radio_type
+        if carrier is not None:
+            params["carrier"] = carrier
+        if consider_ip is not None:
+            params["considerIp"] = consider_ip
+        if cell_towers is not None:
+            params["cellTowers"] = cell_towers
+        if wifi_access_points is not None:
+            params["wifiAccessPoints"] = wifi_access_points
+        # Send request to Google Geolocation API
+        response = requests.post(geolocation_url, params)
+        data = response.json()
 
+        if 'location' in data:
+            latitude = data['location']['lat']
+            longitude = data['location']['lng']
+        else:
+            latitude = None
+            longitude = None
 
-    def getgeolocation(self, Carrier="中華電信") -> dict:
+        return {
+            'lat': latitude,
+            'lng': longitude
+        }
+
+    def getgeolocation(self,ip, Carrier="中華電信") -> dict:
         #先取得粗略的GPS定位
-        gps = self.client.geolocate()
+        gps = self.takeGpsByIP(ip)
         carrier = {'1':"遠傳電信", "5":"遠傳電信","89":"台灣大哥大","92":"中華電信","97":"台灣大哥大"}
         Net = []
         for key, value in carrier.items():
@@ -96,7 +123,7 @@ class GoogleMapforUbike:
             towerList = self.lteCelltower.filter(Q(net=Net[0]))
         pickthem = []
         distanceList= []
-        lat1, lon1 = gps["location"]["lat"], gps["location"]["lng"]
+        lat1, lon1 = gps["lat"], gps["lng"]
         #從表裡面找到最近的基地台資訊
         for tower in towerList:
             distance = haversine(lat1, lon1, float(tower.lat), float(tower.lon))
@@ -127,14 +154,12 @@ class GoogleMapforUbike:
             "channel": 36,
             "age": 0
             }]
-            myGPS = self.client.geolocate(home_mobile_country_code=466, home_mobile_network_code=int(pickthem[x[0]]["net"]),
+            myGPS = self.takeGpsByIP(ip,home_mobile_country_code=466, home_mobile_network_code=int(pickthem[x[0]]["net"]),
                                         radio_type="lte", carrier=Carrier, consider_ip=True,
                                         cell_towers= cellTower, wifi_access_points=wifiAccessPoint)
         else:
-            myGPS = self.client.geolocate(home_mobile_country_code=466, home_mobile_network_code=None,
-                                        radio_type="lte", carrier=Carrier, consider_ip=True,
-                                        cell_towers= None, wifi_access_points=None)
-        return myGPS['location']
+            myGPS = gps
+        return myGPS
 
     def getBikeStation(self, location) -> dict:
         # #先取得半徑500m的bike station {'lat': 123456, 'lng':4561}
@@ -204,7 +229,7 @@ class GoogleMapforUbike:
 
 if __name__ == '__main__':
     # gmap = GoogleMapforUbike('AIzaSyDeEzYq-fwNLOXJu7XzAXU2NgxJW3th_2A')
-    gmap = gmap.Client(key='AIzaSyDeEzYq-fwNLOXJu7XzAXU2NgxJW3th_2A')
+    gmap = gmap.Client(key='')
     start = time.time()
     posi = gmap.geolocate()
     end = time.time()
