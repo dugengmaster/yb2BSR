@@ -116,7 +116,6 @@ class GoogleMapforUbike:
         for key, value in carrier.items():
             if value == Carrier: Net.append(int(key))
 
-
         if len(Net) >1:
             towerList = self.lteCelltower.filter(Q(net=Net[0]) | Q(net=Net[1]))
         else:
