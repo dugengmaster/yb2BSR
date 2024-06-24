@@ -263,12 +263,16 @@ def mapAPP(request):
     #   ip=get_client_ip(request)
         client_ip, is_routable = get_client_ip(request, request_header_order=["HTTP_X_FORWARDED_FOR"])
         if client_ip is None:
+            print(client_ip)
             print("Unable to get the client's IP address")
         else:
+            print(client_ip)
             print("We got the client's IP address")
         if is_routable:
+            print(client_ip)
             print("The client's IP address is publicly routable on the Internet")
         else:
+            print(client_ip)
             print("The client's IP address is private")
         parameter = mapfunctionplus(client_ip)
 
