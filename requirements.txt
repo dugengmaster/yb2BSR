@@ -1,4 +1,4 @@
-django
+django==5.0.6
 gunicorn
 django-heroku
 scikit-learn

@@ -1,24 +1,19 @@
 from django.shortcuts import render
 from django.conf import settings
+from django.http import JsonResponse
 from mapAPP.GoogleMapForUbike import GoogleMapforUbike
-# from mapAPP.models import LtecelltowerTpe, Yb_stn
-from django.db.models import Q
-from django.http import HttpResponse
-import os
-import time
-from datetime import datetime
-import pandas as pd
-import re
-import requests
-import json
 from mapAPP.StationSuggestAlgorism import minuteChange, geo_to_No
 from mapAPP.get_current_info import tpe_cur_rain, tpe_cur_temp, holiday_qy, getstationbike
+# from mapAPP.models import LtecelltowerTpe, Yb_stn
+from datetime import datetime
+import pandas as pd
 import numpy as np
+import os
 import joblib
 import threading
 import queue
-from django.http import JsonResponse
 import requests
+
 # Create your views here.
 
 #上架到heroku之後，程式會優先抓取伺服器的IP而不是使用者IP
@@ -29,6 +24,8 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+# myPosition -> {'lat': float, 'lng': float}
 def mapfunctionplus(ip,myPosition=None):
     now = datetime.now()
     q = queue.Queue()
@@ -39,28 +36,29 @@ def mapfunctionplus(ip,myPosition=None):
     #台北市的經緯度範圍，不再這範圍內的人，會定位在台北車站，並以定位點為中心取得周邊的Ubike站點
     lat_min, lat_max = 24.97619, 25.14582
     lng_min, lng_max = 121.46288, 121.62306
-    
+
     if (myPosition['lat']<lat_min or myPosition['lat']>lat_max) or (myPosition['lng']<lng_min or myPosition['lng']>lng_max):
         temp = "{lat:"+str(myPosition['lat'])+","+"lng:"+str(myPosition['lng'])+'}'
-        msg = "很抱歉，台北市以外的功能尚未開放推薦功能"
+        msg = "很抱歉，台北市以外的區域尚未開放推薦功能"
         bikeStation = gmap.getBikeStation(myPosition)
         # print(bikeStation)
 
         getstationbike(bikeStation,q)
         bikeStatus = q.get()
-        
+
         duration = gmap.getDuration(myPosition,bikeStation)
+        # print(duration[0]['time_cost'], type(duration[0]['time_cost']))
         #訓練結果轉換為msg
         for i in range(len(bikeStatus)):
-            bikeStatus[i]['msg']=" "
-            bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
+            bikeStatus[i]['msg']="台北市以外區域尚無推薦服務"
+            bikeStatus[i]['duration'] = f"{duration[i]['time_cost'] / 60 : .0f}"
         bikestations = []
         #轉換地理座標格式，JS可讀取格式
         for sta in bikeStation:
             change = "{lat:"+str(sta['lat'])+","+"lng:"+str(sta['lng'])+'}'
             bike = {sta['name_tw']: change}
             bikestations.append(bike)
-        
+
         #資料彙整成dict傳入html
         parameter = {
             "api_key": settings.GOOGLE_MAPS_API_KEY,
@@ -74,7 +72,7 @@ def mapfunctionplus(ip,myPosition=None):
         temp = "{lat:"+str(myPosition['lat'])+","+"lng:"+str(myPosition['lng'])+'}'
         msg = ' '
         bikeStation = gmap.getBikeStation(myPosition)
-        
+
         #多工緒處理爬蟲
         rainthread = threading.Thread(target=tpe_cur_rain, args=(q,))#降雨資料
         tempthread = threading.Thread(target=tpe_cur_temp, args=(q,))#即時溫度
@@ -82,15 +80,15 @@ def mapfunctionplus(ip,myPosition=None):
         statusthread = threading.Thread(target=getstationbike, args=(bikeStation,q))
         rainthread.start()
         tempthread.start()
-        holidaythread.start() 
+        holidaythread.start()
 
         #多工爬蟲抓取站點即時資料
-        
+
         statusthread.start()
 
         #從./mlmodles 取得各站點的預測模型
         station_no = geo_to_No(bikeStation)
-        
+
         models = []
         for x in station_no:
             try:
@@ -106,45 +104,45 @@ def mapfunctionplus(ip,myPosition=None):
         tempthread.join()
         holidaythread.join()
         statusthread.join()
-        raincheck = q.get()          
-        temperature = q.get()       
-        isholiday = q.get() 
+        raincheck = q.get()
+        temperature = q.get()
+        isholiday = q.get()
         bikeStatus = q.get()
 
         #取得走路到各站點需要花費的時間，並轉換為時段
         bikestations = []
         duration = gmap.getDuration(myPosition,bikeStation)
         timeSwap = [minuteChange(dur['time_cost']/60 + now.minute) for dur in duration]
-        bikes_now = [int(bikeStatus[s]['available_spaces'].split('/')[0]) for s in range(len(bikeStatus))]
-        bikes_total = [int(bikeStatus[s]['available_spaces'].split('/')[1]) for s in range(len(bikeStatus))]
+        bikes_now = [bikeStatus[s]['available_spaces'] for s in range(len(bikeStatus))]
+        bikes_total = [bikeStatus[s]['parking_spaces'] for s in range(len(bikeStatus))]
         #輸入參數hour(00.00), isholiday(0,1), rainCheck(0,1), temp_now
         X_input = [pd.DataFrame([{'hour':(now.hour+timeSwap[i]), 'isholiday':isholiday, 'rainCheck':raincheck, 'temp_now':temperature}]) for i in range(len(timeSwap))]
         for j in range(len(X_input)):
         # 確認 X_input[j] 的格式
             if isinstance(X_input[j], pd.DataFrame):
                 X_input[j] = X_input[j].values  # 將 DataFrame 轉換為 numpy 陣列
-        
+
             # 確保 X_input[j] 是一個二為數組
             X_input[j] = np.asarray(X_input[j])
             if X_input[j].ndim == 1:
                 X_input[j] = X_input[j].reshape(1, -1)  # 將一維轉換為二維
             else:
                 X_input[j] = pd.DataFrame(X_input[j], columns=['hour', 'isholiday', 'rainCheck', 'temp_now'])
-        
+
         have_bike = [models[z].predict(X_input[z]) for z in range(len(models))]
-        
+
         #訓練結果轉換為msg
         for i in range(len(bikeStatus)):
             try:
                 if (have_bike[i]==0) and (bikes_now[i]/bikes_total[i]<=0.15) and (bikes_now[i]<5):
-                    bikeStatus[i]['msg']="這時段車輛可能不足，需要等待幾分鐘"
-                    bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
+                    bikeStatus[i]['msg']="車輛緊張，建議更換站點"
+                    bikeStatus[i]['duration'] = f"{duration[i]['time_cost'] / 60 : .0f}"
                 else:
-                    bikeStatus[i]['msg']="車輛充足"
-                    bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
+                    bikeStatus[i]['msg']="車輛充裕，建議前往"
+                    bikeStatus[i]['duration'] = f"{duration[i]['time_cost'] / 60 : .0f}"
             except:
-                bikeStatus[i]['msg']="車輛充足"
-                bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
+                bikeStatus[i]['msg']="車輛充裕，建議前往"
+                bikeStatus[i]['duration'] = f"{duration[i]['time_cost'] / 60 : .0f}"
 
         #轉換地理座標格式，JS可讀取格式
         for sta in bikeStation:
@@ -161,6 +159,7 @@ def mapfunctionplus(ip,myPosition=None):
             'bikeStatus':bikeStatus
         }
         return parameter
+
 def mapfunction():
     now = datetime.now()
 
@@ -212,9 +211,9 @@ def mapfunction():
     tempthread.join()
     holidaythread.join()
     statusthread.join()
-    raincheck = q.get()          
-    temperature = q.get()       
-    isholiday = q.get() 
+    raincheck = q.get()
+    temperature = q.get()
+    isholiday = q.get()
     bikeStatus = q.get()
 
     #取得走路到各站點需要花費的時間，並轉換為時段
@@ -229,10 +228,10 @@ def mapfunction():
     #訓練結果轉換為msg
     for i in range(len(bikeStatus)):
         if have_bike[i]==1:
-            bikeStatus[i]['msg']="車輛充足"
+            bikeStatus[i]['msg']="車輛充裕，建議前往"
             bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
         else:
-            bikeStatus[i]['msg']="這時段車輛可能不足，需要等待幾分鐘"
+            bikeStatus[i]['msg']="車輛即將用盡，建議前往其他站點"
             bikeStatus[i]['duration'] = round(duration[i]['time_cost']/60,1)
 
     #轉換地理座標格式，JS可讀取格式
@@ -252,15 +251,19 @@ def mapfunction():
     return parameter
 # 顯示有地圖的頁面
 def mapAPP(request):
-    # 25.040280970828704, 121.51193996655002
-    # coor = {'lat':25.040280970828704, 'lng':121.51193996655002}
-    ip=get_client_ip(request)
-    parameter = mapfunctionplus(ip)
+    lat = request.GET.get('lat')
+    lng = request.GET.get('lng')
+
+    if lat and lng:
+        # 25.040280970828704, 121.51193996655002
+        # coor = {'lat':25.040280970828704, 'lng':121.51193996655002}
+        coor = {'lat': float(lat), 'lng': float(lng)}
+        parameter = mapfunctionplus(coor)
+    else:
+      ip=get_client_ip(request)
+      parameter = mapfunctionplus(ip)
     
     return render(request, "mapAPP.html", parameter)
-
-
-
 
 def mapJson(request):
     ip = get_client_ip(request)
@@ -286,15 +289,12 @@ def mapJson(request):
         'longitude': longitude
     })
 
+
 # 查詢特定站點
 
 # 推薦站點
 
 # 站點分析
-
-
-
-
 
 # by C F Chu for yb data collection and yb model setup
 

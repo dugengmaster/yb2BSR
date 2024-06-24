@@ -35,7 +35,7 @@ LINE_CHANNEL_SECRET = os.getenv('LINE_CHANNEL_SECRET')
 LINE_CHANNEL_ACCESS_TOKEN = os.getenv('LINE_CHANNEL_ACCESS_TOKEN')
 METEOROLOGICAL_DATA_OPEN_PLATFORM = os.getenv('METEOROLOGICAL_DATA_OPEN_PLATFORM')
 LINE_LOGIN_CHANNEL_SECRET = os.getenv('LINE_LOGIN_CHANNEL_SECRET')
-LINE_REDIRECT_URI = "https://08c5-2401-e180-8d51-544-1b2-96f3-db0-e241.ngrok-free.app"
+# LINE_REDIRECT_URI = "https://08c5-2401-e180-8d51-544-1b2-96f3-db0-e241.ngrok-free.app"
 LINE_REDIRECT_URI_CALLBACK=os.getenv('LINE_REDIRECT_URI_CALLBACK')
 LINE_NOTIFY_URL = 'https://notify-api.line.me/api/notify'
 ENGINE = os.getenv('ENGINE')
@@ -46,6 +46,7 @@ HOST = os.getenv('HOST')
 PORT = os.getenv('PORT')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = False
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
@@ -130,24 +131,24 @@ WSGI_APPLICATION = "yb2BSR.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': ENGINE,
-#         'NAME': NAME,
-#         'USER': USER,
-#         'PASSWORD': PASSWORD,
-#         'HOST': HOST,
-#         'PORT': PORT,
-#     }
-# }
-#Local use
+# postgreSQL use
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': ENGINE,
+        'NAME': NAME,
+        'USER': USER,
+        'PASSWORD': PASSWORD,
+        'HOST': HOST,
+        'PORT': PORT,
     }
 }
-# SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 使用數據庫儲存 session
+#Local use
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"  # 使用數據庫儲存 session
 LOGGING = {

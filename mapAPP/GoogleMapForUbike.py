@@ -54,7 +54,7 @@ def haversine(lat1, lon1, lat2, lon2):
 
     #地球半徑
     R = 6371.0
-    #單位公里
+    #單位公里換算成公尺
     distance = R*c*1000
     return distance
 
@@ -182,11 +182,12 @@ class GoogleMapforUbike:
         #         coordinates.append(coordinate)
         # df = pd.DataFrame(coordinates)
         # df = df.sort_values(by='distance')
-        
+
         # top5 = df.head(5)
         # del top5['distance']
         staInfo = Yb_stn2.objects.all()#filter(area_code='00')
         sta_info_df = pd.DataFrame([{'lat': float(sta.lat), 'lng': float(sta.lng), 'name_tw': sta.name_tw} for sta in staInfo])
+        # 排重
         sta_info_df = sta_info_df.drop_duplicates(subset=['name_tw'])
         sta_info_df['distance']=sta_info_df.apply(lambda row: haversine(location['lat'], location['lng'], row['lat'], row['lng']), axis=1)
         sta_info_df = sta_info_df.sort_values(by='distance')

@@ -21,20 +21,7 @@ def custom_authenticate(username, password):
     except User.DoesNotExist:
         return None
 
-from django.contrib.auth.models import User  # 导入用户模型
-from django.contrib.auth.hashers import check_password
-
-def custom_authenticate(username, password):
-    try:
-        user = User.objects.get(username=username)
-        if check_password(password, user.password):
-            return user
-    except User.DoesNotExist:
-        return None
-
 def my_login(request):
-    show_modal_1 = False  # 預設不顯示模態窗口
-
     show_modal_1 = False  # 預設不顯示模態窗口
 
     if request.method == "POST":
@@ -68,10 +55,7 @@ def my_login(request):
     # GET 請求或登入失敗後顯示表單
     return render(request, "home.html", {"error_message":error_message,'show_modal_1': show_modal_1})
 
-
-
 # @login_required
-
 
 def home(request):
     if request.user.is_authenticated:
@@ -121,6 +105,7 @@ from web.models import UserProfile
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 logger = logging.getLogger(__name__)
+
 def custom_line_login(request):
     if 'code' in request.GET and 'state' in request.GET:
         # 校验 state，确保不被 CSRF 攻击
@@ -248,7 +233,7 @@ def line_login_callback(request):
 
             if created:
                 # 如果是新用戶，返回 1.html 並顯示註冊模態
-                return render(request, '1.html', {'show_modal': True})
+                return render(request, 'home.html', {'show_modal': True})
 
             # 登錄已存在的用戶
             user.backend = 'django.contrib.auth.backends.ModelBackend'
