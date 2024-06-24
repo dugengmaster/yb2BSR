@@ -8,18 +8,21 @@ from django.conf import settings
 import requests
 import logging
 from django.contrib import messages
-
+from web.models import UserProfile
 # Create your views here.
 from django.contrib.auth.models import User  # 导入用户模型
 from django.contrib.auth.hashers import check_password
+from django.contrib.auth.decorators import login_required
 
 def custom_authenticate(username, password):
     try:
-        user = User.objects.get(username=username)
+        user = UserProfile.objects.get(username=username)
         if check_password(password, user.password):
             return user
-    except User.DoesNotExist:
+    except UserProfile.DoesNotExist:
         return None
+
+
 
 def my_login(request):
     show_modal_1 = False  # 預設不顯示模態窗口
@@ -27,18 +30,14 @@ def my_login(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
-        # print("username:", username)
-        # print("password:", password)
 
         # 使用自定義身份驗證方法
         user = custom_authenticate(username=username, password=password)
         # print("user:", user)
 
         if user is not None:
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')  # 將用戶信息存儲在會話中，實現保持登錄狀態
+            login(request, user, backend='web.backed.LineUserBackend')  # 將用戶信息存儲在會話中，實現保持登錄狀態
             return redirect("home")  # 登錄成功後重定向到首頁
-        # print("username:", username)
-        # print("password:", password)
 
         # 使用自定義身份驗證方法
         user = custom_authenticate(username=username, password=password)
@@ -55,11 +54,25 @@ def my_login(request):
     # GET 請求或登入失敗後顯示表單
     return render(request, "home.html", {"error_message":error_message,'show_modal_1': show_modal_1})
 
-# @login_required
+
 
 def home(request):
     if request.user.is_authenticated:
-        return render(request, 'home.html')
+        line_name = request.user.line_name
+        email = request.user.email
+        # user_profile = UserProfile.objects.get(line_name=line_name, email=email)
+        # line_name = UserProfile.objects.get(line_name=request.user.line_name)
+        # email = UserProfile.objects.get(email=request.user.email)
+        email = email.split("@")[0]
+        print("line_name",line_name)
+        print("email",email)
+        context = {
+            # 'user_profile': user_profile,
+            "line_name":line_name,
+            "email":email,
+        }
+        return render(request, 'home.html', context)
+        # return render(request, 'home.html')
     else:
         return render(request, 'home.html')
 
@@ -76,24 +89,7 @@ def stations(request):
     return render(request, "mapAPP.html", map_key)
 
 
-# def station_analysis_view(request, station_name):
-#     # 根据站点名称获取分析数据
-#     analysis_data = {
-#         "station_name": station_name,
-#         "chart_data": [10, 20, 30, 40, 50],  # 示例数据
-#     }
-#     return render(request, "analysis.html", analysis_data)
 
-# from django.http import Http404
-# def my_view(request):
-#     try:
-#         # 你的視圖代碼...
-#         # 如果無法找到所需內容，則手動引發 404 錯誤
-#         # 如果你的視圖無法找到所需內容，你可以引發 Http404 異常
-#         raise Http404("Page not found")
-#     except Http404:
-#         # 如果引發了 Http404 異常，導向到自定義的 404 錯誤頁面
-#         return custom_404(request)
 
 import requests
 from django.contrib.auth.models import User
@@ -101,9 +97,14 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 import secrets
 from django.http import HttpResponse, HttpResponseBadRequest
-from web.models import UserProfile
-from django.contrib.auth import get_user_model
+
 from django.contrib.auth import login
+from django.contrib.auth.hashers import make_password
+from django.utils import timezone
+from django.contrib.auth import get_user_model
+from web.backed import LineUserBackend
+
+
 logger = logging.getLogger(__name__)
 
 def custom_line_login(request):
@@ -123,7 +124,7 @@ def custom_line_login(request):
         token_url = "https://api.line.me/oauth2/v2.1/token"
         client_id = settings.LINE_CLIENT_ID
         client_secret = settings.LINE_CLIENT_SECRET
-        redirect_uri = "https://yb-select-site-cf3061dbdf38.herokuapp.com/line/login/callback/"
+        redirect_uri = "http://127.0.0.1:8000/line/login/callback/"
 
         response = requests.post(token_url, data={
             'grant_type': 'authorization_code',
@@ -171,7 +172,7 @@ def custom_line_login(request):
         # print("state",state)
         base_url = "https://access.line.me/oauth2/v2.1/authorize"
         client_id = settings.LINE_CLIENT_ID
-        redirect_uri = "https://yb-select-site-cf3061dbdf38.herokuapp.com/line/login/callback/"
+        redirect_uri = "http://127.0.0.1:8000/line/login/callback/"
         response_type = "code"
         scope = "profile openid"
         line_login_url = f"{base_url}?response_type={response_type}&client_id={client_id}&redirect_uri={redirect_uri}&state={state}&scope={scope}"
@@ -186,7 +187,7 @@ def line_login_callback(request):
 
     state = request.GET.get('state')
     code = request.GET.get('code')
-    redirect_uri = "https://yb-select-site-cf3061dbdf38.herokuapp.com/line/login/callback/"
+    redirect_uri = "http://127.0.0.1:8000/line/login/callback/"
     # print("state",state)
 
     # 檢查 state 參數是否與 Session 中的 line_login_state 匹配
@@ -224,19 +225,29 @@ def line_login_callback(request):
             headers = {'Authorization': f'Bearer {access_token}'}
             user_info_response = requests.get(user_info_url, headers=headers)
             user_info_data = user_info_response.json()
-
+            if 'line_user_id' in request.session:
+                del request.session['line_user_id']
+            if 'display_name' in request.session:
+                del request.session['display_name']
             line_user_id = user_info_data['userId']
             display_name = user_info_data.get('displayName', 'No Name')
-
+            request.session['line_user_id'] = line_user_id
+            request.session['display_name'] = display_name
             # 嘗試根據 line_user_id 創建或獲取用戶
-            user, created = User.objects.get_or_create(username=line_user_id, defaults={'first_name': display_name})
+            try:
+                user = UserProfile.objects.get(line_user_id=line_user_id)
+                print(f"找到用戶：{user.line_user_id}")
 
-            if created:
-                # 如果是新用戶，返回 1.html 並顯示註冊模態
-                return render(request, 'home.html', {'show_modal': True})
+            except UserProfile.DoesNotExist:
+                user = None
+            if user is None:
+                user = LineUserBackend().authenticate(request, line_user_id=line_user_id)
+                if not user:
+                    # 如果是新用戶，返回 1.html 並顯示註冊模態
+                    return render(request, 'home.html', {'show_modal': True})
 
             # 登錄已存在的用戶
-            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            user.backend = 'web.backed.LineUserBackend'
             login(request, user)
             return redirect('/')
         else:
@@ -251,48 +262,41 @@ def line_login_callback(request):
 
 
 
-def register_user(new_username, new_password, email, telecom, request):
-    try:
-        # 创建新用户
-        user = User.objects.create_user(username=new_username, password=new_password, email=email)
-
-        # 保存电信信息到用户的 UserProfile
-        user_profile = UserProfile.objects.create(user=user, telecom=telecom)
-        print(user_profile)
-
-        # 确认请求中的用户已经登录
-        if request.user.is_authenticated:
-            line_username = request.user.username
-
-            # 将注册用户与 Line 登录用户进行关联
-            user.line_username = line_username
-            user.save()
-            return HttpResponse("User registered and linked successfully.")
-        else:
-            return HttpResponse("Request user is not authenticated.")
-
-    except Exception as e:
-        return HttpResponse(f"An error occurred: {e}")
-
-def registerModal(request):
+def registerModal( request):
     if request.method == 'POST':
         # 獲取註冊表單提交的數據
+
         new_username = request.POST.get('new_username')
         new_password = request.POST.get('new_password')
-        carrier = request.POST.get('registerCarrier')
+        telecom = request.POST.get('registerCarrier')
         email = request.POST.get('email')
+        line_user_id = request.session.get('line_user_id')
+        display_name = request.session.get('display_name')
+        request.session['new_username'] = new_username
+
+
 
         # 檢查所有字段是否已填寫
-        if not (new_username and new_password and carrier and email):
+        if not (new_username and new_password and telecom and email):
             return HttpResponseBadRequest('所有字段都是註冊所需的。')
 
         try:
+            hashed_password = make_password(new_password)
             # 將註冊用戶的數據保存到數據庫中
             user = User.objects.create_user(username=new_username, password=new_password, email=email)
 
-            # 將電信信息保存到用戶的 UserProfile 中
-            user_profile = UserProfile.objects.create(user=user, carrier=carrier)
-            print(user_profile)  # 打印 UserProfile 對象，用於調試
+            # 將用戶訊息儲存到用戶的 UserProfile 中
+            user_profile = UserProfile.objects.create(
+                user=user,
+                username=new_username,
+                password=hashed_password,
+                email=email,
+                telecom=telecom,
+                line_user_id=line_user_id,
+                line_name=display_name,
+                registration_date=timezone.now()
+                 )
+            print("user_profile",user_profile)  # 打印 UserProfile 對象，用於調試
 
             # 自動登入新註冊的用戶
             user = authenticate(username=new_username, password=new_password)
@@ -301,37 +305,11 @@ def registerModal(request):
                 return redirect('/')  # 這裡可以重定向到其他頁面或者顯示成功消息
 
         except Exception as e:
-            return HttpResponseBadRequest(f'註冊用戶失敗：{str(e)}')
+            # 在捕獲到異常時，返回適當的錯誤消息
+            error_message = f'註冊用戶失敗：{str(e)}'
+            return HttpResponseBadRequest(error_message)
 
-    return render(request, 'components/modals/register_modal.html')
-
-
-
-def send_line_notification(user_id, message):
-    try:
-        # 從資料庫中查詢使用者的 access_token
-        # 這裡假設你已經定義了一個 UserProfile 模型來存儲用戶的 LINE 使用者 ID 和 access_token
-        user_profile = UserProfile.objects.get(user_id=user_id)
-        access_token = user_profile.access_token
-    except UserProfile.DoesNotExist:
-        # 如果未找到使用者，則返回錯誤
-        return HttpResponseBadRequest('User not found')
-
-    # 向 LINE 發送通知
-    notify_url = settings.LINE_NOTIFY_URL
-    headers = {'Authorization': f'Bearer {access_token}'}
-    data = {'message': message}
-
-    response = requests.post(notify_url, headers=headers, data=data)
-    if response.status_code == 200:
-        return HttpResponse('Notification sent successfully')
-    else:
-        return HttpResponseBadRequest('Failed to send notification')
-
-# def login_failed(request):
-#     return render(request, 'login_failed.html')
-
-
+    return render(request, 'home.html', {'show_modal': True})
 
 
 def custom_404(request, exception):
