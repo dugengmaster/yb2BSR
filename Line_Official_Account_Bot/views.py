@@ -218,7 +218,7 @@ def handle_location_message(event):
                     line_bot_api.reply_message(
                     ReplyMessageRequest(
                         reply_token=event.reply_token,
-                        messages=[TextMessage(text="僅支援台灣地區")]
+                        messages=[TextMessage(text="資料重整中")]
                     )
                 )
             # 判斷使用者要查詢最佳站點
