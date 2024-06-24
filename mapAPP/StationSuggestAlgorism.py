@@ -13,10 +13,9 @@ import django
 import sys
 project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_path)
-# 设置环境变量
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'yb2BSR.settings')
 
-# 初始化 Django
 django.setup()
 import numpy as np
 from sklearn.model_selection import train_test_split
