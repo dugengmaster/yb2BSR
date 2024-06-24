@@ -8,7 +8,6 @@ from django.conf import settings
 import requests
 import logging
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from web.models import UserProfile
 # Create your views here.
 from django.contrib.auth.models import User  # 导入用户模型
@@ -28,8 +27,6 @@ def my_login(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
-        # print("username:", username)
-        # print("password:", password)
 
         # 使用自定義身份驗證方法
         user = custom_authenticate(username=username, password=password)
@@ -38,8 +35,6 @@ def my_login(request):
         if user is not None:
             login(request, user, backend='web.backed.LineUserBackend')  # 將用戶信息存儲在會話中，實現保持登錄狀態
             return redirect("home")  # 登錄成功後重定向到首頁
-        # print("username:", username)
-        # print("password:", password)
 
         # 使用自定義身份驗證方法
         user = custom_authenticate(username=username, password=password)
@@ -56,12 +51,7 @@ def my_login(request):
     # GET 請求或登入失敗後顯示表單
     return render(request, "home.html", {"error_message":error_message,'show_modal_1': show_modal_1})
 
-# @login_required
-# def home(request):
-#     if request.user.profile.is_authenticated():  # 假設有一個 is_authenticated 方法在 UserProfile 中
-#         return render(request, 'home.html')
-#     else:
-#         return render(request, 'home.html')
+
 def home(request):
     if request.user.is_authenticated:
         return render(request, 'home.html')
@@ -81,24 +71,7 @@ def stations(request):
     return render(request, "mapAPP.html", map_key)
 
 
-# def station_analysis_view(request, station_name):
-#     # 根据站点名称获取分析数据
-#     analysis_data = {
-#         "station_name": station_name,
-#         "chart_data": [10, 20, 30, 40, 50],  # 示例数据
-#     }
-#     return render(request, "analysis.html", analysis_data)
 
-# from django.http import Http404
-# def my_view(request):
-#     try:
-#         # 你的視圖代碼...
-#         # 如果無法找到所需內容，則手動引發 404 錯誤
-#         # 如果你的視圖無法找到所需內容，你可以引發 Http404 異常
-#         raise Http404("Page not found")
-#     except Http404:
-#         # 如果引發了 Http404 異常，導向到自定義的 404 錯誤頁面
-#         return custom_404(request)
 
 import requests
 from django.contrib.auth.models import User
@@ -256,7 +229,6 @@ def line_login_callback(request):
                     return render(request, 'home.html', {'show_modal': True})
 
             # 登錄已存在的用戶
-            # user.backend = 'django.contrib.auth.backends.ModelBackend'
             user.backend = 'web.backed.LineUserBackend'
             login(request, user)
             return redirect('/')
@@ -320,34 +292,6 @@ def registerModal( request):
             return HttpResponseBadRequest(error_message)
 
     return render(request, 'home.html', {'show_modal': True})
-
-
-
-def send_line_notification(user_id, message):
-    try:
-        # 從資料庫中查詢使用者的 access_token
-        # 這裡假設你已經定義了一個 UserProfile 模型來存儲用戶的 LINE 使用者 ID 和 access_token
-        user_profile = UserProfile.objects.get(user_id=user_id)
-        access_token = user_profile.access_token
-    except UserProfile.DoesNotExist:
-        # 如果未找到使用者，則返回錯誤
-        return HttpResponseBadRequest('User not found')
-
-    # 向 LINE 發送通知
-    notify_url = settings.LINE_NOTIFY_URL
-    headers = {'Authorization': f'Bearer {access_token}'}
-    data = {'message': message}
-
-    response = requests.post(notify_url, headers=headers, data=data)
-    if response.status_code == 200:
-        return HttpResponse('Notification sent successfully')
-    else:
-        return HttpResponseBadRequest('Failed to send notification')
-
-# def login_failed(request):
-#     return render(request, 'login_failed.html')
-
-
 
 
 def custom_404(request, exception):
