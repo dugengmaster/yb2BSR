@@ -10,10 +10,10 @@
 
     - 刪除圖文選單：刪除圖文選單是指移除不再需要的圖文選單。
 
-    - 分配圖文選單：將特定的圖文選單設置為默認圖文選單，或者根據用戶 ID 將圖文選單分配給特定用戶。
+    - 分配圖文選單：將特定的圖文選單設置為默認圖文選單，或者根據使用者 ID 將圖文選單分配給特定使用者。
 2. 設置 Webhook Endpoint 來接收來自 LINE 伺服器的事件。
 3. 接收並解析來自 LINE 伺服器的事件請求。
-4. 根據事件類型進行相應的處理並回應用戶操作。
+4. 根據事件類型進行相應的處理並回應使用者操作。
 ## 安裝與設定
 
 ### 步驟一：安裝 `line-bot-sdk` 套件
@@ -56,7 +56,7 @@
     ```terminal
     python line_richmenu_manager.py -U <rich_menu_id> yb_select_side_rich_menu_default.jpg
     ```
-4. 在 line 官方帳號將圖文選單設置為 default 以顯示在用戶端。
+4. 在 line 官方帳號將圖文選單設置為 default 以顯示在使用者端。
 
     ```terminal
     python line_richmenu_manager.py -sd <rich_menu_id>
@@ -100,19 +100,97 @@
     # 回應 HTTP 200 OK 表示成功處理請求
     return HttpResponse(status=200)
   ```
-## 根據事件類型進行相應的處理並回應用戶操作
+## 根據事件類型進行相應的處理並回應使用者操作
+在接收到來自 LINE 伺服器的事件請求後，根據不同的事件類型進行相應的處理並回應用戶操作。主要的事件類型包括：
 ### Postback Event
-當用戶在圖文選單或按鈕上進行操作（如點擊按鈕）時，LINE 伺服器會發送 Postback 事件。可以根據接收到的數據進行相應的業務邏輯處理，例如導航到特定頁面、執行特定指令等。
+當使用者在圖文選單或按鈕上進行操作（如點擊按鈕）時，LINE 伺服器會發送 Postback 事件。可以根據接收到的數據進行相應的業務邏輯處理，例如導航到特定頁面、執行特定指令等。
+
+```python
+from linebot.v3.webhooks import PostbackEvent
+
+@handler.add(PostbackEvent)
+def handle_postback(event):
+    # 程式邏輯
+```
 
 ### Message Event
-當用戶發送訊息時，LINE 伺服器會發送 Message 事件。根據訊息的內容進行處理，主要包括以下類型：
+當使用者發送訊息時，LINE 伺服器會發送 Message 事件。根據訊息的內容進行處理，主要包括以下類型：
 
 #### Location Message Content
-當用戶發送地點訊息時，可以根據用戶提供的地點資訊進行相應的處理，如查找附近的服務點、提供路線導航等。
+當使用者發送地點訊息時，可以根據使用者提供的地點資訊進行相應的處理，如查找附近的服務點、提供路線導航等。
 
+```python
+from linebot.v3.webhooks import MessageEvent
+from linebot.v3.webhooks import LocationMessageContent
 
+@handler.add(MessageEvent, message=LocationMessageContent)
+def handle_location_message(event):
+    # 程式邏輯
+```
+### 創建回覆訊息
 
+#### Flex Message
+讀取事先定義好的彈性訊息模板，然後根據需要修改模板的內容，最後將修改後的彈性訊息放入 `FlexMessage` 中以供發送給使用者。
+1. **設定 LINE Bot 的基本參數和路徑設置**：
+   - `base_dir`：取得目前文件的絕對路徑，作為基礎目錄。
+   - `quick_reply_path` 和 `flex_message_path`：分別設定快速回覆訊息和彈性訊息的配置文件路徑。
 
+2. 使用 FLEX MESSAGE SIMULATOR 製作訊息的模板。
+
+3. 將模板儲存在 `./messages_components/Flex_message.json`。
+
+4. 讀取彈性訊息配置文件並創建彈性訊息物件：
+   ```python
+   import json
+   from linebot.v3.messaging import (
+      FlexMessage,
+      FlexContainer,
+   )
+
+   with open(flex_message_path, "r", encoding="utf-8") as file:
+       flex_message_config = json.load(file)
+       bubble_config = flex_message_config.get('example_bubble')
+   bubble = FlexContainer.from_dict(bubble_config)
+### 發送訊息給使用者
+1. **設定 LINE Bot 配置和處理程序**：
+   - `configuration`：使用 `Configuration` 設定訪問令牌 (`access_token`)，這是與 LINE API 通信所需的身份驗證令牌。
+
+2. **發送訊息**：
+   - 使用 `ApiClient` 建立 API 客戶端。
+   - 通過 `MessagingApi` 來發送回覆訊息。
+   - 使用 `reply_message` 方法，將 `ReplyMessageRequest` 封裝的回覆訊息發送給使用者。
+
+```python
+import os
+from linebot.v3 import (
+    Configuration,
+    ApiClient,
+    MessagingApi,
+    ReplyMessageRequest
+  )
+
+# 設定 Line Bot 的基本參數和路徑設置
+base_dir = os.path.dirname(os.path.abspath(__file__))
+quick_reply_path = os.path.join(base_dir, 'messages_components', 'quick_reply.json')
+flex_message_path = os.path.join(base_dir, 'messages_components', 'Flex_message.json')
+
+# 設定 Line Bot 配置和處理程序
+configuration = Configuration(access_token=settings.LINE_CHANNEL_ACCESS_TOKEN)
+
+# 使用配置的訪問令牌創建 API 客戶端
+with ApiClient(configuration) as api_client:
+    line_bot_api = MessagingApi(api_client)
+
+    # 使用 reply_message 方法發送回覆訊息
+    line_bot_api.reply_message(
+        ReplyMessageRequest(
+            reply_token=event.reply_token,  # 事件的回覆令牌
+            messages=[message]  # 要發送的訊息
+        )
+    )
+```
+
+### Line 讀取動畫
 
 ## 參考資料
 - Line developers 官方文件

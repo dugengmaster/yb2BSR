@@ -107,11 +107,11 @@ def handle_postback(event):
                     temp = {}
                     temp.update(
                         {"name": status.name,
-                        "available_spaces": status.available_spaces,
-                        "parking_spaces": status.parking_spaces,
-                        "duration": status.duration,
-                        "msg": status.msg,
-                        "update_time": status.update_time}
+                         "available_spaces": status.available_spaces,
+                         "parking_spaces": status.parking_spaces,
+                         "duration": status.duration,
+                         "msg": status.msg,
+                         "update_time": status.update_time}
                         )
                     bikeStatus.append(temp)
 
