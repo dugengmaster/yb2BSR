@@ -12,6 +12,7 @@ import joblib
 import threading
 import queue
 from django.http import JsonResponse
+import requests
 # Create your views here.
 
 # myPosition -> {'lat': float, 'lng': float}
@@ -252,6 +253,38 @@ def mapAPP(request):
         parameter = mapfunctionplus()
 
     return render(request, "mapAPP.html", parameter)
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+def mapJson(request):
+    ip = get_client_ip(request)
+    google_api_key = settings.GOOGLE_MAPS_API_KEY
+
+    # Geolocation API URL
+    geolocation_url = 'https://www.googleapis.com/geolocation/v1/geolocate?key=' + google_api_key
+
+    # Send request to Google Geolocation API
+    response = requests.post(geolocation_url, json={"considerIp": "true","ip": ip})
+    data = response.json()
+
+    if 'location' in data:
+        latitude = data['location']['lat']
+        longitude = data['location']['lng']
+    else:
+        latitude = None
+        longitude = None
+
+    return JsonResponse({
+        'ip': ip,
+        'latitude': latitude,
+        'longitude': longitude
+    })
 
 # def mapJson(request):
 #     parameter = mapfunction()
