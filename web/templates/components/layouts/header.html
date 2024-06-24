@@ -17,7 +17,7 @@
                         <a class="nav-link active" aria-current="page" href="{% url 'home' %}">首頁</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'mapAPP' %}">站點地圖</a>
+                        <a class="nav-link" href="https://https://5b0e-1-161-197-123.ngrok-free.app/map/">站點地圖</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'bike_trail' %}">腳踏車步道</a>
@@ -28,12 +28,12 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'chart' %}">站點地圖分析</a>
                     </li>
-                    <li class="nav-item">
+                    {% comment %} <li class="nav-item">
                         <a class="nav-link" href="{% url 'member' %}">會員專區</a>
-                    </li>
-                    <li class="nav-item">
+                    </li> {% endcomment %}
+                    {% comment %} <li class="nav-item">
                         <a class="nav-link" href="{% url 'about_us' %}">關於我們</a>
-                    </li>
+                    </li> {% endcomment %}
                 </ul>
                 <ul class="navbar-nav justify-content-end flex-grow-2 pe-3">
                     {% if user.is_authenticated %}
