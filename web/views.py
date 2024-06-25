@@ -283,10 +283,15 @@ def line_login_callback(request):
             user.backend = 'web.backed.LineUserBackend'
             login(request, user)
             line_user_id = request.user.line_user_id
+            line_name = request.user.line_name
+            email = request.user.email
+            email = email.split("@")[0]
 
             context = {
-                "line_user_id":line_user_id,
-            }
+                            "line_user_id":line_user_id,
+                            "line_name":line_name,
+                            "email":email,
+                        }
             return render(request, 'home.html',context)
         else:
             # 如果未能獲取 Access Token，返回錯誤信息
