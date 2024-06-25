@@ -1,18 +1,29 @@
 from django.shortcuts import render
 from django.conf import settings
+from django.http import JsonResponse
 from mapAPP.GoogleMapForUbike import GoogleMapforUbike
-# from mapAPP.models import LtecelltowerTpe, Yb_stn
-import os
-from datetime import datetime
-import pandas as pd
 from mapAPP.StationSuggestAlgorism import minuteChange, geo_to_No
 from mapAPP.get_current_info import tpe_cur_rain, tpe_cur_temp, holiday_qy, getstationbike
+# from mapAPP.models import LtecelltowerTpe, Yb_stn
+from datetime import datetime
+import pandas as pd
 import numpy as np
+import os
 import joblib
 import threading
 import queue
-from django.http import JsonResponse
+import requests
+
 # Create your views here.
+
+#上架到heroku之後，程式會優先抓取伺服器的IP而不是使用者IP
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 
 # myPosition -> {'lat': float, 'lng': float}
 def mapfunctionplus(myPosition=None):
@@ -238,34 +249,52 @@ def mapfunction():
         'bikeStatus':bikeStatus
     }
     return parameter
+
 # 顯示有地圖的頁面
 def mapAPP(request):
     lat = request.GET.get('lat')
     lng = request.GET.get('lng')
 
     if lat and lng:
+        # 25.040280970828704, 121.51193996655002
+        # coor = {'lat':25.040280970828704, 'lng':121.51193996655002}
         coor = {'lat': float(lat), 'lng': float(lng)}
         parameter = mapfunctionplus(coor)
     else:
-    # 25.040280970828704, 121.51193996655002
-    # coor = {'lat':25.040280970828704, 'lng':121.51193996655002}
         parameter = mapfunctionplus()
 
     return render(request, "mapAPP.html", parameter)
 
-# def mapJson(request):
-#     parameter = mapfunction()
-#     return JsonResponse(parameter)
+def mapJson(request):
+    ip = get_client_ip(request)
+    google_api_key = settings.GOOGLE_MAPS_API_KEY
+
+    # Geolocation API URL
+    geolocation_url = 'https://www.googleapis.com/geolocation/v1/geolocate?key=' + google_api_key
+
+    # Send request to Google Geolocation API
+    response = requests.post(geolocation_url, json={"considerIp": "true","ip": ip})
+    data = response.json()
+
+    if 'location' in data:
+        latitude = data['location']['lat']
+        longitude = data['location']['lng']
+    else:
+        latitude = None
+        longitude = None
+
+    return JsonResponse({
+        'ip': ip,
+        'latitude': latitude,
+        'longitude': longitude
+    })
+
 
 # 查詢特定站點
 
 # 推薦站點
 
 # 站點分析
-
-
-
-
 
 # by C F Chu for yb data collection and yb model setup
 

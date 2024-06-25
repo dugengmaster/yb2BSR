@@ -43,15 +43,45 @@
                         <a class="nav-link" href="{% url 'about_us' %}">關於我們</a>
                     </li>
                 </ul>
-
+                <style>
+                    .custom-btn {
+                        max-width: 200px; /* 設置按鈕的最大寬度 */
+                        white-space: nowrap; /* 防止文字換行 */
+                        overflow: hidden; /* 超出部分隱藏 */
+                        text-overflow: ellipsis; /* 顯示省略符號 */
+                    }
+                </style>
                 <!-- 登入/登出按鈕 -->
                 <ul class="navbar-nav justify-content-end flex-grow-2 pe-3">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <form action="{% url 'logout' %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary">登出</button>
-                            </form>
+                            <div class="row">
+                                <div class="col">
+                                    {% if line_name is None %}
+                                        <h4 style="white-space: nowrap; color: white;">
+                                            <span class="text-primary" style="color: white;">歡迎: {{ email }}</span>
+                                        </h4>
+                                    {% else %}
+                                        <h4 style="white-space: nowrap; color: white;">
+                                            <span class="text-primary" style="color: white;">歡迎: {{ line_name }}</span>
+                                        </h4>
+                                    {% endif %}
+
+                                    <form action="{% url 'custom_line_login' %}" method="post">
+                                        {% if line_user_id is None%}
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary custom-btn">line綁定</button>
+                                        {% endif %}
+                                    </form>
+
+                                </div>
+                                <div class="col">
+                                    <form action="{% url 'logout' %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-primary custom-btn">登出</button>
+                                    </form>
+                                </div>
+                            </div>
                         </li>
                     {% else %}
                         <li class="nav-item">

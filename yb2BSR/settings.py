@@ -45,6 +45,9 @@ PASSWORD = os.getenv('PASSWORD')
 HOST = os.getenv('HOST')
 PORT = os.getenv('PORT')
 
+#X-Forwarded-For 用
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False
 DEBUG = True

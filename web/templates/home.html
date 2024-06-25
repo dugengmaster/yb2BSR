@@ -4,14 +4,6 @@
 {% block title %}Youbike最佳站點推薦系統{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
-    {% if line_name is None %}
-        <h1>歡迎: {{ email }}!</h1>
-    {% else %}
-        <h1>歡迎: {{ line_name }}!</h1>
-    {% endif %}
-    <h3>歡迎: {{ email }}</h3>
-{% endif %}
     {% if error_message %}
         <p style="color: red;">{{ error_message }}</p>
     {% endif %}

@@ -58,17 +58,21 @@ def my_login(request):
 
 def home(request):
     if request.user.is_authenticated:
+        line_user_id = request.user.line_user_id
         line_name = request.user.line_name
         email = request.user.email
         email = email.split("@")[0]
-        print("line_name",line_name)
-        print("email",email)
+
         context = {
-            # 'user_profile': user_profile,
+            "line_user_id":line_user_id,
             "line_name":line_name,
             "email":email,
         }
-        return render(request, 'home.html', context)
+
+
+        print("line_name",line_name)
+        print("email",email)
+        return render(request,'home.html',context)
         # return render(request, 'home.html')
     else:
         return render(request, 'home.html')
@@ -230,6 +234,13 @@ def line_login_callback(request):
             display_name = user_info_data.get('displayName', 'No Name')
             request.session['line_user_id'] = line_user_id
             request.session['display_name'] = display_name
+            user_profiles = UserProfile.objects.all().values_list('username', flat=True)
+            for username in user_profiles:
+                username = username
+                print("user_profiles",username)
+
+
+
             # 嘗試根據 line_user_id 創建或獲取用戶
             try:
                 user = UserProfile.objects.get(line_user_id=line_user_id)
@@ -241,12 +252,42 @@ def line_login_callback(request):
                 user = LineUserBackend().authenticate(request, line_user_id=line_user_id)
                 if not user:
                     # 如果是新用戶，返回 1.html 並顯示註冊模態
+                    user_name = UserProfile.objects.get(username=username)
+                    if user_name:
+                        user_profile, created = UserProfile.objects.get_or_create(username=user_name)
+                        user_profile.line_user_id = line_user_id
+                        user_profile.line_name = display_name
+                        user_profile.save()
+                        user = UserProfile.objects.get(username=username)
+                        user.backend = 'web.backed.LineUserBackend'
+                        login(request, user)
+                        line_user_id = request.user.line_user_id
+                        line_name = request.user.line_name
+                        email = request.user.email
+                        email = email.split("@")[0]
+
+                        context = {
+                            "line_user_id":line_user_id,
+                            "line_name":line_name,
+                            "email":email,
+                        }
+                        return render(request,'home.html',context)
                     return render(request, 'home.html', {'show_modal': True})
+
+
+
+                # 如果line_id為空，顯示綁定LINE按鈕
+                return redirect('home', show_bind_button=True)
 
             # 登錄已存在的用戶
             user.backend = 'web.backed.LineUserBackend'
             login(request, user)
-            return redirect('/')
+            line_user_id = request.user.line_user_id
+
+            context = {
+                "line_user_id":line_user_id,
+            }
+            return render(request, 'home.html',context)
         else:
             # 如果未能獲取 Access Token，返回錯誤信息
             error_description = response_data.get('error_description', 'Unknown error')
@@ -280,7 +321,7 @@ def registerModal(request):
             # user = User.objects.create_user(username=new_username, password=new_password, email=email)
 
             # 將用戶訊息儲存到用戶的 UserProfile 中（如果有其他信息需要儲存）
-            UserProfile.objects.create_user(
+            UserProfile.objects.create(
                 # user=user,
                 username=new_username,
                 password=make_password(new_password),  # 使用 hashed password
@@ -294,6 +335,7 @@ def registerModal(request):
 
             # 自動登入新註冊的用戶
             user = authenticate(username=new_username, password=new_password)
+            print("user",user)
             if user is not None:
                 login(request, user)
                 return redirect('/')  # 這裡可以重定向到其他頁面或者顯示成功消息

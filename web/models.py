@@ -57,6 +57,7 @@ class UserProfileManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
 class UserProfile(AbstractBaseUser):
     line_user_id = models.CharField(max_length=100, blank=True, null=True)
     line_name = models.CharField(max_length=150, blank=True, null=True)
