@@ -60,9 +60,6 @@ def home(request):
     if request.user.is_authenticated:
         line_name = request.user.line_name
         email = request.user.email
-        # user_profile = UserProfile.objects.get(line_name=line_name, email=email)
-        # line_name = UserProfile.objects.get(line_name=request.user.line_name)
-        # email = UserProfile.objects.get(email=request.user.email)
         email = email.split("@")[0]
         print("line_name",line_name)
         print("email",email)
@@ -261,11 +258,11 @@ def line_login_callback(request):
         return HttpResponseBadRequest(f"Error in line_login_callback: {e}")
 
 
+User = get_user_model()
 
-def registerModal( request):
+def registerModal(request):
     if request.method == 'POST':
         # 獲取註冊表單提交的數據
-
         new_username = request.POST.get('new_username')
         new_password = request.POST.get('new_password')
         telecom = request.POST.get('registerCarrier')
@@ -274,29 +271,26 @@ def registerModal( request):
         display_name = request.session.get('display_name')
         request.session['new_username'] = new_username
 
-
-
         # 檢查所有字段是否已填寫
         if not (new_username and new_password and telecom and email):
             return HttpResponseBadRequest('所有字段都是註冊所需的。')
 
         try:
-            hashed_password = make_password(new_password)
             # 將註冊用戶的數據保存到數據庫中
-            user = User.objects.create_user(username=new_username, password=new_password, email=email)
+            # user = User.objects.create_user(username=new_username, password=new_password, email=email)
 
-            # 將用戶訊息儲存到用戶的 UserProfile 中
-            user_profile = UserProfile.objects.create(
-                user=user,
+            # 將用戶訊息儲存到用戶的 UserProfile 中（如果有其他信息需要儲存）
+            UserProfile.objects.create_user(
+                # user=user,
                 username=new_username,
-                password=hashed_password,
+                password=make_password(new_password),  # 使用 hashed password
                 email=email,
                 telecom=telecom,
                 line_user_id=line_user_id,
                 line_name=display_name,
                 registration_date=timezone.now()
-                 )
-            print("user_profile",user_profile)  # 打印 UserProfile 對象，用於調試
+            )
+            print("user_profile created successfully")  # 打印成功消息，用於調試
 
             # 自動登入新註冊的用戶
             user = authenticate(username=new_username, password=new_password)
@@ -310,7 +304,6 @@ def registerModal( request):
             return HttpResponseBadRequest(error_message)
 
     return render(request, 'home.html', {'show_modal': True})
-
 
 def custom_404(request, exception):
 

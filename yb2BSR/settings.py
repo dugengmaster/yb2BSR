@@ -133,16 +133,16 @@ WSGI_APPLICATION = "yb2BSR.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 # postgreSQL use
-DATABASES = {
-    'default': {
-        'ENGINE': ENGINE,
-        'NAME': NAME,
-        'USER': USER,
-        'PASSWORD': PASSWORD,
-        'HOST': HOST,
-        'PORT': PORT,
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': ENGINE,
+#         'NAME': NAME,
+#         'USER': USER,
+#         'PASSWORD': PASSWORD,
+#         'HOST': HOST,
+#         'PORT': PORT,
+#     }
+# }
 #Local use
 DATABASES = {
     'default': {

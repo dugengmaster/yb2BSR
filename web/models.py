@@ -18,10 +18,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
-class CustomUserManager(BaseUserManager):
-
-    # 自定義用戶管理器，用於創建用戶和超級用戶。
-
+class UserProfileManager(BaseUserManager):
     def create_user(self, username=None, line_user_id=None, password=None, **extra_fields):
         """
         創建並保存一個普通用戶,給定用戶名、LINE用戶ID和密碼。
@@ -40,17 +37,6 @@ class CustomUserManager(BaseUserManager):
         """
         if not username and not line_user_id:
             raise ValueError('Either username or line_user_id must be set')
-        """
-        創建並保存一個超級用戶，給定用戶名和密碼。
-
-        Args:
-            username (str): 用戶名。
-            password (str): 用戶密碼。
-            **extra_fields: 其他額外字段。
-
-        Returns:
-            User: 創建的超級用戶對象。
-        """
 
         user = self.model(
             username=username,
@@ -81,7 +67,7 @@ class UserProfile(AbstractBaseUser):
     registration_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
 
-    objects = CustomUserManager()
+    objects = UserProfileManager()
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['line_user_id']

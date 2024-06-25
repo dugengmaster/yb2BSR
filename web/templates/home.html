@@ -12,8 +12,6 @@
     {% endif %}
     <h3>歡迎: {{ email }}</h3>
 {% endif %}
-
-
     {% if error_message %}
         <p style="color: red;">{{ error_message }}</p>
     {% endif %}
@@ -21,7 +19,6 @@
     {% include "components/home/video.html" %}
     {% include "components/home/announcement.html" %}
     {% include "components/home/info.html" %}
-
 {% endblock %}
 
 
