@@ -124,7 +124,7 @@ def custom_line_login(request):
         token_url = "https://api.line.me/oauth2/v2.1/token"
         client_id = settings.LINE_CLIENT_ID
         client_secret = settings.LINE_CLIENT_SECRET
-        redirect_uri = "http://127.0.0.1:8000/line/login/callback/"
+        redirect_uri = "https://yb-select-site-cf3061dbdf38.herokuapp.com/line/login/callback/"
 
         response = requests.post(token_url, data={
             'grant_type': 'authorization_code',
@@ -172,7 +172,7 @@ def custom_line_login(request):
         # print("state",state)
         base_url = "https://access.line.me/oauth2/v2.1/authorize"
         client_id = settings.LINE_CLIENT_ID
-        redirect_uri = "http://127.0.0.1:8000/line/login/callback/"
+        redirect_uri = "https://yb-select-site-cf3061dbdf38.herokuapp.com/line/login/callback/"
         response_type = "code"
         scope = "profile openid"
         line_login_url = f"{base_url}?response_type={response_type}&client_id={client_id}&redirect_uri={redirect_uri}&state={state}&scope={scope}"
@@ -187,7 +187,7 @@ def line_login_callback(request):
 
     state = request.GET.get('state')
     code = request.GET.get('code')
-    redirect_uri = "http://127.0.0.1:8000/line/login/callback/"
+    redirect_uri = "https://yb-select-site-cf3061dbdf38.herokuapp.com/line/login/callback/"
     # print("state",state)
 
     # 檢查 state 參數是否與 Session 中的 line_login_state 匹配
