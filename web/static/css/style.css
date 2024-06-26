@@ -218,6 +218,12 @@
     border-color: #007bff;
 }
 .text-primary{
+    border-color: white;
+    color: white;
+}
+
+.white-text {
+    white-space: nowrap;
     color: white;
 }
 
