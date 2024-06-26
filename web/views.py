@@ -58,20 +58,21 @@ def my_login(request):
 
 def home(request):
     if request.user.is_authenticated:
+        line_user_id = request.user.line_user_id
         line_name = request.user.line_name
         email = request.user.email
-        # user_profile = UserProfile.objects.get(line_name=line_name, email=email)
-        # line_name = UserProfile.objects.get(line_name=request.user.line_name)
-        # email = UserProfile.objects.get(email=request.user.email)
         email = email.split("@")[0]
-        print("line_name",line_name)
-        print("email",email)
+
         context = {
-            # 'user_profile': user_profile,
+            "line_user_id":line_user_id,
             "line_name":line_name,
             "email":email,
         }
-        return render(request, 'home.html', context)
+
+
+        print("line_name",line_name)
+        print("email",email)
+        return render(request,'home.html',context)
         # return render(request, 'home.html')
     else:
         return render(request, 'home.html')
@@ -124,7 +125,7 @@ def custom_line_login(request):
         token_url = "https://api.line.me/oauth2/v2.1/token"
         client_id = settings.LINE_CLIENT_ID
         client_secret = settings.LINE_CLIENT_SECRET
-        redirect_uri = "https://yb-select-site-cf3061dbdf38.herokuapp.com/line/login/callback/"
+        redirect_uri = "http://127.0.0.1:8000/line/login/callback/"
 
         response = requests.post(token_url, data={
             'grant_type': 'authorization_code',
@@ -172,7 +173,7 @@ def custom_line_login(request):
         # print("state",state)
         base_url = "https://access.line.me/oauth2/v2.1/authorize"
         client_id = settings.LINE_CLIENT_ID
-        redirect_uri = "https://yb-select-site-cf3061dbdf38.herokuapp.com/line/login/callback/"
+        redirect_uri = "http://127.0.0.1:8000/line/login/callback/"
         response_type = "code"
         scope = "profile openid"
         line_login_url = f"{base_url}?response_type={response_type}&client_id={client_id}&redirect_uri={redirect_uri}&state={state}&scope={scope}"
@@ -187,7 +188,7 @@ def line_login_callback(request):
 
     state = request.GET.get('state')
     code = request.GET.get('code')
-    redirect_uri = "https://yb-select-site-cf3061dbdf38.herokuapp.com/line/login/callback/"
+    redirect_uri = "http://127.0.0.1:8000/line/login/callback/"
     # print("state",state)
 
     # 檢查 state 參數是否與 Session 中的 line_login_state 匹配
@@ -233,6 +234,13 @@ def line_login_callback(request):
             display_name = user_info_data.get('displayName', 'No Name')
             request.session['line_user_id'] = line_user_id
             request.session['display_name'] = display_name
+            user_profiles = UserProfile.objects.all().values_list('username', flat=True)
+            for username in user_profiles:
+                username = username
+                print("user_profiles",username)
+
+
+
             # 嘗試根據 line_user_id 創建或獲取用戶
             try:
                 user = UserProfile.objects.get(line_user_id=line_user_id)
@@ -244,12 +252,47 @@ def line_login_callback(request):
                 user = LineUserBackend().authenticate(request, line_user_id=line_user_id)
                 if not user:
                     # 如果是新用戶，返回 1.html 並顯示註冊模態
+                    user_name = UserProfile.objects.get(username=username)
+                    if user_name:
+                        user_profile, created = UserProfile.objects.get_or_create(username=user_name)
+                        user_profile.line_user_id = line_user_id
+                        user_profile.line_name = display_name
+                        user_profile.save()
+                        user = UserProfile.objects.get(username=username)
+                        user.backend = 'web.backed.LineUserBackend'
+                        login(request, user)
+                        line_user_id = request.user.line_user_id
+                        line_name = request.user.line_name
+                        email = request.user.email
+                        email = email.split("@")[0]
+
+                        context = {
+                            "line_user_id":line_user_id,
+                            "line_name":line_name,
+                            "email":email,
+                        }
+                        return render(request,'home.html',context)
                     return render(request, 'home.html', {'show_modal': True})
+
+
+
+                # 如果line_id為空，顯示綁定LINE按鈕
+                return redirect('home', show_bind_button=True)
 
             # 登錄已存在的用戶
             user.backend = 'web.backed.LineUserBackend'
             login(request, user)
-            return redirect('/')
+            line_user_id = request.user.line_user_id
+            line_name = request.user.line_name
+            email = request.user.email
+            email = email.split("@")[0]
+
+            context = {
+                            "line_user_id":line_user_id,
+                            "line_name":line_name,
+                            "email":email,
+                        }
+            return render(request, 'home.html',context)
         else:
             # 如果未能獲取 Access Token，返回錯誤信息
             error_description = response_data.get('error_description', 'Unknown error')
@@ -261,11 +304,11 @@ def line_login_callback(request):
         return HttpResponseBadRequest(f"Error in line_login_callback: {e}")
 
 
+User = get_user_model()
 
-def registerModal( request):
+def registerModal(request):
     if request.method == 'POST':
         # 獲取註冊表單提交的數據
-
         new_username = request.POST.get('new_username')
         new_password = request.POST.get('new_password')
         telecom = request.POST.get('registerCarrier')
@@ -274,32 +317,30 @@ def registerModal( request):
         display_name = request.session.get('display_name')
         request.session['new_username'] = new_username
 
-
-
         # 檢查所有字段是否已填寫
         if not (new_username and new_password and telecom and email):
             return HttpResponseBadRequest('所有字段都是註冊所需的。')
 
         try:
-            hashed_password = make_password(new_password)
             # 將註冊用戶的數據保存到數據庫中
-            user = User.objects.create_user(username=new_username, password=new_password, email=email)
+            # user = User.objects.create_user(username=new_username, password=new_password, email=email)
 
-            # 將用戶訊息儲存到用戶的 UserProfile 中
-            user_profile = UserProfile.objects.create(
-                user=user,
+            # 將用戶訊息儲存到用戶的 UserProfile 中（如果有其他信息需要儲存）
+            UserProfile.objects.create(
+                # user=user,
                 username=new_username,
-                password=hashed_password,
+                password=make_password(new_password),  # 使用 hashed password
                 email=email,
                 telecom=telecom,
                 line_user_id=line_user_id,
                 line_name=display_name,
                 registration_date=timezone.now()
-                 )
-            print("user_profile",user_profile)  # 打印 UserProfile 對象，用於調試
+            )
+            print("user_profile created successfully")  # 打印成功消息，用於調試
 
             # 自動登入新註冊的用戶
             user = authenticate(username=new_username, password=new_password)
+            print("user",user)
             if user is not None:
                 login(request, user)
                 return redirect('/')  # 這裡可以重定向到其他頁面或者顯示成功消息
@@ -310,7 +351,6 @@ def registerModal( request):
             return HttpResponseBadRequest(error_message)
 
     return render(request, 'home.html', {'show_modal': True})
-
 
 def custom_404(request, exception):
 
