@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 import django_heroku
 from dotenv import load_dotenv
+from ipinfo_django.ip_selector.default import DefaultIPSelector
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -91,8 +92,9 @@ SOCIALACCOUNT_PROVIDERS = {
 }}
 
 MIDDLEWARE = [
+    
     "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",    
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -102,6 +104,8 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'ipinfo_django.middleware.IPinfoMiddleware',
+
 ]
 
 ROOT_URLCONF = "yb2BSR.urls"
@@ -227,3 +231,16 @@ django_heroku.settings(locals())
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+#ipinfo
+IPINFO_TOKEN = '06f4652bdf5283'
+IPINFO_SETTINGS = {
+  'cache_options': {
+      'ttl':30,
+      'maxsize': 128
+  },
+#   'countries_file': 'custom_countries.json',
+#   'cache': my_fancy_custom_cache_object
+}
+IPINFO_FILTER = lambda request: request.scheme == 'http'
+IPINFO_IP_SELECTOR = DefaultIPSelector()
