@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
 from mapAPP.GoogleMapForUbike import GoogleMapforUbike
 from mapAPP.StationSuggestAlgorism import minuteChange, geo_to_No
 from mapAPP.get_current_info import tpe_cur_rain, tpe_cur_temp, holiday_qy, getstationbike
@@ -13,27 +13,38 @@ import joblib
 import threading
 import queue
 import requests
+from ipware import get_client_ip
+import ipinfo
 
 # Create your views here.
 
 #上架到heroku之後，程式會優先抓取伺服器的IP而不是使用者IP
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
+# def get_client_ip(request):
+#     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+#     if x_forwarded_for:
+#         ip = x_forwarded_for.split(',')[0]
+#     else:
+#         ip = request.META.get('REMOTE_ADDR')
+#     return ip
 
 # myPosition -> {'lat': float, 'lng': float}
-def mapfunctionplus(ip,myPosition=None):
+
+def get_ip_details(ip_address=None):
+	ipinfo_token = getattr(settings, "IPINFO_TOKEN", None)
+	ipinfo_settings = getattr(settings, "IPINFO_SETTINGS", {})
+	ip_data = ipinfo.getHandler(ipinfo_token, **ipinfo_settings)
+	ip_data = ip_data.getDetails(ip_address)
+	return ip_data
+
+def mapfunctionplus(myPosition=None):
     now = datetime.now()
     q = queue.Queue()
      #取得使用者GPS
     gmap = GoogleMapforUbike(settings.GOOGLE_MAPS_API_KEY)
     if myPosition == None:
-        myPosition = gmap.getgeolocation(ip)
+        myPosition = gmap.getgeolocation()
     #台北市的經緯度範圍，不再這範圍內的人，會定位在台北車站，並以定位點為中心取得周邊的Ubike站點
+    print(myPosition)
     lat_min, lat_max = 24.97619, 25.14582
     lng_min, lng_max = 121.46288, 121.62306
 
@@ -253,7 +264,7 @@ def mapfunction():
 def mapAPP(request):
     lat = request.GET.get('lat')
     lng = request.GET.get('lng')
-
+    
     if lat and lng:
         ip=get_client_ip(request)
         # 25.040280970828704, 121.51193996655002
@@ -261,34 +272,34 @@ def mapAPP(request):
         coor = {'lat': float(lat), 'lng': float(lng)}
         parameter = mapfunctionplus(ip, coor)
     else:
-        ip=get_client_ip(request)
-        parameter = mapfunctionplus(ip)
-
+        
+    #   ip=get_client_ip(request)
+        client_ip, is_routable = get_client_ip(request, request_header_order=["HTTP_X_FORWARDED_FOR"])
+        
+        if client_ip is None:
+            print("Unable to get the client's IP address")
+        else:
+            print("We got the client's IP address")
+            print(client_ip)
+        if is_routable:
+            print("The client's IP address is publicly routable on the Internet")
+        else:
+            print("The client's IP address is private")
+        ip_data = get_ip_details(client_ip)
+        coor = {'lat': float(ip_data.loc.split(',')[0]), 'lng':float(ip_data.loc.split(',')[1])}
+        print("view",coor)
+        parameter = mapfunctionplus(coor)
+    
     return render(request, "mapAPP.html", parameter)
 
 def mapJson(request):
-    ip = get_client_ip(request)
-    google_api_key = settings.GOOGLE_MAPS_API_KEY
+    response_string = 'The IP address {} is located at the coordinates {}, which is in the city {}.'.format(
+        request.ipinfo.ip,
+        request.ipinfo.loc,
+        request.ipinfo.city
+    )
 
-    # Geolocation API URL
-    geolocation_url = 'https://www.googleapis.com/geolocation/v1/geolocate?key=' + google_api_key
-
-    # Send request to Google Geolocation API
-    response = requests.post(geolocation_url, json={"considerIp": "true","ip": ip})
-    data = response.json()
-
-    if 'location' in data:
-        latitude = data['location']['lat']
-        longitude = data['location']['lng']
-    else:
-        latitude = None
-        longitude = None
-
-    return JsonResponse({
-        'ip': ip,
-        'latitude': latitude,
-        'longitude': longitude
-    })
+    return HttpResponse(response_string)
 
 
 # 查詢特定站點

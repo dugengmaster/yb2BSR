@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 import django_heroku
 from dotenv import load_dotenv
+from ipinfo_django.ip_selector.default import DefaultIPSelector
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -44,12 +45,9 @@ USER = os.getenv('USER')
 PASSWORD = os.getenv('PASSWORD')
 HOST = os.getenv('HOST')
 PORT = os.getenv('PORT')
-
 #X-Forwarded-For 用
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = False
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
@@ -95,6 +93,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }}
 
 MIDDLEWARE = [
+
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -106,6 +105,8 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'ipinfo_django.middleware.IPinfoMiddleware',
+
 ]
 
 ROOT_URLCONF = "yb2BSR.urls"
@@ -135,7 +136,6 @@ WSGI_APPLICATION = "yb2BSR.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# postgreSQL use
 DATABASES = {
     'default': {
         'ENGINE': ENGINE,
@@ -153,6 +153,7 @@ DATABASES = {
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+# SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 使用數據庫儲存 session
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"  # 使用數據庫儲存 session
 LOGGING = {
@@ -231,3 +232,16 @@ django_heroku.settings(locals())
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+#ipinfo
+IPINFO_TOKEN = '06f4652bdf5283'
+IPINFO_SETTINGS = {
+  'cache_options': {
+      'ttl':30,
+      'maxsize': 128
+  },
+#   'countries_file': 'custom_countries.json',
+#   'cache': my_fancy_custom_cache_object
+}
+IPINFO_FILTER = lambda request: request.scheme == 'http'
+IPINFO_IP_SELECTOR = DefaultIPSelector()
