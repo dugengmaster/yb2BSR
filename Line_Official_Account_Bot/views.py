@@ -92,7 +92,6 @@ def handle_postback(event):
                     messages=[message]
                 )
             )
-            show_loading_animation_request = ShowLoadingAnimationRequest(chatId=user_id)
         elif action == "selectStation":
             # 提取 line 返回的 user id 在 sessions 中的資料並倒序排列
             session = LineUserSessions.objects.filter(user_id = user_id).order_by('-id')
@@ -129,7 +128,6 @@ def handle_postback(event):
                     messages=[message]
                     )
                 )
-                show_loading_animation_request = ShowLoadingAnimationRequest(chatId=user_id)
             else:
                 line_bot_api.reply_message(
                         ReplyMessageRequest(
@@ -190,24 +188,9 @@ def handle_location_message(event):
                     #理論上只會有一筆資料，但留著保平安
                     weather_record = weather_records.first()
 
-                    with open(flex_message_path, "r", encoding="utf-8") as file:
-                        bubble_string = json.load(file).get('weather_bubble')
-                    bubble = FlexContainer.from_dict(bubble_string)
-                    # 圖片
-                    if int(weather_record.weather_code) < 10:
-                        bubble.hero.contents[0].url = f"https://www.cwa.gov.tw/V8/assets/img/weather_icons/weathers/png_icon/day/0{weather_record.weather_code}.png"
-                    else:
-                        bubble.hero.contents[0].url = f"https://www.cwa.gov.tw/V8/assets/img/weather_icons/weathers/png_icon/day/{weather_record.weather_code}.png"
-                    # 天氣
-                    bubble.hero.contents[1].text = weather_record.wx
-                    # 最低溫度
-                    bubble.body.contents[0].contents[0].contents[1].contents[0].contents[0].text = weather_record.min_temp
-                    # 最高溫度
-                    bubble.body.contents[0].contents[0].contents[1].contents[0].contents[2].text = weather_record.max_temp
-                    # 降雨機率
-                    bubble.body.contents[0].contents[1].contents[1].contents[0].text = weather_record.pop_value
+                    bubble = make_weather_record_bubble(weather_record)
 
-                    message = FlexMessage(alt_text="weather", contents=bubble)
+                    message = FlexMessage(alt_text="天氣查詢", contents=bubble)
                     line_bot_api.reply_message(
                         ReplyMessageRequest(
                             reply_token=event.reply_token,
@@ -257,8 +240,6 @@ def handle_location_message(event):
                     messages=[message]
                     )
                 )
-                show_loading_animation_request = ShowLoadingAnimationRequest(chatId=user_id)
-
     else:
         line_bot_api.reply_message(
                 ReplyMessageRequest(
@@ -297,6 +278,14 @@ def weather(request):
 
 # 建立站點選項的 quick reply
 def make_station_reply(station_number: int, bikeStatus_len: int) -> QuickReply:
+    """
+    Args:
+    - station_number: 整數，表示使用者選擇某一個鄰近站點的站點編號
+    - bikeStatus_len: 整數，表示鄰近站點的數量
+
+    Returns:
+    - QuickReply: 返回一個包含站點選項的快速回覆對象，排除了指定站點編號的項目
+    """
     station_index = station_number - 1
 
     with open(quick_reply_path, "r", encoding="utf-8") as quick_reply_component:
@@ -323,6 +312,15 @@ def make_station_reply(station_number: int, bikeStatus_len: int) -> QuickReply:
     return QuickReply.from_dict(quick_reply_string)
 
 def make_bike_status_bubble(station_number: int, bikeStatus: list[dict], gps: Tuple[float, float]) -> FlexContainer:
+    """
+    Args:
+    - station_number: 整數，表示使用者選擇某一個鄰近站點的站點編號
+    - bikeStatus: 包含站點資訊的列表，每個元素是包含站點相關信息的字典
+    - gps: 包含緯度和經度的元組 (float, float)
+
+    Returns:
+    - FlexContainer: 把指定站點的單車狀態資訊封裝成一個 Flex Message 容器
+    """
     latitude, longitude = gps
     station_index = station_number - 1
 
@@ -359,6 +357,13 @@ def make_bike_status_bubble(station_number: int, bikeStatus: list[dict], gps: Tu
     return bubble
 
 def make_weather_record_bubble(weather_record: WeatherRecord) -> FlexContainer:
+    """
+    Args:
+    - weather_record: 從資料庫 ORM 取得的 WeatherRecord 資料表物件，內含天氣記錄信息 ( 36小時 )。
+
+    Returns:
+    - FlexContainer: 把天氣紀錄的狀態資訊封裝成一個 Flex Message 容器
+    """
     with open(flex_message_path, "r", encoding="utf-8") as file:
             bubble_string = json.load(file).get('weather_bubble')
     bubble = FlexContainer.from_dict(bubble_string)

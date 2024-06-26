@@ -1,18 +1,15 @@
 from django.shortcuts import render, redirect
+from django.conf import settings
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.conf import settings
-import requests
-import logging
-from django.contrib import messages
-from django.conf import settings
-import requests
-import logging
-from django.contrib import messages
-from web.models import UserProfile
-# Create your views here.
-from django.contrib.auth.models import User  # 导入用户模型
+from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+import requests
+import logging
+from web.models import UserProfile
+
+# Create your views here.
 
 def custom_authenticate(username, password):
     try:
@@ -21,8 +18,6 @@ def custom_authenticate(username, password):
             return user
     except UserProfile.DoesNotExist:
         return None
-
-
 
 def my_login(request):
     show_modal_1 = False  # 預設不顯示模態窗口
@@ -54,8 +49,6 @@ def my_login(request):
     # GET 請求或登入失敗後顯示表單
     return render(request, "home.html", {"error_message":error_message,'show_modal_1': show_modal_1})
 
-
-
 def home(request):
     if request.user.is_authenticated:
         line_user_id = request.user.line_user_id
@@ -69,14 +62,12 @@ def home(request):
             "email":email,
         }
 
-
-        print("line_name",line_name)
-        print("email",email)
+        # print("line_name",line_name)
+        # print("email",email)
         return render(request,'home.html',context)
         # return render(request, 'home.html')
     else:
         return render(request, 'home.html')
-
 
 def logout_view(request):
     if request.user.is_authenticated:
@@ -88,9 +79,6 @@ def logout_view(request):
 def stations(request):
     map_key = {"GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY}
     return render(request, "mapAPP.html", map_key)
-
-
-
 
 import requests
 from django.contrib.auth.models import User
@@ -237,14 +225,14 @@ def line_login_callback(request):
             user_profiles = UserProfile.objects.all().values_list('username', flat=True)
             for username in user_profiles:
                 username = username
-                print("user_profiles",username)
+                # print("user_profiles",username)
 
 
 
             # 嘗試根據 line_user_id 創建或獲取用戶
             try:
                 user = UserProfile.objects.get(line_user_id=line_user_id)
-                print(f"找到用戶：{user.line_user_id}")
+                # print(f"找到用戶：{user.line_user_id}")
 
             except UserProfile.DoesNotExist:
                 user = None
@@ -336,11 +324,11 @@ def registerModal(request):
                 line_name=display_name,
                 registration_date=timezone.now()
             )
-            print("user_profile created successfully")  # 打印成功消息，用於調試
+            # print("user_profile created successfully")  # 打印成功消息，用於調試
 
             # 自動登入新註冊的用戶
             user = authenticate(username=new_username, password=new_password)
-            print("user",user)
+            # print("user",user)
             if user is not None:
                 login(request, user)
                 return redirect('/')  # 這裡可以重定向到其他頁面或者顯示成功消息
