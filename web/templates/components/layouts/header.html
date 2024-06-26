@@ -43,86 +43,48 @@
                         <a class="nav-link" href="{% url 'about_us' %}">關於我們</a>
                     </li>
                 </ul>
-
+                <style>
+                    .custom-btn {
+                        max-width: 200px; /* 設置按鈕的最大寬度 */
+                        white-space: nowrap; /* 防止文字換行 */
+                        overflow: hidden; /* 超出部分隱藏 */
+                        text-overflow: ellipsis; /* 顯示省略符號 */
+                    }
+                </style>
                 <!-- 登入/登出按鈕 -->
                 <ul class="navbar-nav justify-content-end flex-grow-2 pe-3">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <form action="{% url 'logout' %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary">登出</button>
-                            </form>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                登入 / 註冊
-                            </button>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </div>
-</nav>
+                            <div class="row">
+                                <div class="col">
+                                    {% if line_name is None %}
+                                        <h4 class="white-text">
+                                            <span  style="color: white;">歡迎: {{ email }}</span>
+                                        </h4>
+                                    {% else %}
+                                        <h4 class="white-text">
+                                            <span  style="color: white;">歡迎: {{ line_name }}</span>
+                                        </h4>
+                                    {% endif %}
+                                </div>
+                                <div class="col">
 
 
-<nav class="navbar navbar-dark bg-dark fixed-top navbar-expand-lg">
-    <div class="container-fluid">
-        <!-- 品牌名稱 -->
-        <a class="navbar-brand" href="#">YouBike最佳站點推薦系統</a>
+                                    <form action="{% url 'custom_line_login' %}" method="post">
+                                        {% if line_user_id is None%}
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary custom-btn">line綁定</button>
+                                        {% endif %}
+                                    </form>
 
-        <!-- 切換按鈕 -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <!-- Offcanvas 菜單 -->
-        <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">YouBike最佳站點推薦系統</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <!-- 導航鏈接 -->
-                <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'home' %}">首頁</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'mapAPP' %}">站點地圖</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'chart' %}">站點地圖分析</a>
-
-                    </li>
-                    <!-- 未登入用戶隱藏的選項 -->
-                    {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'bike_trail' %}">腳踏車步道</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'food' %}">YouBike米其林</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'member' %}">會員專區</a>
-                    </li>
-                    {% endif %}
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'about_us' %}">關於我們</a>
-                    </li> {% endcomment %}
-                </ul>
-
-                <!-- 登入/登出按鈕 -->
-                <ul class="navbar-nav justify-content-end flex-grow-2 pe-3">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <form action="{% url 'logout' %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary">登出</button>
-                            </form>
+                                </div>
+                                <div class="col">
+                                    <form action="{% url 'logout' %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-primary custom-btn">登出</button>
+                                    </form>
+                                </div>
+                            </div>
                         </li>
                     {% else %}
                         <li class="nav-item">

@@ -217,6 +217,15 @@
     background-color: #007bff;
     border-color: #007bff;
 }
+.text-primary{
+    border-color: white;
+    color: white;
+}
+
+.white-text {
+    white-space: nowrap;
+    color: white;
+}
 
 .btn-primary:hover {
     background-color: #0056b3;
