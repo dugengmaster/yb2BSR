@@ -1,5 +1,5 @@
 # mapAPP 架構說明
-1. 本文主旨在說明mappAPP的架構
+1. 本文主旨在說明mapAPP的架構
 
 ## 主要三個Side program
 1. GoogleMap API 地圖應用程式: GoogleMapForUbike.py
@@ -16,4 +16,3 @@
    1. model預測得到的結果為1: 回傳msg: 車輛充足
    2. model預測得到的結果為0: 回傳msg: 這時段車輛可能不足，需要等待幾分鐘
 6. 最後將資料彙整並傳入mapAPP.html
-
