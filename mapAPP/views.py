@@ -264,7 +264,7 @@ def mapfunction():
 def mapAPP(request):
     lat = request.GET.get('lat')
     lng = request.GET.get('lng')
-    
+
     if lat and lng:
         ip=get_client_ip(request)
         # 25.040280970828704, 121.51193996655002
@@ -272,24 +272,24 @@ def mapAPP(request):
         coor = {'lat': float(lat), 'lng': float(lng)}
         parameter = mapfunctionplus(ip, coor)
     else:
-        
+
     #   ip=get_client_ip(request)
         client_ip, is_routable = get_client_ip(request, request_header_order=["HTTP_X_FORWARDED_FOR"])
-        
-        if client_ip is None:
-            print("Unable to get the client's IP address")
-        else:
-            print("We got the client's IP address")
-            print(client_ip)
-        if is_routable:
-            print("The client's IP address is publicly routable on the Internet")
-        else:
-            print("The client's IP address is private")
+
+        # if client_ip is None:
+        #     print("Unable to get the client's IP address")
+        # else:
+        #     print("We got the client's IP address")
+        #     print(client_ip)
+        # if is_routable:
+        #     print("The client's IP address is publicly routable on the Internet")
+        # else:
+        #     print("The client's IP address is private")
         ip_data = get_ip_details(client_ip)
         coor = {'lat': float(ip_data.loc.split(',')[0]), 'lng':float(ip_data.loc.split(',')[1])}
-        print("view",coor)
+        # print("view",coor)
         parameter = mapfunctionplus(coor)
-    
+
     return render(request, "mapAPP.html", parameter)
 
 def mapJson(request):

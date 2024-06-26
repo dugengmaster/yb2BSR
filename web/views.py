@@ -225,14 +225,14 @@ def line_login_callback(request):
             user_profiles = UserProfile.objects.all().values_list('username', flat=True)
             for username in user_profiles:
                 username = username
-                print("user_profiles",username)
+                # print("user_profiles",username)
 
 
 
             # 嘗試根據 line_user_id 創建或獲取用戶
             try:
                 user = UserProfile.objects.get(line_user_id=line_user_id)
-                print(f"找到用戶：{user.line_user_id}")
+                # print(f"找到用戶：{user.line_user_id}")
 
             except UserProfile.DoesNotExist:
                 user = None
@@ -324,11 +324,11 @@ def registerModal(request):
                 line_name=display_name,
                 registration_date=timezone.now()
             )
-            print("user_profile created successfully")  # 打印成功消息，用於調試
+            # print("user_profile created successfully")  # 打印成功消息，用於調試
 
             # 自動登入新註冊的用戶
             user = authenticate(username=new_username, password=new_password)
-            print("user",user)
+            # print("user",user)
             if user is not None:
                 login(request, user)
                 return redirect('/')  # 這裡可以重定向到其他頁面或者顯示成功消息
