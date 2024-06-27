@@ -52,6 +52,7 @@ urlpatterns = [
     path('food/', views.food, name='food'),
     path('registerModal/', views.registerModal, name='registerModal'),
 
+
 ]
 handler404 = web_views.custom_404
 # 將自定義 404 視圖與指定路徑關聯

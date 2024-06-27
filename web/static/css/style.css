@@ -217,6 +217,16 @@
     background-color: #007bff;
     border-color: #007bff;
 }
+.text-primary{
+    border-color: white;
+    color: white;
+}
+
+.white-text {
+    white-space: nowrap;
+    color: white;
+    padding: 6px 0 2px;
+}
 
 .btn-primary:hover {
     background-color: #0056b3;
