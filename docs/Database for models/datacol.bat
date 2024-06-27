@@ -1,0 +1,1 @@
+"C:\Users\cfchu\anaconda3\python.exe" D:\LC\ubike\getUbikeApi-CF4.py
