@@ -9,3 +9,5 @@ requests
 line-bot-sdk
 googlemaps
 python-dotenv
+django-ipware
+ipinfo_django

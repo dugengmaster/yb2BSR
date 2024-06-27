@@ -21,6 +21,6 @@ from mapAPP import views
 
 urlpatterns = [
     path("", views.mapAPP, name="mapAPP"),
-    # path("json/", views.mapJson, name="mapJson")
+    path("json/", views.mapJson, name="mapJson")
     # path("test", views.test)
 ]
