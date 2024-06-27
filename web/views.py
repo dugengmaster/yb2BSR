@@ -361,18 +361,106 @@ def io(request):
     return render(request,"home.html")
 
 def about_us(request):
-    return render(request, "about_us.html")
+    if request.user.is_authenticated:
+        line_user_id = request.user.line_user_id
+        line_name = request.user.line_name
+        email = request.user.email
+        email = email.split("@")[0]
+
+        context = {
+            "line_user_id":line_user_id,
+            "line_name":line_name,
+            "email":email,
+        }
+
+
+        print("line_name",line_name)
+        print("email",email)
+        return render(request,'about_us.html',context)
+        # return render(request, 'home.html')
+    else:
+         return render(request, "about_us.html")
 
 
 def member(request):
-    return render(request, "member.html")
+    if request.user.is_authenticated:
+        line_user_id = request.user.line_user_id
+        line_name = request.user.line_name
+        email = request.user.email
+        email = email.split("@")[0]
+
+        context = {
+            "line_user_id":line_user_id,
+            "line_name":line_name,
+            "email":email,
+        }
+
+
+        print("line_name",line_name)
+        print("email",email)
+        return render(request,'member.html',context)
+    else:
+         return render(request, "member.html")
 
 def bike_trail(request):
-    return render(request, "bike_trail.html")
+    if request.user.is_authenticated:
+        line_user_id = request.user.line_user_id
+        line_name = request.user.line_name
+        email = request.user.email
+        email = email.split("@")[0]
+
+        context = {
+            "line_user_id":line_user_id,
+            "line_name":line_name,
+            "email":email,
+        }
+
+
+        print("line_name",line_name)
+        print("email",email)
+        return render(request,'bike_trail.html',context)
+    else:
+         return render(request, "bike_trail.html")
+
 
 def chart(request):
-    return render(request, "chart.html")
+    if request.user.is_authenticated:
+        line_user_id = request.user.line_user_id
+        line_name = request.user.line_name
+        email = request.user.email
+        email = email.split("@")[0]
+
+        context = {
+            "line_user_id":line_user_id,
+            "line_name":line_name,
+            "email":email,
+        }
+
+
+        print("line_name",line_name)
+        print("email",email)
+        return render(request,'chart.html',context)
+    else:
+         return render(request, "chart.html")
+
 
 def food(request):
-    return render(request, "food.html")
+    if request.user.is_authenticated:
+        line_user_id = request.user.line_user_id
+        line_name = request.user.line_name
+        email = request.user.email
+        email = email.split("@")[0]
+
+        context = {
+            "line_user_id":line_user_id,
+            "line_name":line_name,
+            "email":email,
+        }
+
+
+        print("line_name",line_name)
+        print("email",email)
+        return render(request,'food.html',context)
+    else:
+         return render(request, "food.html")
 
