@@ -1,4 +1,5 @@
 # 爬蟲與資料庫
+
 ## 引言
 - 收集政府開放平台的資料，利用數據擷取與分析的方法，作為網頁建立的基礎。
 
@@ -11,15 +12,15 @@
 ## 公開資料來源
 
 ### YouBike開放資料：
-1.	area-all：各縣市YouBike客戶服務相關資料
+1.	area-all：各縣市 YouBike 客戶服務相關資料
 
 	https://apis.youbike.com.tw/json/area-all.json
 
-2.	station-yb1：YouBike 1各站點即時資料(更新頻率每五分鐘一次)，因YouBike 1只分布於新北，桃園，苗栗三縣市，故目前網站暫不支援，僅作為未來功能擴充之參考。
+2.	station-yb1：YouBike 1.0 各站點即時資料，因 YouBike 1.0 只分布於新北、桃園、苗栗三縣市，故目前網站暫不支援，僅作為未來功能擴充之參考。
 
 	https://apis.youbike.com.tw/json/station-yb1.json
 
-3.	station-yb2：YouBike 2各站點即時資料(更新頻率每五分鐘一次)，系統主要之YouBike資料來源。
+3.	station-yb2：YouBike 2.0 各站點即時資料，系統主要之 YouBike 資料來源。
 
 	https://apis.youbike.com.tw/json/station-yb2.json
 
@@ -262,15 +263,95 @@
 ## 爬蟲操作
 
 ### mapAPP 所使用之爬蟲
-- takeGpsByIP(self,home_mobile_country_code=None,
-              home_mobile_network_code=None, radio_type=None, carrier=None,
-              consider_ip=None, cell_towers=None, wifi_access_points=None) -> dict
-- getstationbike(coordinates, q)
-- tpe_cur_rain(q)
-- tpe_cur_temp(q)
-- tpe_yb_stn()
-- tpe_yb_qy(station_no)
-- holiday_qy(date,q)
+#### 建立站點推薦模型使用之資料
+1. 使用 `windows` 排程器，以每五分鐘的頻率下載Json格式的原始資料。
+
+	- datacol.bat
+		```bat
+		"C:\Users\cfchu\anaconda3\python.exe" D:\LC\ubike\getUbikeApi-CF4.py
+		```
+
+	- getUbikeApi-CF4.py
+
+		```python
+		import requests
+		import json
+		import datetime
+
+		agent = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"}
+		session = requests.Session()
+		session.headers.update(agent)
+
+		fn1="D:\\LC\\ubike\\raw\\area-all-"+str(datetime.datetime.now())[:16].replace(":","_")+".json"
+		fn2="D:\\LC\\ubike\\raw\\station-yb1-"+str(datetime.datetime.now())[:16].replace(":","_")+".json"
+		fn3="D:\\LC\\ubike\\raw\\station-yb2-"+str(datetime.datetime.now())[:16].replace(":","_")+".json"
+		fn4="D:\\LC\\ubike\\raw\\weather-"+str(datetime.datetime.now())[:16].replace(":","_")+".json"
+		fn5="D:\\LC\\ubike\\raw\\weather2-"+str(datetime.datetime.now())[:16].replace(":","_")+".json"
+
+		fns = [fn1, fn2, fn3, fn4, fn5]
+
+		apis = ["https://apis.youbike.com.tw/json/area-all.json",
+				"https://apis.youbike.com.tw/json/station-yb1.json",
+				"https://apis.youbike.com.tw/json/station-yb2.json",
+				"https://opendata.cwa.gov.tw/api/v1/rest/datastore/O-A0001-001?Authorization={Authorization}&format=JSON",
+				"https://opendata.cwa.gov.tw/api/v1/rest/datastore/O-A0002-001?Authorization={Authorization}&format=JSON"
+				]
+		for index, api in enumerate(apis):
+			response = session.get(api)
+			print(response.status_code)
+			if response.status_code == 200:
+				data = response.json()
+				with open(fns[index], "w", encoding="utf-8") as file:
+					json.dump(data, file, ensure_ascii=False, indent=4)
+		```
+
+2. 將原始資料整理後，在視圖中執行函式並儲存進資料庫內。
+	- 執行 Yb_yb(request) 儲存到資料表 Yb_yb
+		欄位格式：
+
+		車輛當前存放數量、車輛存放總量、站點的車輛種類與更新時間。
+
+	- 執行 Yb_stn(request) 儲存到資料表 Yb_stn：
+
+		欄位格式：車站名稱資訊、車站編號、縣市區域、車站經緯度。
+
+	- 執行 Tpe_yb(request) 儲存到資料表 Tpe_yb：
+
+		欄位格式：台北區域車輛存放總量、是否為假日、是否下雨、當前氣溫、車站資料更新時間、下載資料的時間。
+
+	- 執行 Twn_yb(request) 儲存到資料表 Twn_yb：
+
+		欄位格式：全台灣區域車輛存放總量、是否為假日、是否下雨、當前氣溫、車站資料更新時間、下載資料的時間。
+
+#### 提取即時訊息供模型預測使用
+- getstationbike(coordinates, q)：
+
+	從 "https://apis.youbike.com.tw/json/station-yb1.json", "https://apis.youbike.com.tw/json/station-yb2.json" 取得車站即時資訊，以 `dict` 的形式輸出。
+
+	Example：
+	```python
+	{
+	'name': '台北轉運站',
+	'available_spaces': 10,
+	'parking_spaces': 25,
+	'update_time': '2024-06-27 09:23:20'
+	}
+	```
+- tpe_cur_rain(q)：
+
+	從 "https://opendata.cwa.gov.tw/api/v1/rest/datastore/O-A0002-001?Authorization={Authorization}&format=JSON" 取得台北降雨即時資訊。
+
+	若有降雨輸出 1 反之輸出 0，以配合 Pandas DataFrame 來使用。
+- tpe_cur_temp(q)：
+
+	從 "https://opendata.cwa.gov.tw/api/v1/rest/datastore/O-A0001-001?Authorization={Authorization}&format=JSON" 取得台北氣溫即時資訊。
+
+	輸出資料型態為 Float 的當前氣溫。
+- holiday_qy(date,q)：
+
+	從 "https://data.ntpc.gov.tw/api/datasets/308dcd75-6434-45bc-a95f-584da4fed251/json?size=2000" 取得中華民國節慶與假日資料。
+
+	若為假日輸出 1 反之輸出 0，以配合 Pandas DataFrame 來使用。
 
 ### Line_Official_Account_Bot 所使用之爬蟲
 - weather(Authorization: str) -> dict | None
