@@ -70,8 +70,8 @@ def home(request):
         }
 
 
-        print("line_name",line_name)
-        print("email",email)
+        # print("line_name",line_name)
+        # print("email",email)
         return render(request,'home.html',context)
         # return render(request, 'home.html')
     else:
@@ -237,7 +237,7 @@ def line_login_callback(request):
             user_profiles = UserProfile.objects.all().values_list('username', flat=True)
             for username in user_profiles:
                 username = username
-                print("user_profiles",username)
+                # print("user_profiles",username)
 
 
 
@@ -340,7 +340,7 @@ def registerModal(request):
 
             # 自動登入新註冊的用戶
             user = authenticate(username=new_username, password=new_password)
-            print("user",user)
+            # print("user",user)
             if user is not None:
                 login(request, user)
                 return redirect('/')  # 這裡可以重定向到其他頁面或者顯示成功消息
@@ -374,8 +374,8 @@ def about_us(request):
         }
 
 
-        print("line_name",line_name)
-        print("email",email)
+        # print("line_name",line_name)
+        # print("email",email)
         return render(request,'about_us.html',context)
         # return render(request, 'home.html')
     else:
@@ -396,8 +396,8 @@ def member(request):
         }
 
 
-        print("line_name",line_name)
-        print("email",email)
+        # print("line_name",line_name)
+        # print("email",email)
         return render(request,'member.html',context)
     else:
          return render(request, "member.html")
@@ -416,8 +416,8 @@ def bike_trail(request):
         }
 
 
-        print("line_name",line_name)
-        print("email",email)
+        # print("line_name",line_name)
+        # print("email",email)
         return render(request,'bike_trail.html',context)
     else:
          return render(request, "bike_trail.html")
@@ -437,8 +437,8 @@ def chart(request):
         }
 
 
-        print("line_name",line_name)
-        print("email",email)
+        # print("line_name",line_name)
+        # print("email",email)
         return render(request,'chart.html',context)
     else:
          return render(request, "chart.html")
@@ -458,8 +458,8 @@ def food(request):
         }
 
 
-        print("line_name",line_name)
-        print("email",email)
+        # print("line_name",line_name)
+        # print("email",email)
         return render(request,'food.html',context)
     else:
          return render(request, "food.html")

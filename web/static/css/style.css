@@ -225,6 +225,8 @@
 .white-text {
     white-space: nowrap;
     color: white;
+    padding: 5px;
+    border-radius: 5px;
 }
 
 .btn-primary:hover {
