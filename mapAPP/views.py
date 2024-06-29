@@ -266,11 +266,11 @@ def mapAPP(request):
     lng = request.GET.get('lng')
 
     if lat and lng:
-        ip=get_client_ip(request)
+        # ip=get_client_ip(request)
         # 25.040280970828704, 121.51193996655002
         # coor = {'lat':25.040280970828704, 'lng':121.51193996655002}
         coor = {'lat': float(lat), 'lng': float(lng)}
-        parameter = mapfunctionplus(ip, coor)
+        parameter = mapfunctionplus(coor)
     else:
 
     #   ip=get_client_ip(request)

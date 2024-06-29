@@ -54,7 +54,7 @@ handler = WebhookHandler(settings.LINE_CHANNEL_SECRET)
 def callback(request):
     signature = request.META.get('HTTP_X_LINE_SIGNATURE', '')
     body = request.body.decode('utf-8')
-    # print(json.loads(body).get('events'))
+
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
