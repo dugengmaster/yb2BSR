@@ -24,6 +24,7 @@
 
 - 操作系統：Windows 10
 - 資料庫：PostgreSQL
+
 部屬環境：Heroku
 
 - 操作系統：Linux
