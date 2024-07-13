@@ -11,14 +11,21 @@
 
 ## 開發環境
 程式語言：Python 3.10.9, JavaScript(ES6+)
+
 程式碼編輯器：Spyder, Visual Studio Code
+
 設計工具：Canva, 小畫家3D
+
 前後端開發：Django
+
 版本控制：Git, Github
+
 本地端測試環境：
+
 - 操作系統：Windows 10
 - 資料庫：PostgreSQL
 部屬環境：Heroku
+
 - 操作系統：Linux
 - 資料庫：Sqlite
 
